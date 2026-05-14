@@ -2,7 +2,35 @@
   "permissions": {
     "allow": [
       "Bash(2>&1)",
-      "Bash(PGPASSWORD=somepassword psql \"postgresql://ep-summer-boat-ab0tssvx-pooler.eu-west-2.aws.neon.tech:5432/uhqAccount-prod-db?options=-csearch_path%3Dpublic\" -c \"SELECT conname, conrelid::regclass AS table_name, confrelid::regclass AS referenced_table, CASE contype WHEN 'f' THEN 'foreign key' END AS type, CASE confdeltype WHEN 'c' THEN 'CASCADE' WHEN 'r' THEN 'RESTRICT' WHEN 'n' THEN 'SET NULL' WHEN 'a' THEN 'NO ACTION' END AS on_delete FROM pg_constraint WHERE conrelid = 'orders'::regclass AND contype = 'f';\")"
+      "Bash(PGPASSWORD=somepassword psql \"postgresql://ep-summer-boat-ab0tssvx-pooler.eu-west-2.aws.neon.tech:5432/uhqAccount-prod-db?options=-csearch_path%3Dpublic\" -c \"SELECT conname, conrelid::regclass AS table_name, confrelid::regclass AS referenced_table, CASE contype WHEN 'f' THEN 'foreign key' END AS type, CASE confdeltype WHEN 'c' THEN 'CASCADE' WHEN 'r' THEN 'RESTRICT' WHEN 'n' THEN 'SET NULL' WHEN 'a' THEN 'NO ACTION' END AS on_delete FROM pg_constraint WHERE conrelid = 'orders'::regclass AND contype = 'f';\")",
+      "Bash(rm -f e:/web/my-personal-use/flexora/backend/src/services/telegram-*.service.ts e:/web/my-personal-use/flexora/backend/src/services/telegram*.service.ts)",
+      "Bash(rm -f e:/web/my-personal-use/flexora/backend/src/routes/admin/telegram-*.route.ts e:/web/my-personal-use/flexora/backend/src/routes/customer/telegram-*.route.ts)",
+      "Bash(rm -f e:/web/my-personal-use/flexora/backend/src/controllers/admin/telegram-*.ts e:/web/my-personal-use/flexora/backend/src/controllers/admin/transfer-product.controller.ts)",
+      "Bash(bun prisma *)",
+      "Bash(bun run *)",
+      "Bash(bun install *)",
+      "Bash(bunx prisma *)",
+      "Bash(xargs -I{} basename {} .ts)",
+      "Bash(netstat -ano)",
+      "Bash(rm -f e:/web/my-personal-use/flexora/backend/src/services/telegram-*.service.ts e:/web/my-personal-use/flexora/backend/src/services/user-telegram-notification.service.ts)",
+      "Bash(rm -f e:/web/my-personal-use/flexora/backend/src/types/telegram*.ts e:/web/my-personal-use/flexora/backend/src/scripts/backfill-telegram*.ts)",
+      "Bash(rm -f e:/web/my-personal-use/flexora/backend/src/validations/zod/telegram*.ts e:/web/my-personal-use/flexora/backend/src/validations/zod/transfer-product.schema.ts)",
+      "Bash(sed -i \"s/import { userTelegramNotificationService } from '.\\\\/user-telegram-notification.service';//\" src/services/balance.service.ts)",
+      "Bash(sed -i '/userTelegramNotificationService/,/\\\\.catch.*Failed to send Telegram notification/d' src/services/balance.service.ts)",
+      "Bash(sed -i '/Send Telegram notification to user\\\\|Send success notification to user via Telegram\\\\|Send Telegram notification \\(non-blocking\\)/d' src/services/balance.service.ts)",
+      "Bash(curl -s http://localhost:5000/health)",
+      "Bash(curl -s http://localhost:5000/api/public/homepage)",
+      "Bash(curl -s http://localhost:5000/api/v1/settings/key/system_site_settings)",
+      "Bash(taskkill //F //PID 31532)",
+      "Bash(taskkill //F //PID 19136)",
+      "Bash(taskkill //F //PID 32480)"
+    ],
+    "additionalDirectories": [
+      "e:\\web\\my-personal-use\\flexora\\backend\\src\\services",
+      "e:\\web\\my-personal-use\\flexora\\backend\\src\\routes\\admin",
+      "e:\\web\\my-personal-use\\flexora\\backend\\src\\controllers\\admin",
+      "e:\\web\\my-personal-use\\flexora\\backend\\src\\types",
+      "e:\\web\\my-personal-use\\flexora\\backend\\src\\validations\\zod"
     ]
   }
 }

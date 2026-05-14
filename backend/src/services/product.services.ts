@@ -12,7 +12,6 @@ import type {
   TelegramProduct,
   UpdateProduct
 } from '../validations/zod/product.schema'
-import { TransferProductMetaSchema } from '../validations/zod/transfer-product.schema'
 import { CacheInvalidationService } from './cache-invalidation.service'
 import { cacheService } from './cache.service'
 import { isTelegramTransferProduct, TELEGRAM_ACCOUNT_PRODUCT_TYPES, TELEGRAM_TRANSFER_PRODUCT_TYPES } from '../utils/product-type'

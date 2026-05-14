@@ -12,8 +12,6 @@ export * from './zod/rank.schema';
 export * from './zod/setting.schema';
 export * from './zod/subscription-package.schema';
 export * from './zod/system.schema';
-export * from './zod/telegram-transfer.schema';
-export * from './zod/telegram.schema';
 export * from './zod/ticket.schema';
 export * from './zod/user.schema';
 

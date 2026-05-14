@@ -521,12 +521,12 @@ export default function PurchasedItems() {
                     <span>
                       Open{' '}
                       <a
-                        href='https://t.me/uhqaccountsbot'
+                        href='https://t.me/flexorabot'
                         target='_blank'
                         rel='noopener noreferrer'
                         className='font-semibold underline hover:text-amber-700 dark:hover:text-yellow-200'
                       >
-                        @uhqaccountsbot
+                        @flexorabot
                       </a>{' '}
                       on Telegram
                     </span>

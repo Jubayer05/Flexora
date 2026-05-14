@@ -68,7 +68,7 @@ export default function SiteLogoClient({
   }, [logoSrc])
 
   const handleImageError = () => {
-    console.error('[SiteLogoClient] Image load error, falling back to default:', {
+    console.warn('[SiteLogoClient] Image load error, falling back to default:', {
       attemptedSrc: currentSrc,
       defaultLogo
     })
@@ -88,7 +88,7 @@ export default function SiteLogoClient({
         src={currentSrc}
         width={225}
         height={height}
-        alt='UHQ Accounts logo'
+        alt='Flexora logo'
         priority
         decoding='sync'
         quality={85}

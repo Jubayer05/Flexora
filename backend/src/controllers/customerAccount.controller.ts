@@ -445,7 +445,7 @@ export const requestTelegramOTP = async (
       }
 
       // Trigger bot messaging to request OTP (optional)
-      const botUsername = process.env.TELEGRAM_BOT_USERNAME || '@uhqaccountsbot'
+      const botUsername = process.env.TELEGRAM_BOT_USERNAME || '@flexorabot'
       try {
         await BotService.sendBotMessage(phoneNumber, botUsername, '/start', accountProxy)
       } catch (botError) {

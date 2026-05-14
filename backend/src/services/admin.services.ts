@@ -43,7 +43,7 @@ export class AdminService {
   private readonly TOKEN_EXPIRY = '1d'; // Longer for admin sessions
   private readonly REFRESH_TOKEN_EXPIRY = '30d'; // Longer for admin
   private readonly SESSION_EXPIRY_DAYS = 30;
-  private readonly SUPER_ADMIN_EMAIL = 'superadmin@uhq.com';
+  private readonly SUPER_ADMIN_EMAIL = process.env.ADMIN_EMAIL || 'superadmin@flexora.com';
 
   constructor() {
     this.userService = new UserService();

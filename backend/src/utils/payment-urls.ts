@@ -1,4 +1,4 @@
-const DEFAULT_FRONTEND_URL = 'https://uhqaccounts.com'
+const DEFAULT_FRONTEND_URL = 'https://flexora.com'
 
 function isHttpUrl(value: string) {
   try {

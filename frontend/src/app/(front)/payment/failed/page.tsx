@@ -250,8 +250,8 @@ export default function PaymentFailedPage() {
                 support team
               </Link>
               {' '}or email{' '}
-              <a href='mailto:support@uhqaccounts.com' className='text-primary hover:underline'>
-                support@uhqaccounts.com
+              <a href='mailto:support@flexora.com' className='text-primary hover:underline'>
+                support@flexora.com
               </a>
             </Typography>
           </div>

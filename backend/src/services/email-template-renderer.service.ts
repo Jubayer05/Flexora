@@ -129,11 +129,11 @@ export class EmailTemplateRendererService {
       },
       VERIFICATION_EMAIL: {
         name: 'John Doe',
-        verificationLink: 'https://uhqaccounts.com/verify-email?token=abc123'
+        verificationLink: 'https://flexora.com/verify-email?token=abc123'
       },
       PASSWORD_RESET: {
         name: 'John Doe',
-        resetLink: 'https://uhqaccounts.com/reset-password?token=abc123'
+        resetLink: 'https://flexora.com/reset-password?token=abc123'
       },
       ORDER_CONFIRMATION: {
         name: 'John Doe',

@@ -1,6 +1,6 @@
-const PUBLIC_SITE_URL = 'https://uhqaccounts.com'
-const PUBLIC_API_URL = 'https://api.uhqaccounts.com'
-const PUBLIC_ROOT_API_URL = 'https://api.uhqaccounts.com/api/v1'
+const PUBLIC_SITE_URL = 'https://flexora.com'
+const PUBLIC_API_URL = 'https://api.flexora.com'
+const PUBLIC_ROOT_API_URL = 'https://api.flexora.com/api/v1'
 
 function cleanBaseUrl(value?: string | null) {
   return String(value || '').trim().replace(/\/+$/, '')

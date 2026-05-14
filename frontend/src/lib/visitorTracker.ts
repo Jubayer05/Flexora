@@ -5,7 +5,7 @@
  * Uses sessionStorage to prevent double counting within same session
  */
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_APP_ROOT_API || 'http://localhost:5000/api/v1'
+const API_BASE_URL = process.env.NEXT_PUBLIC_APP_ROOT_API || 'http://localhost:5015/api/v1'
 
 /**
  * Get today's date in YYYY-MM-DD format

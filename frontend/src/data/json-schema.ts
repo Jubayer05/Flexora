@@ -40,7 +40,7 @@ export const homeSchema = {
       description:
         'UHQ Accounts is the leading and top-rated social media accounts provider, offering high-quality, reliable, and secure accounts for various platforms to meet your personal and business needs.',
       sameAs: [
-        'https://www.facebook.com/uhqaccounts',
+        'https://www.facebook.com/flexora',
         'https://www.instagram.com/accounts.curlware.net/?hl=en',
         'https://www.youtube.com/@UHQAccounts',
         'https://www.linkedin.com/company/uhq-accounts/'
@@ -48,7 +48,7 @@ export const homeSchema = {
       contactPoint: [
         {
           '@type': 'ContactPoint',
-          email: 'support@uhqaccounts.com',
+          email: 'support@flexora.com',
           contactType: 'customer service'
         }
       ]

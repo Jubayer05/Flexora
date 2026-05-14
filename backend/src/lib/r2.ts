@@ -154,7 +154,7 @@ export async function deleteFromR2(
 
 /**
  * Extract R2 key from a public URL for deletion
- * e.g. "https://www.uhqaccounts.com/gallery/xyz.png" -> "gallery/xyz.png"
+ * e.g. "https://www.flexora.com/gallery/xyz.png" -> "gallery/xyz.png"
  */
 export function extractR2KeyFromUrl(url: string): string | null {
   if (!url) return null

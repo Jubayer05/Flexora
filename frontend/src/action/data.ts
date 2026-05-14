@@ -2,7 +2,7 @@
 import { HomepageSettings } from '@/lib/validations/schemas/homepageSettings'
 
 // Use the public API URL for server-side calls
-const serverBaseURL = process.env.NEXT_PUBLIC_APP_ROOT_API || 'http://localhost:5000/api/v1'
+const serverBaseURL = process.env.NEXT_PUBLIC_APP_ROOT_API || 'http://localhost:5015/api/v1'
 
 // Add build-time detection
 const isBuildTime = () => {

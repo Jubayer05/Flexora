@@ -3,7 +3,6 @@ import { FeedbackSource, NameStatus } from '@prisma/client'
 import db from '../configs/db'
 import { cacheService } from '../services/cache.service'
 import { SettingService } from '../services/setting.services'
-import { telegramNotificationService } from '../services/telegram-notification.service'
 import { sendSuccessResponse, type ApiResponse } from '../utils'
 import { fakeFeedbackSchema } from '../validations'
 import {
@@ -75,10 +74,6 @@ export const upsertSetting = async (
     const validatedData = upsertSettingSchema.parse(req.body)
 
     const setting = await settingService.upsertSetting(key, validatedData)
-
-    if (key === 'telegram_config') {
-      await telegramNotificationService.reloadConfig()
-    }
 
     return sendSuccessResponse(res, setting, 'Setting saved successfully')
   } catch (error) {

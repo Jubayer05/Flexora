@@ -20,7 +20,6 @@ import { validatePaymentRequest, isDuplicatePayment } from '../utils/risk-manage
 import { isTelegramTransferProduct } from '../utils/product-type'
 import { NotificationService } from './notification.service'
 import { OrderService } from './order.services'
-import { telegramPremiumService } from './telegram/premium.service'
 import { BalanceGatewayService } from './payment-gateways/balance.gateway'
 import { NOWPaymentsGatewayService } from './payment-gateways/nowpayments.gateway'
 import { StripeGatewayService } from './payment-gateways/stripe.gateway'
@@ -1633,8 +1632,8 @@ ${(order.product.type === 'SERVICE' && order.product.platform !== 'TELEGRAM') ||
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 You can track your order status anytime:
 ${order.userId 
-  ? '• Dashboard: https://uhqaccounts.com/user/purchased-items' 
-  : `• Guest Access: https://uhqaccounts.com/guest/access
+  ? '• Dashboard: https://flexora.com/user/purchased-items' 
+  : `• Guest Access: https://flexora.com/guest/access
 • Order Number: ${order.orderNumber}
 • Email: ${userEmail}`}
 
@@ -1644,7 +1643,7 @@ Best regards,
 UHQ Accounts Team
 
 ---
-Support: support@uhqaccounts.com
+Support: support@flexora.com
             `.trim()
 
             await sendEmail(userEmail, emailText, emailSubject)
@@ -1808,29 +1807,7 @@ Support: support@uhqaccounts.com
           )
 
           if (isPremiumChildOrder) {
-            try {
-              const premiumResult = await telegramPremiumService.processPremiumOrder(childOrder.id)
-
-              if (premiumResult.success) {
-                console.log('[Payment] Premium child order activated successfully', {
-                  parentOrderId: orderId,
-                  childOrderId: childOrder.id,
-                  transactionId: premiumResult.result?.transactionId
-                })
-              } else {
-                console.error('[Payment] Failed to activate premium child order', {
-                  parentOrderId: orderId,
-                  childOrderId: childOrder.id,
-                  error: premiumResult.message
-                })
-              }
-            } catch (error: any) {
-              console.error('[Payment] Error processing premium child order', {
-                parentOrderId: orderId,
-                childOrderId: childOrder.id,
-                error: error.message
-              })
-            }
+            await this.orderService.deliverOrderAccounts(childOrder.id)
           } else {
             await this.orderService.deliverOrderAccounts(childOrder.id)
           }
@@ -1882,38 +1859,7 @@ Support: support@uhqaccounts.com
         // still need stock/sales counters updated when payment completes.
         await this.adjustNonAccountProductInventory(order)
 
-        const isPremiumOrder = ['PREMIUM_1M', 'PREMIUM_3M', 'PREMIUM_6M', 'PREMIUM_12M'].includes(
-          order.product.type
-        )
-
-        if (isPremiumOrder) {
-          try {
-            // Process premium order activation
-            const premiumResult = await telegramPremiumService.processPremiumOrder(orderId)
-
-            if (premiumResult.success) {
-              console.log('[Payment] Premium order activated successfully', {
-                orderId,
-                transactionId: premiumResult.result?.transactionId
-              })
-            } else {
-              console.error('[Payment] Failed to activate premium order', {
-                orderId,
-                error: premiumResult.message
-              })
-              // Don't fail the payment, but log the error
-            }
-          } catch (error: any) {
-            console.error('[Payment] Error processing premium order', {
-              orderId,
-              error: error.message
-            })
-            // Don't fail the payment if premium activation fails
-          }
-        } else {
-          // Trigger order delivery for non-premium orders (this will handle stock updates internally based on actual delivery)
-          await this.orderService.deliverOrderAccounts(orderId)
-        }
+        await this.orderService.deliverOrderAccounts(orderId)
       }
 
       // For guest orders, generate and send access token

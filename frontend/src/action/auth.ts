@@ -12,7 +12,7 @@ const baseURL = process.env.NEXT_PUBLIC_APP_ROOT_API || 'http://localhost:5001/a
 const appUrl =
   process.env.NEXT_PUBLIC_APP_URL ||
   process.env.NEXTAUTH_URL ||
-  (process.env.NODE_ENV === 'production' ? 'https://uhqaccounts.com' : 'http://localhost:3000')
+  (process.env.NODE_ENV === 'production' ? 'https://flexora.com' : 'http://localhost:3015')
 const isHttps = appUrl.startsWith('https://')
 
 const userCookieOptions = {
@@ -204,7 +204,7 @@ export const adminLogout = async () => {
   } catch (error) {
     console.error('Logout API call failed:', error)
   } finally {
-    redirect('/admin/login')
+    redirect('/login')
   }
 }
 

@@ -628,7 +628,7 @@ export default function OrderSuccessPage() {
               Need Help?
             </Typography>
             <Typography variant='body2' className='text-xs text-muted-foreground'>
-              Contact support@uhqaccounts.com anytime
+              Contact support@flexora.com anytime
             </Typography>
           </div>
         </div>

@@ -3,6 +3,7 @@ import type { NextFunction, Request, Response } from 'express'
 import { OAuth2Client } from 'google-auth-library'
 import db from '../configs/db'
 import { AppError } from '../middlewares/error-handler'
+import { AdminService } from '../services/admin.services'
 import { AuthService } from '../services/auth.services'
 import { getClientIP, sendCreatedResponse, sendSuccessResponse, type ApiResponse } from '../utils'
 import {
@@ -18,8 +19,9 @@ import {
   RevokeSessionSchema
 } from '../validations/zod/user.schema'
 
-// Initialize service
+// Initialize services
 const authService = new AuthService()
+const adminService = new AdminService()
 
 // ================================
 // AUTHENTICATION ENDPOINTS
@@ -59,8 +61,26 @@ export const login = async (
     const userAgent = req.get('User-Agent')
     const ipAddress = getClientIP(req) || undefined
 
-    const result = await authService.login(validatedData, userAgent, ipAddress)
+    // Check if user is admin by looking up their role first
+    const user = await db.user.findUnique({
+      where: { email: validatedData.email },
+      select: { role: true, isActive: true, isBanned: true }
+    })
 
+    // If user is admin or moderator, use admin login
+    if (user && (user.role === 'ADMIN' || user.role === 'MODERATOR')) {
+      if (!user.isActive) {
+        throw new AppError('Account is deactivated', 403)
+      }
+      if (user.isBanned) {
+        throw new AppError('Account is banned', 403)
+      }
+      const result = await adminService.adminLogin(validatedData, userAgent, ipAddress)
+      return sendSuccessResponse(res, result, 'Admin login successful')
+    }
+
+    // Otherwise use regular user login
+    const result = await authService.login(validatedData, userAgent, ipAddress)
     return sendSuccessResponse(res, result, 'Login successful')
   } catch (error) {
     next(error)

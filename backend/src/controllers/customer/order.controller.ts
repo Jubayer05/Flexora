@@ -8,7 +8,6 @@ import { InvoiceService } from '../../services/invoice.service'
 import { OrderService } from '../../services/order.services'
 import rankService from '../../services/rank.service'
 import { SubscriptionService } from '../../services/subscription.service'
-import { telegramNotificationService } from '../../services/telegram-notification.service'
 import { UserService } from '../../services/user.services'
 import type { AuthRequest } from '../../types/req-res'
 import { decrypt } from '../../utils/encryption'
@@ -791,47 +790,6 @@ export const createOrder = async (req: AuthRequest, res: Response) => {
       }
     }
 
-    // Send Telegram notification for Telegram-related products only
-    const isTelegramRelatedProduct =
-      order.product.platform === 'TELEGRAM' ||
-      (order.product.type || '').toUpperCase().startsWith('PREMIUM_')
-
-    if (isTelegramRelatedProduct) {
-      try {
-        await telegramNotificationService.sendOrderNotification({
-          orderId: order.id,
-          orderNumber: order.orderNumber,
-          customerName: order.customerName || order.user?.firstName || '',
-          customerEmail: order.user?.email || guestEmail || undefined,
-          customerPhone: order.customerPhone || '',
-          total: Number(order.total),
-          subtotal: Number(order.subtotal),
-          discount: Number(order.discount),
-          itemsCount: order.quantity,
-          customer: order.user
-            ? {
-                id: order.user.id,
-                email: order.user.email,
-                firstName: order.user.firstName || ''
-              }
-            : undefined,
-          items: [
-            {
-              productName: order.product.name,
-              quantity: order.quantity,
-              unitPrice: Number(order.unitPrice),
-              totalPrice: Number(order.subtotal)
-            }
-          ],
-          status: order.status,
-          createdAt: order.createdAt
-        })
-      } catch (notificationError) {
-        // Don't fail order creation if notification fails
-        console.error('Failed to send order notification:', notificationError)
-      }
-    }
-
     // Return order details with instructions to initiate payment
     res.status(201).json({
       success: true,
@@ -1316,39 +1274,6 @@ export const createCartOrders = async (req: AuthRequest, res: Response) => {
           }))?.email
         : undefined)
 
-    // Send Telegram notifications for Telegram-related orders created from cart
-    for (const order of createdOrders as any[]) {
-      const isTelegramRelatedProduct =
-        order.product?.platform === 'TELEGRAM' ||
-        (order.product?.type || '').toUpperCase().startsWith('PREMIUM_')
-
-      if (!isTelegramRelatedProduct) continue
-
-      try {
-        await telegramNotificationService.sendOrderNotification({
-          orderId: order.id,
-          orderNumber: order.orderNumber,
-          customerName: parentOrder.customerName || validated.customerName || '',
-          customerEmail: customerEmailForNotifications,
-          customerPhone: parentOrder.customerPhone || validated.customerPhone || '',
-          total: Number(parentOrder.total),
-          subtotal: Number(parentOrder.subtotal),
-          discount: Number(parentOrder.discount),
-          itemsCount: totalQuantity,
-          items: summaryItems.map((item) => ({
-            productName: item.productName,
-            quantity: item.quantity,
-            unitPrice: item.unitPrice,
-            totalPrice: item.subtotal
-          })),
-          status: parentOrder.status,
-          createdAt: parentOrder.createdAt
-        })
-      } catch (notificationError) {
-        // Don't fail cart checkout if notification fails
-        console.error('Failed to send cart order notification:', notificationError)
-      }
-    }
 
     return res.status(201).json({
       success: true,

@@ -1,21 +1,15 @@
 import { subscriptionService } from '../services/subscription.service'
-import { TelegramTransferRetryService } from '../services/telegram-transfer-retry.service'
 
 /**
  * Setup cron jobs for background tasks
  * Run this from index.ts on server startup
  */
 
-const retryService = new TelegramTransferRetryService()
-
 /**
  * Start all cron jobs
  */
 export function startCronJobs() {
   console.log('[CronJobs] Starting background cron jobs...')
-
-  // Run transfer retry job every hour
-  startTransferRetryJob()
 
   // Run subscription expiration check daily at midnight
   startSubscriptionExpirationJob()
@@ -27,37 +21,6 @@ export function startCronJobs() {
   startScheduledFeedbackJob()
 
   console.log('[CronJobs] All cron jobs started')
-}
-
-/**
- * Transfer retry job - runs every hour
- * Automatically retries failed transfers with exponential backoff
- */
-function startTransferRetryJob() {
-  const INTERVAL_MS = 60 * 60 * 1000 // 1 hour
-
-  // Run immediately on startup
-  runTransferRetryJob()
-
-  // Then run every hour
-  setInterval(() => {
-    runTransferRetryJob()
-  }, INTERVAL_MS)
-
-  console.log('[CronJobs] Transfer retry job scheduled (every 1 hour)')
-}
-
-/**
- * Execute the retry job
- */
-async function runTransferRetryJob() {
-  try {
-    console.log('[CronJobs] Running transfer retry job...')
-    const result = await retryService.processFailedTransfers()
-    console.log('[CronJobs] Transfer retry job completed:', result)
-  } catch (error) {
-    console.error('[CronJobs] Transfer retry job failed:', error)
-  }
 }
 
 /**

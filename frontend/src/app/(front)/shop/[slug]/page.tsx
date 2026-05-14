@@ -38,7 +38,7 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { slug } = await params
   const baseApiUrl = process.env.NEXT_PUBLIC_APP_ROOT_API || 'http://localhost:5000/api/v1'
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://uhqaccounts.com'
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://flexora.com'
 
   try {
     const controller = new AbortController()

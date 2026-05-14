@@ -8,7 +8,7 @@ const paymentService = new PaymentService()
  * Volet uses Stripe webhooks with additional security verification.
  *
  * Local testing with Stripe CLI:
- *   stripe listen --forward-to http://localhost:5000/api/v1/webhooks/volet
+ *   stripe listen --forward-to http://localhost:5015/api/v1/webhooks/volet
  * Use the signing secret printed by the CLI (whsec_...) in Admin → Payment Gateways
  * → Volet → Webhook Secret. Do not use the Dashboard webhook secret when using the CLI.
  */

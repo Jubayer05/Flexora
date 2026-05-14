@@ -3,8 +3,8 @@
  * Uses inline styles for maximum compatibility with email clients.
  */
 
-const FRONTEND_URL = process.env.FRONTEND_URL || 'https://uhqaccounts.com'
-const SUPPORT_EMAIL = 'support@uhqaccounts.com'
+const FRONTEND_URL = process.env.FRONTEND_URL || 'https://flexora.com'
+const SUPPORT_EMAIL = 'support@flexora.com'
 
 // Brand colors (inline-friendly)
 const colors = {

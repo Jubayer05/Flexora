@@ -58,9 +58,9 @@ const nextConfig: NextConfig = {
     imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
     minimumCacheTTL: 31536000,
     remotePatterns: [
-      { protocol: "https", hostname: "uhqaccounts.com" },
-      { protocol: "https", hostname: "www.uhqaccounts.com" },
-      { protocol: "https", hostname: "api.uhqaccounts.com" },
+      { protocol: "https", hostname: "flexora.com" },
+      { protocol: "https", hostname: "www.flexora.com" },
+      { protocol: "https", hostname: "api.flexora.com" },
       { protocol: "http", hostname: "localhost" },
       { protocol: "https", hostname: "res.cloudinary.com" },
       // Cloudflare R2 (pub-xxx.r2.dev)

@@ -3,7 +3,6 @@ import { Router } from 'express'
 import * as guestOrderController from '../../controllers/customer/guest-order.controller'
 import * as orderDownloadController from '../../controllers/customer/order-download.controller'
 import * as orderController from '../../controllers/customer/order.controller'
-import * as telegramTransferController from '../../controllers/customer/telegram-transfer.controller'
 import { authMiddleware, optionalAuthMiddleware } from '../../middlewares/auth'
 
 const router = Router()
@@ -59,17 +58,6 @@ router.get('/number/:orderNumber', optionalAuthMiddleware, orderController.getOr
 router.get('/:id/delivery-status', optionalAuthMiddleware, orderController.getOrderDeliveryStatus)
 
 /**
- * @route   GET /api/v1/customer/orders/:orderId/transfers
- * @desc    Get all Telegram transfers for a specific order
- * @access  Private (Customer) or Public (Guest with email query param)
- */
-router.get(
-  '/:orderId/transfers',
-  optionalAuthMiddleware,
-  telegramTransferController.getOrderTransfers
-)
-
-/**
  * @route   GET /api/v1/customer/accounts
  * @desc    Get customer's accessible accounts
  * @access  Private (Customer) or Public (Guest with email query param)
@@ -89,17 +77,6 @@ router.post('/send-otp', optionalAuthMiddleware, orderController.sendOrderOTP)
  * @access  Private (Customer) or Public (Guest)
  */
 router.post('/verify-otp', optionalAuthMiddleware, orderController.verifyOrderOTP)
-
-/**
- * @route   GET /api/v1/customer/orders/:orderId/telegram-accounts
- * @desc    Get Telegram account details for a specific order (phone, password, etc.)
- * @access  Private (Customer) or Public (Guest with email query param)
- */
-router.get(
-  '/:orderId/telegram-accounts',
-  optionalAuthMiddleware,
-  orderController.getTelegramAccountDetails
-)
 
 /**
  * @route   GET /api/v1/customer/orders/:id/invoice
@@ -169,7 +146,7 @@ router.post('/guest/send-code', guestOrderController.sendGuestVerificationCode)
  * @route   GET /api/v1/customer/orders/guest/download
  * @desc    Download guest order in different formats (txt, excel, json)
  * @access  Public or Private (supports both guest and authenticated users)
- * 
+ *
  * NOTE: This route MUST come before /:id/download to avoid route conflicts
  * Express matches routes in order, so /guest/download would match /:id/download with id="guest"
  */

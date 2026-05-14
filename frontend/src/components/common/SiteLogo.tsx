@@ -13,7 +13,9 @@ type SiteLogoProps = {
 export default async function SiteLogo({ className, height = LOGO_HEIGHT }: SiteLogoProps) {
   try {
     const siteConfig = await getSiteConfig()
-    const logo = siteConfig?.logo
+    // Handle both possible structures: { logo: { default, dark } } or { siteLogo }
+    const logoDefault = siteConfig?.logo?.default || siteConfig?.siteLogo || '/images/logo.svg'
+    const logoDark = siteConfig?.logo?.dark || siteConfig?.siteLogo || '/images/logo.svg'
 
     // Ensure SiteLogoClient is properly imported and available
     if (!SiteLogoClient) {
@@ -27,19 +29,18 @@ export default async function SiteLogo({ className, height = LOGO_HEIGHT }: Site
 
     return (
       <SiteLogoClient
-        logoDefault={logo?.default || '/logo.png'}
-        logoDark={logo?.dark || '/logo.png'}
+        logoDefault={logoDefault}
+        logoDark={logoDark}
         className={cn(className)}
         height={height}
       />
     )
   } catch (error) {
     console.error('[SiteLogo] Error loading site config:', error)
-    // Fallback to default logo if config fails
     return (
       <SiteLogoClient
-        logoDefault={null}
-        logoDark={null}
+        logoDefault={'/images/logo.svg'}
+        logoDark={'/images/logo.svg'}
         className={cn(className)}
         height={height}
       />

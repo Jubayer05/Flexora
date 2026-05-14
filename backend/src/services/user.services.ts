@@ -20,7 +20,7 @@ import { getCountryFromIP } from '../utils/geo'
 
 export class UserService {
   private readonly SALT_ROUNDS = 12
-  private readonly SUPER_ADMIN_EMAIL = 'superadmin@uhq.com'
+  private readonly SUPER_ADMIN_EMAIL = process.env.ADMIN_EMAIL || 'superadmin@flexora.com'
   private cacheInvalidationService = new CacheInvalidationService()
 
   // ================================

@@ -33,8 +33,9 @@ const allowedOriginsFromEnv = (process.env.FRONTEND_URL || '')
   .filter(Boolean)
 
 // Allow your production frontends even if env is misconfigured.
-// You can still override/extend via FRONTEND_URL="https://www.uhqaccounts.com,https://uhqaccounts.com"
-const defaultAllowedOrigins = ['https://www.uhqaccounts.com', 'https://uhqaccounts.com','https://uhqaccounts-frontend.vercel.app','http://109.199.119']
+// Allow your production frontends even if env is misconfigured.
+// You can still override/extend via FRONTEND_URL="https://www.flexora.com,https://flexora.com"
+const defaultAllowedOrigins = ['https://www.flexora.com', 'https://flexora.com','https://flexora-frontend.vercel.app','http://109.199.119']
 const allowedOrigins = [...new Set([...allowedOriginsFromEnv, ...defaultAllowedOrigins])]
 
 // Check if we're in development mode (allow IP addresses for local/VPS testing)
@@ -48,8 +49,8 @@ const corsOptions: cors.CorsOptions = {
     // Exact-match allowlist
     if (allowedOrigins.includes(origin)) return callback(null, true)
 
-    // Allow any subdomain of uhqaccounts.com (e.g. https://admin.uhqaccounts.com)
-    if (/^https:\/\/([a-z0-9-]+\.)*uhqaccounts\.com$/i.test(origin)) {
+    // Allow any subdomain of flexora.com (e.g. https://admin.flexora.com)
+    if (/^https:\/\/([a-z0-9-]+\.)*flexora\.com$/i.test(origin)) {
       return callback(null, true)
     }
 
@@ -190,25 +191,10 @@ const startServer = async () => {
     console.log('🔌 Ticket socket (typing + new reply) enabled at /api/v1/socket.io')
 
     httpServer.listen(PORT, () => {
-      console.log(`🚀 UHQ Backend API is running on port ${PORT}`)
+      console.log(`🚀 Flexora Backend API is running on port ${PORT}`)
       console.log(`📖 Health check: http://localhost:${PORT}/health`)
       console.log(`🌍 Environment: ${process.env.NODE_ENV || 'development'}`)
     })
-
-    //TODO: enable background tasks
-    // if (process.env.NODE_ENV === 'production') {
-    // Initialize Telegram bot after server is running (non-blocking)
-    try {
-      const { telegramBotService } = await import('./src/services/telegram-bot.service')
-      telegramBotService.initialize().catch((error) => {
-        console.error('⚠️  Telegram bot initialization failed:', error)
-        console.log('🔄 Server continues without Telegram bot functionality')
-      })
-      console.log('🤖 Telegram bot initialization started...')
-    } catch (error) {
-      console.error('⚠️  Failed to import Telegram bot service:', error)
-      console.log('🔄 Server continues without Telegram bot functionality')
-    }
 
     // Start background cron jobs (non-blocking)
     try {
@@ -217,9 +203,8 @@ const startServer = async () => {
       console.log('⏰ Background cron jobs started')
     } catch (error) {
       console.error('⚠️  Failed to start cron jobs:', error)
-      console.log('🔄 Server continues without automatic retry functionality')
+      console.log('🔄 Server continues without cron jobs')
     }
-    // }
   } catch (error) {
     console.error('❌ Database connection failed:', error)
     process.exit(1)

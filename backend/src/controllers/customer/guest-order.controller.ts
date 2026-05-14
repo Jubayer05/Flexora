@@ -284,7 +284,7 @@ export const sendGuestVerificationCode = async (req: Request, res: Response) => 
     await cacheService.set(rateLimitKey, (attempts + 1).toString(), 3600)
 
     // Send email with verification code (use AuthEmailTemplate VERIFICATION_CODE if set)
-    const frontendUrl = process.env.FRONTEND_URL || 'https://uhqaccounts.com'
+    const frontendUrl = process.env.FRONTEND_URL || 'https://flexora.com'
     const guestAccessUrl = `${frontendUrl}/guest-login`
     const signUpUrl = `${frontendUrl}/sign-up`
     const customerName = order?.customerName || 'Customer'
@@ -372,7 +372,7 @@ A: TXT, Excel (.csv), or JSON - choose what works best for you!
 📞 NEED HELP?
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-📧 Email: support@uhqaccounts.com
+📧 Email: support@flexora.com
 🌐 Website: ${frontendUrl}
 📋 Order Number: ${order.orderNumber}
 
@@ -949,9 +949,9 @@ IMPORTANT SECURITY NOTES
 
 SUPPORT INFORMATION
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-Email:              support@uhqaccounts.com
-Website:            https://uhqaccounts.com
-Help Center:        https://uhqaccounts.com/help
+Email:              support@flexora.com
+Website:            https://flexora.com
+Help Center:        https://flexora.com/help
 
 Thank you for your purchase!
 
@@ -1098,9 +1098,9 @@ function generateJsonContent(order: any, accounts: any[], email: string): string
       'Delete after saving to password manager'
     ],
     support: {
-      email: 'support@uhqaccounts.com',
-      website: 'https://uhqaccounts.com',
-      helpCenter: 'https://uhqaccounts.com/help'
+      email: 'support@flexora.com',
+      website: 'https://flexora.com',
+      helpCenter: 'https://flexora.com/help'
     },
     generatedAt: new Date().toISOString()
   }

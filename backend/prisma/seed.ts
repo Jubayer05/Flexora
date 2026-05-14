@@ -1,9 +1,37 @@
-import { PrismaClient } from '@prisma/client'
-
-const prisma = new PrismaClient()
+import bcrypt from 'bcrypt'
+import db from '../src/configs/db'
 
 async function main() {
   console.log('🌱 Starting database seeding...')
+
+  // ================================
+  // 0. CREATE ADMIN USER
+  // ================================
+  console.log('👤 Creating admin user...')
+
+  const adminEmail = process.env.ADMIN_EMAIL || 'admin@flexora.com'
+  const adminPassword = process.env.ADMIN_PASSWORD || '123456aA!@'
+  const hashedPassword = await bcrypt.hash(adminPassword, 12)
+
+  const existingAdmin = await db.user.findUnique({
+    where: { email: adminEmail }
+  })
+
+  if (!existingAdmin) {
+    await db.user.create({
+      data: {
+        email: adminEmail,
+        passwordHash: hashedPassword,
+        firstName: 'Admin',
+        role: 'ADMIN',
+        isActive: true,
+        isVerified: true
+      }
+    })
+    console.log(`  ✅ Created admin user: ${adminEmail}`)
+  } else {
+    console.log(`  ⏭️  Admin user already exists: ${adminEmail}`)
+  }
 
   // ================================
   // 1. CREATE DEFAULT SETTINGS
@@ -14,11 +42,11 @@ async function main() {
     {
       key: 'system_site_settings',
       value: {
-        siteName: 'UHQ Accounts',
-        siteDescription: 'Premium Account Marketplace',
-        siteLogo: '/files/logo.png',
+        siteName: 'Flexora',
+        siteDescription: 'Premium Product Marketplace',
+        siteLogo: '/images/logo.svg',
         siteFavicon: '/files/favicon.ico',
-        contactEmail: 'support@uhqaccounts.com',
+        contactEmail: 'support@flexora.com',
         contactPhone: '+1234567890',
         address: '123 Main St, City, Country',
         currency: 'USD',
@@ -29,8 +57,8 @@ async function main() {
     {
       key: 'homepage_settings',
       value: {
-        heroTitle: 'Welcome to UHQ Accounts',
-        heroSubtitle: 'Premium accounts at your fingertips',
+        heroTitle: 'Welcome to Flexora',
+        heroSubtitle: 'Premium products at your fingertips',
         heroImage: '/files/hero.jpg',
         featuredSectionTitle: 'Featured Products',
         featuredSectionEnabled: true,
@@ -45,8 +73,8 @@ async function main() {
         title: 'Frequently Asked Questions',
         items: [
           {
-            question: 'What is UHQ Accounts?',
-            answer: 'UHQ Accounts is a premium marketplace for verified accounts.',
+            question: 'What is Flexora?',
+            answer: 'Flexora is a premium marketplace for quality products.',
           },
           {
             question: 'How do I purchase an account?',
@@ -147,20 +175,20 @@ async function main() {
     value: {
       smtpUsername: 'azeemrauf7474@gmail.com',
       smtpPassword: 'kintaswlegfiretk', // Replace with actual password or environment variable
-      mailFromName: 'UHQ Accounts',
-      mailFromEmail: 'noreply@uhqaccounts.com',
+      mailFromName: 'Flexora',
+      mailFromEmail: 'noreply@flexora.com',
       smtpHost: 'smtp.gmail.com',
       smtpPort: 587,
       secure: false, // true for 465, false for other ports
     }
   }
 
-  const existingEmailConfig = await prisma.settings.findUnique({
+  const existingEmailConfig = await db.settings.findUnique({
     where: { key: emailConfig.key },
   })
 
   if (!existingEmailConfig) {
-    await prisma.settings.create({
+    await db.settings.create({
       data: emailConfig,
     })
     console.log(`  ✅ Created setting: ${emailConfig.key}`)
@@ -169,12 +197,12 @@ async function main() {
   }
 
   for (const setting of defaultSettings) {
-    const existing = await prisma.settings.findUnique({
+    const existing = await db.settings.findUnique({
       where: { key: setting.key },
     })
 
     if (!existing) {
-      await prisma.settings.create({
+      await db.settings.create({
         data: setting,
       })
       console.log(`  ✅ Created setting: ${setting.key}`)
@@ -188,12 +216,12 @@ async function main() {
   // ================================
   console.log('\n📄 Creating default custom pages...')
 
-  const homePage = await prisma.customPage.findUnique({
+  const homePage = await db.customPage.findUnique({
     where: { slug: 'home' },
   })
 
   if (!homePage) {
-    await prisma.customPage.create({
+    await db.customPage.create({
       data: {
         slug: 'home',
         title: 'Home',
@@ -205,8 +233,8 @@ async function main() {
           sections: [
             {
               type: 'hero',
-              title: 'Welcome to UHQ Accounts',
-              subtitle: 'Premium accounts at your fingertips',
+              title: 'Welcome to Flexora',
+              subtitle: 'Premium products at your fingertips',
               cta: {
                 label: 'Browse Products',
                 url: '/products',
@@ -236,8 +264,8 @@ async function main() {
           ],
         },
         seo: {
-          title: 'UHQ Accounts - Premium Account Marketplace',
-          description: 'Buy verified accounts instantly',
+          title: 'Flexora - Premium Product Marketplace',
+          description: 'Buy quality products instantly',
           keywords: ['accounts', 'verified', 'premium'],
         },
       },
@@ -272,12 +300,12 @@ async function main() {
   ]
 
   for (const pageData of headerPages) {
-    const existing = await prisma.customPage.findUnique({
+    const existing = await db.customPage.findUnique({
       where: { slug: pageData.slug },
     })
 
     if (!existing) {
-      await prisma.customPage.create({
+      await db.customPage.create({
         data: {
           ...pageData,
           type: 'DYNAMIC',
@@ -303,5 +331,5 @@ main()
     process.exit(1)
   })
   .finally(async () => {
-    await prisma.$disconnect()
+    await db.$disconnect()
   })

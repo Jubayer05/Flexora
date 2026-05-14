@@ -40,16 +40,7 @@ import settingRoutes from './setting.route'
 import statisticsRoutes from './statistics.route'
 import subscriptionPackageRoutes from './subscription-package.route'
 import subscriptionRoutes from './subscription.route'
-import telegramNotificationRoutes from './telegram-notification.route'
-import telegramOtpRoutes from './telegram-otp.route'
-import telegramRetryRoutes from './telegram-retry.route'
-import telegramSessionRoutes from './telegram-session.route'
-import telegramTransferRoutes from './telegram-transfer.route'
-import telegramAccountRoutes from './telegramAccount.route'
-import telegramPremiumRoutes from './telegram-premium.route'
-import telegramProxyRoutes from './telegram-proxy.route'
 import ticketRoutes from './ticket.routes'
-import transferProductRoutes from './transfer-product.route'
 import auditLogRoutes from './audit-log.route'
 import userRoutes from './user.route'
 import withdrawalRoutes from './withdrawal.route'
@@ -92,35 +83,8 @@ router.use('/products', productRoutes)
 // Admin product group management routes
 router.use('/product-groups', productGroupRoutes)
 
-// Admin transfer product management routes (Telegram ownership transfers)
-router.use('/transfer-products', transferProductRoutes)
-
-// Admin Telegram account management routes
-router.use('/telegram-accounts', telegramAccountRoutes)
-
-// Admin Telegram Premium management routes
-router.use('/telegram-premium', telegramPremiumRoutes)
-
-// Admin Telegram Proxy management routes
-router.use('/telegram-proxies', telegramProxyRoutes)
-
 // Admin account management routes (all platforms)
 router.use('/accounts', accountRoutes)
-
-// Admin Telegram transfer management routes
-router.use('/telegram-transfers', telegramTransferRoutes)
-
-// Admin Telegram retry/automation management routes
-router.use('/telegram-retry', telegramRetryRoutes)
-
-// Admin Telegram session management routes
-router.use('/telegram-sessions', telegramSessionRoutes)
-
-// Admin Telegram OTP detection routes (Node.js native)
-router.use('/telegram-otp', telegramOtpRoutes)
-
-// Admin Telegram notification management routes
-router.use('/telegram', telegramNotificationRoutes)
 
 // Admin category management routes
 router.use('/categories', categoryRoutes)

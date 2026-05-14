@@ -147,7 +147,7 @@ export default function TestimonialOne({ data }: { data?: GameChangerSection }) 
   const ref = useRef<HTMLDivElement>(null)
 
   const { scrollYProgress } = useScroll({
-    target: ref,
+    target: undefined,
     offset: ['start end', 'end start'],
   })
 

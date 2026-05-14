@@ -9,7 +9,7 @@ export const revalidate = 3600
 
 export async function generateMetadata(): Promise<Metadata> {
   const baseApiUrl = process.env.NEXT_PUBLIC_APP_ROOT_API || ''
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://uhqaccounts.com'
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://flexora.com'
 
   try {
     const [seoSettingsResponse, pageResponse] = await Promise.allSettled([

@@ -1297,8 +1297,8 @@ export default function PremiumCheckoutPage() {
                 Contact Support
               </Link>{' '}
               or email{' '}
-              <a href='mailto:support@uhqaccounts.com' className='text-primary hover:underline'>
-                support@uhqaccounts.com
+              <a href='mailto:support@flexora.com' className='text-primary hover:underline'>
+                support@flexora.com
               </a>
             </Typography>
           </div>

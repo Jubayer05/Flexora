@@ -92,7 +92,7 @@ Best regards,
 UHQ Accounts Team
 
 ---
-Support: support@uhqaccounts.com
+Support: support@flexora.com
     `.trim()
 
     await sendEmail(email, emailText, emailSubject)
@@ -333,9 +333,9 @@ IMPORTANT SECURITY NOTES
 
 SUPPORT INFORMATION
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-Email:              support@uhqaccounts.com
-Dashboard:          https://uhqaccounts.com/dashboard
-Help Center:        https://uhqaccounts.com/help
+Email:              support@flexora.com
+Dashboard:          https://flexora.com/dashboard
+Help Center:        https://flexora.com/help
 
 Thank you for your purchase!
 

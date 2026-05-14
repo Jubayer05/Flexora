@@ -40,7 +40,7 @@ async function createAuthOptions(requestBaseUrl?: string): Promise<NextAuthOptio
       process.env.NEXT_PUBLIC_APP_URL ||
       (process.env.NODE_ENV === 'production'
         ? 'https://accounts.curlware.net'
-        : 'http://localhost:3000')
+        : 'http://localhost:3015')
 
     logInfo('OAuth base URL:', resolvedBaseUrl)
 

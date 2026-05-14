@@ -7,7 +7,7 @@ import { PayGateProviderService } from './paygate-provider.service';
 import { PayGateGatewayService } from './payment-gateways/paygate.gateway';
 import { PaymentService } from './payment.service';
 import { SettingService } from './setting.services';
-import { userTelegramNotificationService } from './user-telegram-notification.service';
+
 
 interface TransactionOptions {
   reference?: string;
@@ -97,10 +97,6 @@ export class BalanceService {
         },
       });
 
-      // Send Telegram notification (non-blocking)
-      userTelegramNotificationService
-        .sendBalanceNotification(userId, amount, balanceAfter, type, description)
-        .catch((err: any) => console.error('Failed to send Telegram notification:', err));
 
       return {
         success: true,
@@ -171,10 +167,6 @@ export class BalanceService {
         },
       });
 
-      // Send Telegram notification (non-blocking)
-      userTelegramNotificationService
-        .sendBalanceNotification(userId, -amount, balanceAfter, type, description)
-        .catch((err: any) => console.error('Failed to send Telegram notification:', err));
 
       return {
         success: true,
@@ -602,10 +594,6 @@ export class BalanceService {
       },
     });
 
-    // Send Telegram notification to user
-    userTelegramNotificationService
-      .sendTopupRequestNotification(data.userId, data.amount)
-      .catch((err: any) => console.error('Failed to send Telegram notification:', err));
 
     // Send email notification to all admins
     this.notifyAdminsOfTopupRequest(topupRequest.id, user, data.amount, data.reason)
@@ -845,185 +833,6 @@ Please review this request on the admin panel: ${manageLink}
       },
     });
 
-    // Send Telegram notification to user
-    userTelegramNotificationService
-      .sendTopupRejectionNotification(topupRequest.userId, Number(topupRequest.amount), reason || 'Topup request rejected')
-      .catch((err: any) => console.error('Failed to send rejection notification:', err));
-
-    return {
-      success: true,
-      topupRequest: updatedRequest,
-    };
-  }
-
-  // ================================
-  // STRIPE TOPUP OPERATIONS
-  // ================================
-
-  /**
-   * Create Stripe payment intent for topup
-   */
-  async createStripePaymentIntent(data: { userId: number; amount: number }) {
-    const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
-
-    // Validate amount
-    if (data.amount < 5) {
-      throw new Error('Minimum topup amount is $5.00');
-    }
-
-    // Verify user exists
-    const user = await db.user.findUnique({
-      where: { id: data.userId },
-      select: { id: true, email: true, firstName: true },
-    });
-
-    if (!user) {
-      throw new Error('User not found');
-    }
-
-    // Calculate fee (2%)
-    const fee = data.amount * 0.02;
-    const total = data.amount + fee;
-
-    // Create payment intent
-    const paymentIntent = await stripe.paymentIntents.create({
-      amount: Math.round(total * 100), // Convert to cents
-      currency: 'usd',
-      metadata: {
-        userId: data.userId,
-        topupAmount: data.amount,
-        type: 'wallet_topup',
-        userEmail: user.email,
-      },
-      receipt_email: user.email,
-      description: `Wallet topup for user ${user.firstName || 'User'} (ID: ${user.id})`,
-    });
-
-    return paymentIntent;
-  }
-
-  /**
-   * Verify Stripe webhook signature
-   */
-  async verifyStripeWebhook(signature: string, req: any): Promise<boolean> {
-    try {
-      const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
-      const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
-
-      const event = stripe.webhooks.constructEvent(
-        req.body || req.rawBody,
-        signature,
-        webhookSecret
-      );
-
-      return !!event;
-    } catch (error) {
-      console.error('Webhook signature verification failed:', error);
-      return false;
-    }
-  }
-
-  /**
-   * Process successful Stripe topup
-   */
-  async processStripeTopup(paymentIntent: any) {
-    const userId = parseInt(paymentIntent.metadata.userId);
-    const topupAmount = parseFloat(paymentIntent.metadata.topupAmount);
-    const fee = topupAmount * 0.02;
-    const totalAmount = topupAmount + fee;
-
-    // Verify payment amount matches
-    if (paymentIntent.amount !== Math.round(totalAmount * 100)) {
-      throw new Error('Payment amount mismatch');
-    }
-
-    // Get user
-    const user = await db.user.findUnique({
-      where: { id: userId },
-      select: { id: true, email: true, firstName: true, balance: true },
-    });
-
-    if (!user) {
-      throw new Error('User not found');
-    }
-
-    // Check if topup request already exists for this payment (BEFORE transaction)
-    const existingTopupRequest = await db.topupRequest.findFirst({
-      where: {
-        userId,
-        reason: { contains: paymentIntent.id }, // Payment ID in reason
-      },
-    });
-
-    if (existingTopupRequest) {
-      console.log(`[Stripe Topup] Payment ${paymentIntent.id} already processed as topup request ${existingTopupRequest.id}`);
-      return;
-    }
-
-    // Execute both operations in a transaction to ensure atomicity
-    await db.$transaction(async (tx) => {
-      // Get current user balance
-      const currentUser = await tx.user.findUnique({
-        where: { id: userId },
-        select: { balance: true },
-      });
-
-      if (!currentUser) {
-        throw new Error('User not found in transaction');
-      }
-
-      // Convert balance to numbers for calculation
-      const balanceBefore = Number(currentUser.balance);
-      const balanceAfter = balanceBefore + topupAmount;
-
-      // Update user balance - Prisma will convert to Decimal
-      await tx.user.update({
-        where: { id: userId },
-        data: { 
-          balance: balanceAfter,
-        },
-      });
-
-      // Create balance transaction record
-      const txData: any = {
-        userId,
-        type: 'TOPUP',
-        amount: topupAmount,
-        balanceBefore: balanceBefore,
-        balanceAfter: balanceAfter,
-        reference: paymentIntent.id,
-        description: 'Stripe card payment topup',
-        meta: {
-          paymentIntentId: paymentIntent.id,
-          stripeFee: Number(fee.toFixed(2)),
-          totalPaid: Number(totalAmount.toFixed(2)),
-        },
-      };
-      
-      await tx.balanceTransaction.create({ data: txData });
-
-      // Create topupRequest record with APPROVED status (for history visibility)
-      // Truncate reason to fit 500 char limit
-      const shortPaymentId = paymentIntent.id.substring(paymentIntent.id.length - 20);
-      const reason = `Stripe payment - ${shortPaymentId}`;
-      
-      const requestData: any = {
-        userId,
-        amount: topupAmount,
-        reason: reason.substring(0, 500), // Ensure it doesn't exceed limit
-        status: 'APPROVED',
-        requestedAt: new Date(),
-        approvedAt: new Date(),
-        approvedBy: 'SYSTEM_STRIPE',
-      };
-      
-      await tx.topupRequest.create({ data: requestData });
-    });
-
-    // Send success notification to user via Telegram
-    userTelegramNotificationService
-      .sendStripeTopupSuccessNotification(userId, topupAmount)
-      .catch((err: any) => console.error('Failed to send Telegram notification:', err));
 
     // Send email to admin
     this.notifyAdminsOfStripeTopup(userId, user, topupAmount, paymentIntent.id)

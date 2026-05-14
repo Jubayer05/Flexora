@@ -9,8 +9,6 @@ import feedbackRoutes from './feedback.route'
 import notificationRoutes from './notification.route'
 import orderRoutes from './order.route'
 import subscriptionRoutes from './subscription.route'
-import telegramTransferRoutes from './telegram-transfer.route'
-import telegramAccountRoutes from './telegramAccount.route'
 import ticketRoutes from './ticket.routes'
 import userRoutes from './user.route'
 import withdrawalRoutes from './withdrawal.route'
@@ -42,12 +40,6 @@ router.use('/withdrawals', withdrawalRoutes)
 
 // Customer affiliate/referral routes
 router.use('/affiliate', affiliateRoutes)
-
-// Customer Telegram transfer routes
-router.use('/telegram-transfers', telegramTransferRoutes)
-
-// Customer Telegram account access routes
-router.use('/telegram-accounts', telegramAccountRoutes)
 
 // Customer notification routes (for OTP notifications)
 router.use('/notifications', notificationRoutes)

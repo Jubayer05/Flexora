@@ -1311,8 +1311,8 @@ Best regards,
 UHQ Accounts Team
 
 ---
-Support: support@uhqaccounts.com
-Dashboard: https://uhqaccounts.com/dashboard
+Support: support@flexora.com
+Dashboard: https://flexora.com/dashboard
       `.trim()
 
       // HTML version
@@ -1436,7 +1436,7 @@ ${accounts.length > 0 ? `New Account Credentials:\n${accountsText}` : ''}
 
 ${order.quantityPending > 0 ? '\nThe remaining accounts will be delivered automatically when stock becomes available.' : '\nYour order is now complete! Thank you for your patience.'}
 
-View all your accounts: https://uhqaccounts.com/dashboard/orders/${order.id}
+View all your accounts: https://flexora.com/dashboard/orders/${order.id}
 
 Thank you for your business!
 
@@ -1444,8 +1444,8 @@ Best regards,
 UHQ Accounts Team
 
 ---
-Support: support@uhqaccounts.com
-Dashboard: https://uhqaccounts.com/dashboard
+Support: support@flexora.com
+Dashboard: https://flexora.com/dashboard
       `.trim()
 
       // HTML version
@@ -1517,7 +1517,7 @@ Dashboard: https://uhqaccounts.com/dashboard
     deliveryStatus: string
   ) {
     try {
-      const frontendUrl = process.env.FRONTEND_URL || 'https://uhqaccounts.com'
+      const frontendUrl = process.env.FRONTEND_URL || 'https://flexora.com'
       const totalOrdered = order.quantity
       const hasDeliveredAccounts = quantityDelivered > 0
       const hasFileDeliveries = Boolean(
@@ -1723,7 +1723,7 @@ Best regards,
 UHQ Accounts Team
 
 ---
-Support: support@uhqaccounts.com
+Support: support@flexora.com
 Dashboard: ${frontendUrl}/dashboard
       `.trim()
 
@@ -2273,10 +2273,10 @@ Delivered At: ${new Date().toLocaleDateString()}
 📥 ACCESS YOUR ORDER:
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ${order.userId
-  ? `• Dashboard: https://uhqaccounts.com/user/purchased-items
+  ? `• Dashboard: https://flexora.com/user/purchased-items
 • Find order ${order.orderNumber} and open delivery details
 • ${deliveryAccessText}`
-  : `• Guest Access: https://uhqaccounts.com/guest/access
+  : `• Guest Access: https://flexora.com/guest/access
 • Enter order number: ${order.orderNumber}
 • Enter your email: ${userEmail}
 • ${deliveryAccessText}`}
@@ -2295,8 +2295,8 @@ Best regards,
 UHQ Accounts Team
 
 ---
-Support: support@uhqaccounts.com
-Dashboard: https://uhqaccounts.com/dashboard
+Support: support@flexora.com
+Dashboard: https://flexora.com/dashboard
           `.trim()
 
           const customerName = order.user?.firstName || order.customerName || 'Customer'

@@ -284,8 +284,8 @@ export function generateEmailHTML(
         <p><strong>UHQ Accounts</strong></p>
         <p>Thank you for your business!</p>
         <p>
-          <a href="${process.env.FRONTEND_URL || 'https://uhqaccounts.com'}">Visit our website</a> | 
-          <a href="mailto:support@uhqaccounts.com">Contact Support</a>
+          <a href="${process.env.FRONTEND_URL || 'https://flexora.com'}">Visit our website</a> | 
+          <a href="mailto:support@flexora.com">Contact Support</a>
         </p>
         <p style="font-size: 12px; color: #9ca3af; margin-top: 20px;">
           This is an automated message. Please do not reply to this email.

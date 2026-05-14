@@ -11,7 +11,7 @@ export const COMPANY_INFO = {
   name: 'UHQ Accounts',
   tagline: 'Premium Social Media Accounts',
   email: 'support@uhq.com',
-  website: 'https://uhqaccounts.com',
+  website: 'https://flexora.com',
   address: {
     line1: '123 Business Street',
     line2: 'Suite 100',

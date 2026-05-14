@@ -20,27 +20,32 @@ class CacheService {
 
   constructor() {
     const isDevelopment = process.env.NODE_ENV === 'development';
-    
-    this.redis = new Redis({
-      host: process.env.REDIS_HOST || 'localhost',
-      port: parseInt(process.env.REDIS_PORT || '6379'),
-      password: process.env.REDIS_PASSWORD,
-      db: parseInt(process.env.REDIS_DB || '0'),
+
+    // Use REDIS_URL if provided, otherwise fall back to individual env vars
+    const redisConfig: any = process.env.REDIS_URL
+      ? process.env.REDIS_URL
+      : {
+          host: process.env.REDIS_HOST || 'localhost',
+          port: parseInt(process.env.REDIS_PORT || '6379'),
+          password: process.env.REDIS_PASSWORD,
+          db: parseInt(process.env.REDIS_DB || '0'),
+        };
+
+    this.redis = new Redis(redisConfig, {
       lazyConnect: true,
       // Optimize for local development
       ...(isDevelopment && {
-        connectTimeout: 2000, // Faster connection timeout
+        connectTimeout: 5000,
         retryStrategy: (times) => {
-          // Quick retry for local dev, fail fast if Redis is not available
           if (times > 3) {
             console.warn('⚠️  Redis connection failed after 3 attempts, continuing without cache');
             this.isConnected = false;
-            return null; // Stop retrying
+            return null;
           }
-          return Math.min(times * 100, 1000); // Max 1 second between retries
+          return Math.min(times * 200, 2000);
         },
-        maxRetriesPerRequest: 1, // Fail fast in dev
-        enableOfflineQueue: false, // Don't queue commands if disconnected
+        maxRetriesPerRequest: 3,
+        enableOfflineQueue: false,
       }),
     });
 
