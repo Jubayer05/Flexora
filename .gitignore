@@ -1,0 +1,56 @@
+# dependencies (bun install)
+node_modules
+
+# output
+out
+dist
+*.tgz
+# Python cache files
+python-services/__pycache__/
+**/__pycache__/
+**/.next/
+view/
+*.pyc
+*.pyo
+*.pyd
+# code coverage
+coverage
+*.lcov
+
+# logs
+logs
+_.log
+report.[0-9]_.[0-9]_.[0-9]_.[0-9]_.json
+
+# dotenv environment variable files
+.env
+.env.development.local
+.env.test.local
+.env.production.local
+.env.local
+Payment_Backend_Milestones.pdf
+# caches
+.eslintcache
+.cache
+*.tsbuildinfo
+
+# IntelliJ based IDEs
+.idea
+
+# Finder (MacOS) folder config
+.DS_Store
+
+# Prisma generated files
+/src/generated/prisma
+
+# Docker and Database volumes
+/postgres_data
+/redis_data
+/pgadmin_data
+docker/postgres/data/
+docker/redis/data/
+
+# Upload directories
+uploads/
+temp/
+files/

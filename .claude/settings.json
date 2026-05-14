@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(2>&1)",
+      "Bash(PGPASSWORD=somepassword psql \"postgresql://ep-summer-boat-ab0tssvx-pooler.eu-west-2.aws.neon.tech:5432/uhqAccount-prod-db?options=-csearch_path%3Dpublic\" -c \"SELECT conname, conrelid::regclass AS table_name, confrelid::regclass AS referenced_table, CASE contype WHEN 'f' THEN 'foreign key' END AS type, CASE confdeltype WHEN 'c' THEN 'CASCADE' WHEN 'r' THEN 'RESTRICT' WHEN 'n' THEN 'SET NULL' WHEN 'a' THEN 'NO ACTION' END AS on_delete FROM pg_constraint WHERE conrelid = 'orders'::regclass AND contype = 'f';\")"
+    ]
+  }
+}

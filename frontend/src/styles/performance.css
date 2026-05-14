@@ -1,0 +1,195 @@
+/* Advanced Performance Optimizations for uhqaccounts */
+
+/* ============================================================================
+   RENDERING PERFORMANCE OPTIMIZATIONS
+   ============================================================================ */
+
+/* 1. REDUCE FORCED REFLOWS & REPAINTS */
+
+/* Use will-change sparingly on elements that will definitely animate */
+@supports (will-change: transform) {
+  /* Only apply to elements that actually animate */
+  .animate-spin {
+    will-change: transform;
+    /* Remove will-change after animation: will-change: auto; */
+  }
+  
+  .transition-colors {
+    will-change: color, background-color;
+  }
+}
+
+/* 2. OPTIMIZE PAINT PERFORMANCE */
+
+/* Improve button hover states without repainting */
+.group:hover > * {
+  /* Use transform instead of width/height changes */
+  transition: transform 200ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* 3. OPTIMIZE SCROLLING PERFORMANCE */
+
+@supports (scroll-behavior: smooth) {
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+/* Use contain for heavy DOM sections */
+.data-table-container {
+  contain: layout style paint;
+}
+
+/* 4. OPTIMIZE FILTER & EFFECTS */
+
+/* Use cheaper CSS transforms instead of layout-affecting properties */
+.hover\:scale-105:hover {
+  /* Prefer transform over width/padding changes */
+  transform: scale(1.05);
+}
+
+/* ============================================================================
+   FONT RENDERING OPTIMIZATIONS
+   ============================================================================ */
+
+/* Font fallback strategy with proper metrics */
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  font-feature-settings: 'kern' 1;
+  font-kerning: auto;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* High-priority font declarations */
+.font-manrope {
+  font-family: var(--font-manrope), system-ui, sans-serif;
+  font-feature-settings: 'kern' 1;
+  font-display: swap;
+}
+
+/* ============================================================================
+   MEMORY & BUNDLE SIZE OPTIMIZATIONS
+   ============================================================================ */
+
+/* Reduce unused CSS with critical CSS inlining */
+/* (Critical CSS should be inline in <style> tag, rest deferred) */
+
+/* NOTE: Google Fonts are loaded in layout.tsx with optimal strategy, not here */
+
+/* ============================================================================
+   ANIMATION FRAME RATE OPTIMIZATION
+   ============================================================================ */
+
+/* Use requestAnimationFrame for smooth 60fps animations */
+/* JavaScript animations should use rAF instead of setInterval */
+
+/* Optimize transitions for 60fps */
+@supports (backdrop-filter: blur(10px)) {
+  .backdrop-blur {
+    /* Use GPU-accelerated filters */
+    backdrop-filter: blur(10px);
+  }
+}
+
+/* ============================================================================
+   LAYOUT SHIFT PREVENTION
+   ============================================================================ */
+
+/* Prevent CLS (Cumulative Layout Shift) from font swapping */
+html {
+  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  /* Use CSS font metrics overrides to prevent baseline shifts */
+  --fallback-width: 1em;
+  --fallback-height: 1em;
+}
+
+/* Reserve space for fonts before they load */
+.font-placeholder {
+  min-height: 1.2em; /* Prevent height shifts */
+  display: flex;
+  align-items: center;
+}
+
+/* ============================================================================
+   CRITICAL PATH OPTIMIZATION
+   ============================================================================ */
+
+/* Load only essential styles inline, defer the rest */
+/* Inline: Typography, Layout, Critical colors */
+/* Defer: Animations, Hover states, Non-critical features */
+
+/* ============================================================================
+   MOBILE & TOUCH OPTIMIZATION
+   ============================================================================ */
+
+/* Optimize touch performance on mobile */
+@media (hover: none) and (pointer: coarse) {
+  /* Mobile devices - reduce animations */
+  * {
+    animation-duration: 0.2s !important;
+    transition-duration: 0.2s !important;
+  }
+  
+  /* Larger touch targets */
+  button, a, input {
+    min-height: 44px; /* iOS minimum */
+    min-width: 44px;
+  }
+  
+  /* Enable hardware acceleration on mobile */
+  .custom-scrollbar {
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
+/* ============================================================================
+   HIGH DPI / RETINA OPTIMIZATION
+   ============================================================================ */
+
+/* Optimize for high-DPI screens */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+  /* Use optimized assets for high-DPI displays */
+  /* SVGs and web fonts automatically scale */
+  
+  body {
+    -webkit-font-smoothing: subpixel-antialiased;
+  }
+}
+
+/* ============================================================================
+   DARK MODE OPTIMIZATION
+   ============================================================================ */
+
+/* Dark mode reduces eye strain and power consumption */
+@media (prefers-color-scheme: dark) {
+  /* Already configured in :root / .dark */
+  /* No additional optimizations needed */
+}
+
+/* ============================================================================
+   REDUCED MOTION ACCESSIBILITY & PERFORMANCE
+   ============================================================================ */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ============================================================================
+   DEVELOPMENT HELPERS (Remove in Production)
+   ============================================================================ */
+
+/* Highlight expensive operations in development */
+@supports (outline-offset: -2px) {
+  /* Use browser tools to identify heavy elements */
+  body.debug-reflows * {
+    outline: 1px solid red;
+  }
+}

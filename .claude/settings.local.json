@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm install *)",
+      "Bash(npm list *)",
+      "Bash(curl -s http://localhost:3000)",
+      "Bash(npx tsc *)",
+      "Bash(git stash *)",
+      "Bash(bun tsc *)",
+      "Bash(bun add *)"
+    ]
+  }
+}

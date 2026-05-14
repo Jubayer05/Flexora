@@ -1,0 +1,1342 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model GuestAccess {
+  id        Int      @id @default(autoincrement())
+  email     String
+  cartGroup String
+  code      String
+  expiresAt DateTime
+  verified  Boolean  @default(false)
+  attempts  Int      @default(0)
+  createdAt DateTime @default(now())
+
+  @@index([email, cartGroup])
+}
+
+model GuestOrderAccess {
+  id          Int      @id @default(autoincrement())
+  orderId     Int      @unique
+  guestEmail  String
+  token       String   @unique
+  expiresAt   DateTime
+  isActive    Boolean  @default(true)
+  accessCount Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  order       Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  @@index([token])
+  @@index([orderId])
+  @@index([guestEmail])
+}
+
+model User {
+  id                     Int                      @id @default(autoincrement())
+  email                  String                   @unique
+  username               String?                  @unique
+  passwordHash           String?
+  firstName              String?
+  phone                  String?
+  telegramUsername       String?
+  photoUrl               String?
+  role                   UserRole                 @default(CUSTOMER)
+  country                String?
+  totalSpent             Decimal                  @default(0) @db.Decimal(15, 2)
+  totalOrders            Int                      @default(0)
+  discountPercent        Decimal                  @default(0) @db.Decimal(5, 2)
+  balance                Decimal                  @default(0) @db.Decimal(15, 2)
+  referralEarnings       Decimal                  @default(0) @db.Decimal(15, 2)
+  referralCode           String?                  @unique
+  referredById           Int?
+  isActive               Boolean                  @default(true)
+  isVerified             Boolean                  @default(false)
+  isBanned               Boolean                  @default(false)
+  banReason              String?
+  isGuest                Boolean                  @default(false)
+  guestToken             String?                  @unique
+  tags                   String[]                 @default([])
+  note                   String?
+  roleId                 Int?
+  createdAt              DateTime                 @default(now())
+  updatedAt              DateTime                 @updatedAt
+  lastLoginAt            DateTime?
+  emailVerifiedAt        DateTime?
+  meta                   Json?
+  rankId                 Int?
+  subscriptionPackageId  Int?
+  subscriptionStartDate  DateTime?
+  subscriptionEndDate    DateTime?
+  subscriptionNotified   Boolean                  @default(false)
+  balanceTransactions    BalanceTransaction[]
+  topupRequests          TopupRequest[]
+  cart                   Cart?
+  couponUsage            CouponUsage[]
+  feedbacks              Feedback[]
+  loginSessions          LoginSession[]
+  notificationReadStatus NotificationReadStatus[]
+  notifications          Notification[]
+  orders                 Order[]
+  subscriptionPayments   SubscriptionPayment[]
+  binanceAuditLogs      BinanceAuditLog[]
+  tickets                Ticket[]
+  emailVerificationTokens EmailVerificationToken[]
+  passwordResetTokens    PasswordResetToken[]
+  userAuthProviders      UserAuthProvider[]
+  withdrawals            Withdrawal[]
+  auditLogs              AuditLog[]
+  rank                   Rank?                    @relation(fields: [rankId], references: [id])
+  customRole             Role?                    @relation(fields: [roleId], references: [id])
+  subscriptionPackage    SubscriptionPackage?     @relation(fields: [subscriptionPackageId], references: [id])
+  urlTrackings           UrlTracking[]
+  referredBy             User?                    @relation("ReferredBy", fields: [referredById], references: [id])
+  referredUsers          User[]                   @relation("ReferredBy")
+
+  @@index([email])
+  @@index([country])
+  @@index([username])
+  @@index([guestToken])
+  @@index([referralCode])
+  @@index([referredById])
+  @@index([rankId, totalSpent])
+  @@index([isActive, isBanned])
+  @@index([createdAt])
+  @@map("users")
+}
+
+model Rank {
+  id           Int      @id @default(autoincrement())
+  name         String   @unique
+  displayOrder Int      @default(0)
+  description  String?
+  minSpending  Decimal  @default(0) @db.Decimal(10, 2)
+  maxSpending  Decimal  @default(10000) @db.Decimal(10, 2)
+  discount     Decimal  @default(0) @db.Decimal(5, 2)
+  bonusDevices Int      @default(0)
+  meta         Json?
+  icon         String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  customer     User[]
+
+  @@map("ranks")
+}
+
+model Role {
+  id          Int              @id @default(autoincrement())
+  name        String           @unique
+  description String?
+  isActive    Boolean          @default(true)
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+  permissions RolePermission[]
+  moderators  User[]
+
+  @@map("roles")
+}
+
+model RolePermission {
+  id       Int      @id @default(autoincrement())
+  roleId   Int
+  resource String
+  actions  String[] @default([])
+  role     Role     @relation(fields: [roleId], references: [id], onDelete: Cascade)
+
+  @@unique([roleId, resource])
+  @@map("role_permissions")
+}
+
+model Category {
+  id          Int            @id @default(autoincrement())
+  name        String
+  slug        String
+  description String?
+  icon        String?
+  isActive    Boolean        @default(true)
+  isFeatured  Boolean        @default(false)
+  sortOrder   Int            @default(0)
+  parentId    Int?
+  deletedAt   DateTime?
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+  meta        Json?
+  parent      Category?      @relation("CategoryParent", fields: [parentId], references: [id], onDelete: Cascade)
+  children    Category[]     @relation("CategoryParent")
+  groups      ProductGroup[]
+  products    Product[]
+
+  @@index([slug])
+  @@index([parentId])
+  @@index([isActive, sortOrder])
+  @@index([parentId, isActive, sortOrder])
+  @@index([deletedAt])
+  @@map("categories")
+}
+
+model Product {
+  id             Int           @id @default(autoincrement())
+  sku            String
+  name           String
+  slug           String?
+  description    String?
+  type           String        @default("FILE")
+  platform       PlatformType?
+  telegramUrl    String?
+  tags           String[]      @default([])
+  policy         String?
+  sortOrder      Int           @default(0)
+  price          Decimal       @db.Decimal(15, 2)
+  originalPrice  Decimal?      @db.Decimal(15, 2)
+  discount       Decimal?      @db.Decimal(15, 2)
+  btnText        String?
+  costPrice      Decimal?      @db.Decimal(15, 2)
+  stockCount     Int           @default(0)
+  soldCount      Int           @default(0)
+  minQuantity    Int           @default(1)
+  maxQuantity    Int           @default(1000)
+  isActive       Boolean       @default(true)
+  isPrivate      Boolean       @default(false)
+  privateUrl     String?
+  isFeatured     Boolean       @default(false)
+  images         String[]      @default([])
+  thumbnail      String?
+  deletedAt      DateTime?
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+  meta           Json?
+  seo            Json?
+  categoryId     Int
+  productGroupId Int?
+  accounts       Account[]
+  cartItems      CartItem[]
+  feedbacks      Feedback[]
+  orders         Order[]
+  category       Category      @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  productGroup   ProductGroup? @relation(fields: [productGroupId], references: [id])
+
+  @@index([sku])
+  @@index([slug])
+  @@index([categoryId])
+  @@index([platform])
+  @@index([isActive, isPrivate])
+  @@index([price])
+  @@index([stockCount])
+  @@index([soldCount])
+  @@index([createdAt])
+  @@index([sortOrder])
+  @@index([deletedAt])
+  @@map("products")
+}
+
+model ProductGroup {
+  id         Int       @id @default(autoincrement())
+  name       String
+  slug       String?
+  categoryId Int?
+  sortOrder  Int?
+  deletedAt  DateTime?
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+  meta       Json?
+  seo        Json?
+  category   Category? @relation(fields: [categoryId], references: [id])
+  products   Product[]
+
+  @@index([name])
+  @@index([slug])
+  @@index([sortOrder])
+  @@index([deletedAt])
+  @@map("product_groups")
+}
+
+enum FeedbackSource {
+  CUSTOMER        // Real customer review (from frontend / customer API)
+  MANUAL          // Manually added by admin (feedback form)
+  BULK_GENERATED // Bulk-generated / fake (bulk-reviews page)
+}
+
+model Feedback {
+  id          Int             @id @default(autoincrement())
+  userId      Int?
+  productId   Int?
+  name        String
+  feedback    String
+  published   Boolean         @default(false)
+  rating      Decimal         @db.Decimal(2, 1)
+  source      FeedbackSource  @default(CUSTOMER)
+  isScheduled Boolean         @default(false)
+  scheduledAt DateTime?
+  createdAt   DateTime        @default(now())
+  product     Product?        @relation(fields: [productId], references: [id])
+  user        User?           @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+  @@index([productId])
+  @@index([createdAt])
+  @@index([source])
+  @@map("feedback")
+}
+
+model FakeNames {
+  id        Int        @id @default(autoincrement())
+  name      String     @unique
+  status    NameStatus @default(AVAILABLE)
+  createdAt DateTime   @default(now())
+}
+
+model Account {
+  id            Int          @id @default(autoincrement())
+  productId     Int
+  platform      PlatformType
+  encryptedData String
+  isUsed        Boolean      @default(false)
+  isValid       Boolean      @default(true)
+  requiresOtp   Boolean      @default(false)
+  hasPremium    Boolean      @default(false)
+  usedAt        DateTime?
+  usedByOrderId Int?
+  archived      Boolean      @default(false)
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+  meta          Json?
+  product       Product      @relation(fields: [productId], references: [id], onDelete: Cascade)
+  usedByOrder   Order?       @relation(fields: [usedByOrderId], references: [id])
+
+  @@index([productId])
+  @@index([platform])
+  @@index([isUsed, isValid])
+  @@index([createdAt])
+  @@map("accounts")
+}
+
+model Coupon {
+  id                    Int           @id @default(autoincrement())
+  code                  String        @unique
+  name                  String?
+  type                  CouponType
+  status                CouponStatus  @default(ACTIVE)
+  scope                 CouponScope   @default(SPECIFIC_PRODUCTS)
+  discountValue         Decimal       @db.Decimal(15, 2)
+  maxDiscountAmount     Decimal?      @db.Decimal(15, 2)
+  minOrderAmount        Decimal?      @db.Decimal(15, 2)
+  usageLimit            Int?
+  usageCount            Int           @default(0)
+  userUsageLimit        Int?
+  startsAt              DateTime?
+  expiresAt             DateTime?
+  applicableProductIds  Int[]         @default([])
+  applicableCategoryIds Int[]         @default([])
+  createdAt             DateTime      @default(now())
+  updatedAt             DateTime      @updatedAt
+  meta                  Json?
+  orders                CouponUsage[]
+
+  @@index([code])
+  @@index([status])
+  @@index([expiresAt])
+  @@index([scope])
+  @@index([createdAt])
+  @@map("coupons")
+}
+
+model CouponUsage {
+  id             Int      @id @default(autoincrement())
+  couponId       Int
+  orderId        Int
+  userId         Int?
+  guestEmail     String?
+  discountAmount Decimal  @db.Decimal(15, 2)
+  orderAmount    Decimal  @db.Decimal(15, 2)
+  createdAt      DateTime @default(now())
+  coupon         Coupon   @relation(fields: [couponId], references: [id], onDelete: Cascade)
+  order          Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  user           User?    @relation(fields: [userId], references: [id])
+
+  @@unique([couponId, orderId])
+  @@index([couponId])
+  @@index([orderId])
+  @@index([userId])
+  @@index([guestEmail])
+  @@index([createdAt])
+  @@map("coupon_usage")
+}
+
+model PaymentMethod {
+  id                   Int                   @id @default(autoincrement())
+  name                 String                @unique
+  gateway              String
+  thumbnail            String?
+  apiKey               String?
+  apiSecret            String?
+  merchantId           String?
+  webhookSecret        String?
+  testMode             Boolean               @default(false)
+  currencies           String[]              @default([])
+  networks             String[]              @default([])
+  minAmount            Decimal               @default(0) @db.Decimal(15, 2)
+  bonusThreshold       Decimal?              @default(0) @db.Decimal(15, 2)
+  bonus                Decimal?              @default(0) @db.Decimal(5, 2)
+  feeType              DiscountType?
+  feeValue             Decimal?              @db.Decimal(5, 2)
+  isActive             Boolean               @default(true)
+  createdAt            DateTime              @default(now())
+  updatedAt            DateTime              @updatedAt
+  meta                 Json?
+  payments             Payment[]
+  subscriptionPayments SubscriptionPayment[]
+
+  @@index([isActive])
+  @@index([gateway])
+  @@map("payment_methods")
+}
+
+model SubscriptionPackage {
+  id                   Int                   @id @default(autoincrement())
+  name                 String                @unique
+  description          Json?
+  discount             Decimal               @db.Decimal(5, 2)
+  price                Decimal               @db.Decimal(15, 2)
+  duration             Int                   @default(30)
+  isActive             Boolean               @default(true)
+  createdAt            DateTime              @default(now())
+  updatedAt            DateTime              @updatedAt
+  meta                 Json?
+  subscriptionPayments SubscriptionPayment[]
+  users                User[]
+
+  @@index([isActive])
+  @@map("subscription_packages")
+}
+
+model SubscriptionPayment {
+  id                    Int                 @id @default(autoincrement())
+  userId                Int
+  subscriptionPackageId Int
+  amount                Decimal             @db.Decimal(15, 2)
+  paymentMethodId       Int?
+  paymentStatus         PaymentStatus       @default(PENDING)
+  gatewayTxnId          String?
+  periodStart           DateTime
+  periodEnd             DateTime
+  paidAt                DateTime?
+  processedAt           DateTime?
+  createdAt             DateTime            @default(now())
+  updatedAt             DateTime            @updatedAt
+  meta                  Json?
+  paymentMethod         PaymentMethod?      @relation(fields: [paymentMethodId], references: [id])
+  subscriptionPackage   SubscriptionPackage @relation(fields: [subscriptionPackageId], references: [id])
+  user                  User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([subscriptionPackageId])
+  @@index([paymentStatus])
+  @@index([periodStart, periodEnd])
+  @@index([createdAt])
+  @@map("subscription_payments")
+}
+
+model BlogCategory {
+  id            Int               @id @default(autoincrement())
+  name          String            @unique
+  slug          String            @unique
+  createdAt     DateTime          @default(now())
+  updatedAt     DateTime          @updatedAt
+  blogs         Blog[]
+  subcategories BlogSubCategory[]
+
+  @@index([slug])
+  @@index([name])
+  @@map("blog_categories")
+}
+
+model BlogSubCategory {
+  id         Int          @id @default(autoincrement())
+  name       String
+  slug       String       @unique
+  categoryId Int
+  authorId   Int?
+  createdAt  DateTime     @default(now())
+  updatedAt  DateTime     @updatedAt
+  category   BlogCategory @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  author     BlogAuthor?  @relation(fields: [authorId], references: [id], onDelete: SetNull)
+
+  @@index([slug])
+  @@index([categoryId])
+  @@index([authorId])
+  @@map("blog_sub_categories")
+}
+
+model BlogAuthor {
+  id             Int               @id @default(autoincrement())
+  name           String
+  email          String            @default("")
+  bio            String?           @db.Text
+  isActive       Boolean           @default(true)
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+  blogs          Blog[]
+  subcategories  BlogSubCategory[]
+
+  @@index([name])
+  @@index([email])
+  @@index([isActive])
+  @@map("blog_authors")
+}
+
+model Blog {
+  id          Int           @id @default(autoincrement())
+  title       String
+  slug        String        @unique
+  content     String
+  excerpt     String?
+  source      String?
+  thumbnail   String?
+  gallery     String[]      @default([])
+  tags        String[]      @default([])
+  views       Int           @default(0)
+  isPublished Boolean       @default(false)
+  publishedAt DateTime?
+  categoryId  Int?
+  authorId    Int?
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  meta        Json?
+  seo         Json?
+  category    BlogCategory? @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  author      BlogAuthor?   @relation(fields: [authorId], references: [id], onDelete: SetNull)
+
+  @@index([slug])
+  @@index([categoryId])
+  @@index([authorId])
+  @@index([isPublished])
+  @@index([publishedAt])
+  @@index([views])
+  @@index([createdAt])
+  @@index([tags])
+  @@map("blogs")
+}
+
+model Gallery {
+  id     Int         @id @default(autoincrement())
+  fileId String      @unique
+  url    String
+  type   GalleryType @default(IMAGE)
+
+  @@index([url])
+  @@index([fileId])
+  @@map("gallery")
+}
+
+model Order {
+  id                Int               @id @default(autoincrement())
+  orderNumber       String            @unique
+  status            OrderStatus       @default(PENDING)
+  userId            Int?
+  guestEmail        String?
+  customerName      String?
+  customerPhone     String?
+  productId         Int
+  quantity          Int
+  unitPrice         Decimal           @db.Decimal(15, 2)
+  subtotal          Decimal           @db.Decimal(15, 2)
+  discount          Decimal           @default(0) @db.Decimal(15, 2)
+  total             Decimal           @db.Decimal(15, 2)
+  deliveryStatus    DeliveryStatus    @default(PENDING)
+  deliveredAt       DateTime?
+  quantityOrdered   Int               @default(0)
+  quantityDelivered Int               @default(0)
+  quantityPending   Int               @default(0)
+  isPartial         Boolean           @default(false)
+  canResend         Boolean           @default(true)
+  canReplace        Boolean           @default(true)
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime          @updatedAt
+  meta              Json?
+  guestAccess       GuestOrderAccess?
+  usedAccounts      Account[]
+  couponUsage       CouponUsage[]
+  deliveries        Delivery[]
+  product           Product           @relation(fields: [productId], references: [id], onDelete: Cascade)
+  user              User?             @relation(fields: [userId], references: [id])
+  payment           Payment?
+  telegramTransfer  TelegramTransfer?
+
+  @@index([orderNumber])
+  @@index([userId])
+  @@index([guestEmail])
+  @@index([status])
+  @@index([productId])
+  @@index([createdAt])
+  @@map("orders")
+}
+
+model Cart {
+  id        Int        @id @default(autoincrement())
+  userId    Int        @unique
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  items     CartItem[]
+  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("carts")
+}
+
+model CartItem {
+  id        Int      @id @default(autoincrement())
+  cartId    Int
+  productId Int
+  quantity  Int      @default(1)
+  unitPrice Decimal  @db.Decimal(15, 2)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  cart      Cart     @relation(fields: [cartId], references: [id], onDelete: Cascade)
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@unique([cartId, productId])
+  @@index([cartId])
+  @@index([productId])
+  @@map("cart_items")
+}
+
+model Payment {
+  id              Int           @id @default(autoincrement())
+  orderId         Int?          @unique
+  type            PaymentType   @default(ORDER)
+  status          PaymentStatus @default(PENDING)
+  amount          Decimal       @db.Decimal(15, 2)
+  paidAmount      Decimal       @default(0) @db.Decimal(15, 2)
+  refundedAmount  Decimal       @default(0) @db.Decimal(15, 2)
+  gateway         String
+  gatewayTxnId    String?
+  gatewayStatus   String?
+  binanceOrderId  String?
+  binanceStatus   String?
+  paidAt          DateTime?
+  processedAt     DateTime?
+  failedAt        DateTime?
+  failureReason   String?
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+  meta            Json?
+  paymentMethodId Int?
+  order           Order?        @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  method          PaymentMethod? @relation(fields: [paymentMethodId], references: [id])
+
+  @@index([orderId])
+  @@index([status])
+  @@index([type])
+  @@index([gatewayTxnId])
+  @@index([createdAt])
+  @@map("payments")
+}
+
+model OTP {
+  id        Int      @id @default(autoincrement())
+  type      String
+  otp       String
+  email     String?
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  @@index([type])
+  @@index([otp])
+  @@index([email])
+  @@map("otps")
+}
+
+model Delivery {
+  id            Int            @id @default(autoincrement())
+  orderId       Int
+  status        DeliveryStatus @default(PENDING)
+  accounts      Json
+  fileUrl       String?
+  format        String?
+  deliveredAt   DateTime?
+  downloadedAt  DateTime?
+  downloadCount Int            @default(0)
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  meta          Json?
+  order         Order          @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  @@index([orderId])
+  @@index([status])
+  @@index([createdAt])
+  @@map("deliveries")
+}
+
+model TelegramTransfer {
+  id                  Int                    @id @default(autoincrement())
+  orderId             Int                    @unique
+  status              TelegramTransferStatus @default(PENDING)
+  targetUrl           String
+  transferType        String
+  customerTelegram    String
+  joinVerified        Boolean                @default(false)
+  joinVerifiedAt      DateTime?
+  transferStartedAt   DateTime?
+  transferCompletedAt DateTime?
+  lastRetryAt         DateTime?
+  completedAt         DateTime?
+  transferProofUrl    String?
+  proofData           String?
+  failureReason       String?
+  retryCount          Int                    @default(0)
+  maxRetries          Int                    @default(3)
+  adminNotes          String?
+  manualOverride      Boolean                @default(false)
+  verifiedBy          String?
+  createdAt           DateTime               @default(now())
+  updatedAt           DateTime               @updatedAt
+  meta                Json?
+  order               Order                  @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  @@index([orderId])
+  @@index([status])
+  @@index([customerTelegram])
+  @@index([transferType])
+  @@index([targetUrl])
+  @@index([joinVerified])
+  @@index([createdAt])
+  @@map("telegram_transfers")
+}
+
+model Affiliate {
+  id        Int      @id @default(autoincrement())
+  currency  String
+  wallet    String
+  message   String
+  isPaid    Boolean
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  meta      Json?
+
+  @@index([currency])
+  @@index([isPaid])
+  @@map("affiliates")
+}
+
+model NewsletterSubscriber {
+  id        Int      @id @default(autoincrement())
+  email     String
+  createdAt DateTime @default(now())
+  meta      Json?
+}
+
+model Ticket {
+  id           Int            @id @default(autoincrement())
+  ticketNumber String         @unique
+  userId       Int?
+  guestEmail   String?
+  subject      String
+  description  String
+  attachments  String[]       @default([])
+  status       TicketStatus   @default(OPEN)
+  priority     TicketPriority @default(MEDIUM)
+  assignedTo   String?
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+  resolvedAt   DateTime?
+  meta         Json?
+  replies      TicketReply[]
+  user         User?          @relation(fields: [userId], references: [id])
+
+  @@index([ticketNumber])
+  @@index([userId])
+  @@index([guestEmail])
+  @@index([status, priority])
+  @@index([createdAt])
+  @@map("tickets")
+}
+
+model TicketReply {
+  id          Int      @id @default(autoincrement())
+  ticketId    Int
+  content     String
+  isStaff     Boolean  @default(false)
+  authorId    Int?
+  authorName  String?
+  attachments String[] @default([])
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  meta        Json?
+  ticket      Ticket   @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+
+  @@index([ticketId])
+  @@index([createdAt])
+  @@map("ticket_replies")
+}
+
+model Notification {
+  id          Int                      @id @default(autoincrement())
+  userId      Int?
+  title       String
+  message     String
+  attachments String[]                 @default([])
+  role        UserRole                 @default(CUSTOMER)
+  type        NotificationType         @default(OTHERS)
+  isRead      Boolean                  @default(false)
+  meta        Json?
+  createdAt   DateTime                 @default(now())
+  updatedAt   DateTime                 @updatedAt
+  readStatus  NotificationReadStatus[]
+  user        User?                    @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+  @@index([role])
+  @@index([type])
+  @@index([isRead])
+  @@index([createdAt])
+  @@map("notifications")
+}
+
+model NotificationReadStatus {
+  id             Int          @id @default(autoincrement())
+  notificationId Int
+  userId         Int
+  readAt         DateTime     @default(now())
+  notification   Notification @relation(fields: [notificationId], references: [id], onDelete: Cascade)
+  user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([notificationId, userId])
+  @@index([userId])
+  @@index([notificationId])
+  @@map("notification_read_status")
+}
+
+model EmailTemplate {
+  id           Int      @id @default(autoincrement())
+  type         String   @unique
+  subject      String
+  body         String   @db.Text // Plain text version (fallback)
+  htmlBody     String?  @db.Text // HTML version (optional)
+  isActive     Boolean  @default(true)
+  variables    String[] @default([]) // Available variables like ["name", "orderNumber"]
+  description  String?  @db.Text // Description of when this template is used
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@map("email_templates")
+}
+
+model DeliveryTemplate {
+  id                    Int       @id @default(autoincrement())
+  name                  String    @unique
+  thankYouMessage       String?   @db.Text
+  couponPromotionText   String?   @db.Text
+  supportContactInfo    String?   @db.Text
+  feedbackRequestText   String?   @db.Text
+  credentialsHeader     String    @default("ACCOUNT CREDENTIALS")
+  credentialsFormat     String    @default("____ {{itemName}} - Order #{{orderNumber}} Quantity: {{quantity}} ____") @db.Text
+  credentialsFooter     String?   @db.Text // e.g. "____ end of goods ____"
+  isDefault             Boolean   @default(false)
+  isActive              Boolean   @default(true)
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+
+  @@map("delivery_templates")
+}
+
+model AuthEmailTemplate {
+  id                    Int       @id @default(autoincrement())
+  type                  String    @unique // VERIFICATION_CODE, WELCOME_EMAIL, PASSWORD_RESET, etc.
+  subject               String
+  body                  String    @db.Text
+  isActive              Boolean   @default(true)
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+
+  @@map("auth_email_templates")
+}
+
+model CustomerTelegramData {
+  id          Int      @id @default(autoincrement())
+  userId      BigInt   @unique
+  chatId      BigInt
+  username    String?  @unique
+  phoneNumber String?  @unique
+  firstName   String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([userId])
+  @@index([username])
+  @@index([phoneNumber])
+  @@map("customer_telegram_data")
+}
+
+model CustomPage {
+  id          String   @id @default(uuid())
+  slug        String   @unique
+  title       String?
+  type        PageType @default(DYNAMIC)
+  location    Location @default(HEADER)
+  group       String?
+  url         String?
+  subtitle    String?
+  excerpt     String?
+  description String?
+  banner      String?
+  thumbnail   String?
+  isActive    Boolean  @default(true)
+  sortOrder   Int      @default(0)
+  seo         Json?
+  content     Json?
+  meta        Json?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([slug])
+  @@map("custom_pages")
+}
+
+model LoginSession {
+  id        String   @id @default(uuid())
+  userId    Int
+  token     String   @unique
+  userAgent String?
+  ipAddress String?
+  isActive  Boolean  @default(true)
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  meta      Json?
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([token])
+  @@index([expiresAt])
+  @@map("login_sessions")
+}
+
+model EmailVerificationToken {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  tokenHash String
+  expiresAt DateTime
+  consumed  Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([tokenHash])
+  @@map("email_verification_tokens")
+}
+
+model PasswordResetToken {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  tokenHash String
+  expiresAt DateTime
+  consumed  Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([tokenHash])
+  @@map("password_reset_tokens")
+}
+
+model UserAuthProvider {
+  id             Int      @id @default(autoincrement())
+  userId         Int
+  provider       String
+  providerUserId String
+  email          String?
+  meta           Json?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerUserId])
+  @@index([userId])
+  @@index([provider, email])
+  @@map("user_auth_providers")
+}
+
+model BalanceTransaction {
+  id            Int                    @id @default(autoincrement())
+  userId        Int
+  type          BalanceTransactionType
+  amount        Decimal                @db.Decimal(15, 2)
+  balanceBefore Decimal                @db.Decimal(15, 2)
+  balanceAfter  Decimal                @db.Decimal(15, 2)
+  reference     String?
+  description   String
+  createdBy     String?
+  createdAt     DateTime               @default(now())
+  meta          Json?
+  user          User                   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([type])
+  @@index([createdAt])
+  @@index([reference])
+  @@map("balance_transactions")
+}
+
+model TopupRequest {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  amount    Decimal  @db.Decimal(15, 2)
+  reason    String   @db.VarChar(500)
+  status    String   @default("PENDING") // PENDING, APPROVED, REJECTED, COMPLETED, FAILED
+  paymentMethod String?  // STRIPE, PAYGATE_CARD, PAYGATE_CRYPTO, BINANCE, WALLET
+  transactionId String?  // External transaction ID (PayGate txid, Stripe intent, etc)
+  paygateLinkId String?  // PayGate payment ID for tracking
+  paygateCryptoType String?  // erc20_usdc, bep20_usdt, btc, etc
+  requestedAt DateTime @default(now())
+  approvedAt DateTime?
+  approvedBy String?  // Admin username
+  rejectionReason String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([status])
+  @@index([createdAt])
+  @@index([paygateLinkId])
+  @@index([transactionId])
+  @@map("topup_requests")
+}
+
+model Withdrawal {
+  id        Int            @id @default(autoincrement())
+  userId    Int
+  amount    Decimal        @db.Decimal(15, 2)
+  method    String
+  status    WithdrawStatus @default(PENDING)
+  createdAt DateTime       @default(now())
+  meta      Json?
+  user      User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([status])
+  @@index([createdAt])
+  @@map("withdrawals")
+}
+
+model Settings {
+  id    Int    @id @default(autoincrement())
+  key   String @unique
+  value Json?
+
+  @@index([key])
+  @@map("settings")
+}
+
+model AuditLog {
+  id        Int      @id @default(autoincrement())
+  userId    Int?
+  action    String
+  entity    String
+  entityId  String?
+  oldValues Json?
+  newValues Json?
+  ipAddress String?
+  userAgent String?
+  createdAt DateTime @default(now())
+
+  user User? @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([userId])
+  @@index([action])
+  @@index([entity])
+  @@index([createdAt])
+  @@map("audit_logs")
+}
+
+model Visitor {
+  date      DateTime @id @db.Date
+  count     Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([date])
+  @@map("visitors")
+}
+
+enum UrlTrackingPageType {
+  EXISTING
+  NON_EXISTING
+}
+
+model UrlTracking {
+  id               Int                 @id @default(autoincrement())
+  title            String
+  description      String?
+  url              String              @unique
+  slug             String              @unique
+  clickCount       Int                 @default(0)
+  uniqueClickCount Int                 @default(0)
+  lastAccessed     DateTime?
+  isActive         Boolean             @default(true)
+  pageType         UrlTrackingPageType @default(NON_EXISTING)
+  createdById      Int
+  createdAt        DateTime            @default(now())
+  updatedAt        DateTime            @updatedAt
+  createdBy        User                @relation(fields: [createdById], references: [id], onDelete: Cascade)
+  clicks           UrlClickTracking[]
+
+  @@index([slug])
+  @@index([isActive])
+  @@index([clickCount])
+  @@index([uniqueClickCount])
+  @@map("url_trackings")
+}
+
+model UrlClickTracking {
+  id            Int       @id @default(autoincrement())
+  urlTrackingId Int
+  visitorId     String
+  clickCount    Int        @default(1)
+  deviceInfo    Json?      // { platform, deviceType, browser, os, userAgent, screenResolution }
+  location      Json?      // { country, countryCode }
+  firstClickAt  DateTime   @default(now())
+  lastClickAt   DateTime   @default(now())
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+  urlTracking   UrlTracking @relation(fields: [urlTrackingId], references: [id], onDelete: Cascade)
+
+  @@unique([urlTrackingId, visitorId])
+  @@index([urlTrackingId])
+  @@index([visitorId])
+  @@index([lastClickAt])
+  @@map("url_click_trackings")
+}
+
+model TelegramSession {
+  id            Int      @id @default(autoincrement())
+  phoneNumber   String   @unique @map("phone_number")
+  sessionString String   @map("session_string")
+  isAuthorized  Boolean  @default(false) @map("is_authorized")
+  userId        BigInt?  @map("user_id")
+  username      String?
+  firstName     String?  @map("first_name")
+  lastName      String?  @map("last_name")
+  createdBy     Int?     @map("created_by")
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  @@index([phoneNumber])
+  @@index([isAuthorized])
+  @@index([createdBy])
+  @@map("telegram_sessions")
+}
+
+model TelegramOtpRequest {
+  id            Int      @id @default(autoincrement())
+  phoneNumber   String   @map("phone_number")
+  phoneCodeHash String?  @map("phone_code_hash")
+  status        String   @default("pending")
+  requires2FA   Boolean  @default(false) @map("requires_2fa")
+  customerId    Int?     @map("customer_id")
+  createdAt     DateTime @default(now()) @map("created_at")
+  expiresAt     DateTime @map("expires_at")
+
+  @@index([phoneNumber])
+  @@index([status])
+  @@index([expiresAt])
+  @@map("telegram_otp_requests")
+}
+
+model BinanceSession {
+  id        Int      @id @default(autoincrement())
+  sessionId String   @unique @default("default") @map("session_id")
+  cookies   Json     // Array of cookie objects from Playwright
+  email     String?  // Binance email (for reference)
+  isValid   Boolean  @default(true) @map("is_valid")
+  expiresAt DateTime? @map("expires_at")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@index([sessionId])
+  @@index([isValid])
+  @@map("binance_sessions")
+}
+
+model BinanceAuditLog {
+  id            Int      @id @default(autoincrement())
+  type          String   // 'verifyAttempt', 'bootstrap', 'sessionExpired', etc.
+  orderId       Int?     @map("order_id")
+  paymentId     Int?     @map("payment_id")
+  binanceOrderId String? @map("binance_order_id")
+  result        String   // 'ok', 'not_found', 'amount_mismatch', 'recipient_mismatch', 'session_expired', etc.
+  userId        Int?
+  ipAddress     String?  @map("ip_address")
+  userAgent     String?  @map("user_agent")
+  meta          Json?    // Additional metadata (amount, currency, error details, etc.)
+  createdAt     DateTime @default(now()) @map("created_at")
+
+  user User? @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([type])
+  @@index([orderId])
+  @@index([paymentId])
+  @@index([binanceOrderId])
+  @@index([result])
+  @@index([createdAt])
+  @@map("binance_audit_logs")
+}
+
+enum UserRole {
+  ADMIN
+  CUSTOMER
+  GUEST
+  MODERATOR
+}
+
+enum NameStatus {
+  AVAILABLE
+  USED
+}
+
+enum UserRank {
+  NEW
+  NORMAL
+  FREQUENT
+  ELITE
+  VIP
+  MASTER
+}
+
+enum PlatformType {
+  INSTAGRAM
+  FACEBOOK
+  TWITTER
+  TELEGRAM
+  TIKTOK
+  YOUTUBE
+  OTHER
+}
+
+enum OrderStatus {
+  PENDING
+  CONFIRMED
+  PARTIAL
+  COMPLETED
+  CANCELLED
+  REFUNDED
+}
+
+enum PaymentStatus {
+  PENDING
+  COMPLETED
+  FAILED
+  PARTIAL
+  REFUNDED
+}
+
+enum PaymentType {
+  ORDER
+  SUBSCRIPTION_PURCHASE
+  SUBSCRIPTION_RENEWAL
+}
+
+enum DeliveryStatus {
+  PENDING
+  PROCESSING
+  DELIVERED
+  FAILED
+  PARTIAL
+}
+
+enum TelegramTransferStatus {
+  PENDING
+  VERIFICATION_REQUIRED
+  CUSTOMER_JOINED
+  TRANSFER_IN_PROGRESS
+  WAITING_PERIOD
+  COMPLETING
+  COMPLETED
+  FAILED
+}
+
+enum TicketStatus {
+  OPEN
+  IN_PROGRESS
+  RESOLVED
+  CLOSED
+}
+
+enum TicketPriority {
+  LOW
+  MEDIUM
+  HIGH
+  URGENT
+}
+
+enum NotificationType {
+  ORDER
+  PAYMENT
+  RESTOCK
+  SYSTEM
+  PROMOTION
+  OTHERS
+}
+
+enum CouponType {
+  PERCENTAGE
+  FIXED_AMOUNT
+}
+
+enum DiscountType {
+  FIXED
+  PERCENTAGE
+}
+
+enum CouponStatus {
+  ACTIVE
+  INACTIVE
+  EXPIRED
+  DEPLETED
+}
+
+enum CouponScope {
+  ALL_PRODUCTS
+  SPECIFIC_PRODUCTS
+  SPECIFIC_CATEGORIES
+}
+
+enum GalleryType {
+  IMAGE
+  VIDEO
+  FILE
+}
+
+enum BalanceTransactionType {
+  DEPOSIT
+  DEDUCT
+  REFUND
+  BONUS
+  ADJUSTMENT
+  TOPUP
+  WITHDRAWAL
+}
+
+enum WithdrawStatus {
+  PENDING
+  DONE
+}
+
+enum PageType {
+  EXTERNAL
+  DYNAMIC
+  HYBRID
+}
+
+enum Location {
+  HEADER
+  FOOTER
+}

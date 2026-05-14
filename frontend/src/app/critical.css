@@ -1,0 +1,42 @@
+/* Critical CSS for above-the-fold content */
+/* This reduces render-blocking CSS */
+
+:root {
+  --font-manrope: 'Manrope', system-ui;
+}
+
+html {
+  scroll-behavior: auto; /* Disable smooth scroll for faster paint */
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: var(--font-manrope), system-ui;
+  background-color: #ffffff;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Critical layout elements */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+/* Prevent layout shift for product grid */
+.grid {
+  display: grid;
+  gap: 1.5rem;
+}
+
+/* Prevent CLS in product cards */
+.product-card {
+  min-height: 300px;
+}
+
+/* Placeholder preventing shifts */
+.placeholder {
+  min-height: 24rem;
+}
