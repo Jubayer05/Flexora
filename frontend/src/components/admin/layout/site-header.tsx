@@ -29,27 +29,9 @@ import { useAdminNotifications } from '@/hooks/useAdminNotifications'
 import { useMounted } from '@/hooks/useMounted'
 import { useAdminStore } from '@/stores/admin-info'
 import { format } from 'date-fns'
+import SiteLogoWrapper from '@/components/common/SiteLogoWrapper'
 import { Bell, type LucideIcon } from 'lucide-react'
-import Image from 'next/image'
 import { useRouter } from 'next/navigation'
-
-// Memoized logo component for LCP optimization
-const HeaderLogo = memo(() => (
-  <div className='relative w-56.75 h-9'>
-    <Image
-      src={headerConfig.logo.src}
-      alt={headerConfig.logo.alt}
-      width={headerConfig.logo.width}
-      height={headerConfig.logo.height}
-      className='object-cover'
-      priority={true}
-      fetchPriority='high'
-      decoding='sync'
-      quality={85}
-    />
-  </div>
-))
-HeaderLogo.displayName = 'HeaderLogo'
 
 // Memoized notification badge
 const NotificationBadge = memo(({ unreadCount, mounted }: { unreadCount: number; mounted: boolean }) => {
@@ -224,7 +206,7 @@ export function SiteHeader() {
 
       <div className='flex justify-between items-center w-full'>
         {/* Logo Section - Optimized for LCP */}
-        <HeaderLogo />
+        <SiteLogoWrapper height={36} />
 
         {/* Right Section */}
         <div className='flex items-center gap-2 lg:gap-4'>

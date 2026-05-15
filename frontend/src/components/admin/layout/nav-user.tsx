@@ -65,15 +65,15 @@ export function NavUser() {
 
   if (!adminInfo) {
     return (
-      <SidebarMenu className='font-manrope'>
+      <SidebarMenu>
         <SidebarMenuItem>
-          <SidebarMenuButton size='lg' className='cursor-default' disabled>
-            <Avatar className='size-8 rounded-lg'>
-              <AvatarFallback className='rounded-lg bg-sidebar-accent text-sidebar-accent-foreground'>
+          <SidebarMenuButton size='lg' className='cursor-default py-2.5' disabled>
+            <Avatar className='size-9 rounded-full'>
+              <AvatarFallback className='rounded-full bg-surface-container-highest text-on-surface-variant'>
                 —
               </AvatarFallback>
             </Avatar>
-            <span className='truncate'>Loading…</span>
+            <span className='truncate text-on-surface-variant'>Loading…</span>
           </SidebarMenuButton>
         </SidebarMenuItem>
       </SidebarMenu>
@@ -92,58 +92,58 @@ export function NavUser() {
       <SettingsModal isOpen={openModal === 'settings'} onClose={() => setOpenModal(null)} />
       <SecurityModal isOpen={openModal === 'security'} onClose={() => setOpenModal(null)} />
 
-      <SidebarMenu className='font-manrope'>
+      <SidebarMenu>
         <SidebarMenuItem>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <SidebarMenuButton
                 size='lg'
-                className='data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground'
+                className='rounded-full data-[state=open]:bg-surface-container data-[state=open]:text-on-surface py-2.5 px-2.5'
                 tooltip={adminInfo.firstName ?? adminInfo.email ?? 'Account'}
               >
-                <Avatar className='size-8 rounded-lg'>
+                <Avatar className='size-9 rounded-full'>
                   <AvatarImage src='/' alt={adminInfo.firstName ?? undefined} />
-                  <AvatarFallback className='rounded-lg bg-sidebar-primary text-sidebar-primary-foreground text-sm font-medium'>
+                  <AvatarFallback className='rounded-full bg-primary text-on-primary text-sm font-medium'>
                     {initials}
                   </AvatarFallback>
                 </Avatar>
                 <div className='grid min-w-0 flex-1 text-left text-sm leading-tight'>
-                  <span className='truncate font-semibold'>{adminInfo.firstName ?? 'Admin'}</span>
-                  <span className='truncate text-xs text-muted-foreground'>{adminInfo.email}</span>
+                  <span className='truncate font-semibold text-on-surface'>{adminInfo.firstName ?? 'Admin'}</span>
+                  <span className='truncate text-xs text-on-surface-variant'>{adminInfo.email}</span>
                 </div>
-                <ChevronsUpDown className='ml-auto size-4 shrink-0' />
+                <ChevronsUpDown className='ml-auto size-4 shrink-0 text-on-surface-variant' />
               </SidebarMenuButton>
             </DropdownMenuTrigger>
             <DropdownMenuContent
               side='right'
               align='end'
-              className='font-manrope w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-lg bg-sidebar text-sidebar-foreground border-sidebar-border bottom-full'
+              className='w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-full bg-surface-container-low border border-outline-variant shadow-lg'
             >
               <DropdownMenuLabel className='p-0 font-normal'>
-                <div className='flex items-center gap-2 px-2 py-1.5 text-left text-sm'>
-                  <Avatar className='size-8 rounded-lg'>
+                <div className='flex items-center gap-3 px-3 py-2.5 text-left text-sm'>
+                  <Avatar className='size-9 rounded-full'>
                     <AvatarImage src='/' alt={adminInfo.firstName ?? undefined} />
-                    <AvatarFallback className='rounded-lg bg-sidebar-primary text-sidebar-primary-foreground text-sm font-medium'>
+                    <AvatarFallback className='rounded-full bg-primary text-on-primary text-sm font-medium'>
                       {initials}
                     </AvatarFallback>
                   </Avatar>
                   <div className='grid min-w-0 flex-1 text-left text-sm leading-tight'>
-                    <span className='truncate font-semibold'>{adminInfo.firstName ?? 'Admin'}</span>
-                    <span className='truncate text-xs text-muted-foreground'>
+                    <span className='truncate font-semibold text-on-surface'>{adminInfo.firstName ?? 'Admin'}</span>
+                    <span className='truncate text-xs text-on-surface-variant'>
                       {adminInfo.email}
                     </span>
                   </div>
                 </div>
               </DropdownMenuLabel>
-              <DropdownMenuSeparator />
+              <DropdownMenuSeparator className='bg-outline-variant' />
               {userMenuItems.map((item, index) => {
                 const Icon = item.icon as LucideIcon
                 const showSeparator = item.divider || (item.danger && index > 0)
                 return (
                   <div key={item.key}>
-                    {showSeparator && <DropdownMenuSeparator />}
+                    {showSeparator && <DropdownMenuSeparator className='bg-outline-variant' />}
                     <DropdownMenuItem
-                      className={`cursor-pointer gap-2 ${item.danger ? 'text-destructive focus:text-destructive' : ''} ${item.className ?? ''}`}
+                      className={`cursor-pointer gap-2.5 py-2.5 px-3 ${item.danger ? 'text-error focus:text-error' : ''} ${item.className ?? ''} text-on-surface hover:bg-surface-container hover:text-on-surface rounded-full mx-1.5 my-0.5`}
                       onClick={() => handleMenuAction(item)}
                       disabled={item.disabled}
                     >

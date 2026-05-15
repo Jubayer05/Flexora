@@ -53,32 +53,31 @@ export function Pagination({
 
   return (
     <div
-      className={`flex flex-col items-center gap-3 sm:flex-row sm:items-center sm:justify-between mt-8 ${className}`}
+      className={`flex flex-col items-center gap-3 sm:flex-row sm:items-center sm:justify-between px-2 py-4 bg-surface-container/20 rounded-lg border border-outline-variant/20 ${className}`}
     >
       {/* Rows per page */}
       {showRowsPerPage && (
         <div className='flex items-center gap-2 order-2 sm:order-1'>
           <Label
             htmlFor='pagination-rows-per-page'
-            className='font-medium text-card-foreground text-xs sm:text-sm whitespace-nowrap'
-            style={{ fontFamily: 'Manrope' }}
+            className='font-medium text-on-surface-variant text-xs whitespace-nowrap'
           >
-            Rows
+            Rows per page
           </Label>
           <Select value={`${limit}`} onValueChange={(value) => setLimit(Number(value))}>
             <SelectTrigger
               size='sm'
               id='pagination-rows-per-page'
-              className='bg-card border-border w-20 sm:w-28 text-card-foreground justify-between'
+              className='bg-surface-container border-outline-variant w-20 text-foreground justify-between rounded-lg h-8'
             >
               <SelectValue placeholder={limit} />
             </SelectTrigger>
-            <SelectContent side='top' className='bg-card border-border'>
+            <SelectContent side='top' className='bg-popover border-outline-variant rounded-lg'>
               {pageSizeOptions.map((size) => (
                 <SelectItem
                   key={size}
                   value={`${size}`}
-                  className='hover:bg-accent focus:bg-accent text-card-foreground'
+                  className='hover:bg-muted focus:bg-muted text-on-surface'
                 >
                   {size}
                 </SelectItem>
@@ -89,66 +88,64 @@ export function Pagination({
       )}
       {/* Page info */}
       {showPageInfo && (
-        <div className='flex justify-center items-center order-1 sm:order-2 font-medium text-card-foreground text-xs sm:text-sm'>
-          <span style={{ fontFamily: 'Manrope' }}>
-            {page}/{totalPages}
+        <div className='flex justify-center items-center gap-2 order-1 sm:order-2 font-medium text-on-surface text-sm'>
+          <span>
+            Page <span className='font-semibold'>{page}</span> of <span className='font-semibold'>{totalPages}</span>
           </span>
           {total > 0 && (
-            <span
-              className='ml-2 text-muted-foreground hidden sm:inline'
-              style={{ fontFamily: 'Manrope' }}
-            >
-              ({total})
+            <span className='text-muted-foreground text-xs hidden sm:inline'>
+              ({total.toLocaleString()} total)
             </span>
           )}
         </div>
       )}
       {/* Navigation buttons */}
-      <div className='flex justify-center items-center gap-1 sm:gap-2 order-3'>
+      <div className='flex justify-center items-center gap-1 order-3'>
         {showFirstLastButtons && (
           <Button
             variant='outline'
-            className='sm:flex bg-card hover:bg-accent disabled:opacity-50 p-0 border-border w-7 sm:w-8 h-7 sm:h-8 text-card-foreground'
+            size='icon'
+            className='hover:bg-muted disabled:opacity-40 w-8 h-8 border-outline-variant text-on-surface-variant rounded-lg'
             onClick={goToFirstPage}
             disabled={!hasPrev}
           >
             <span className='sr-only'>Go to first page</span>
-            <ChevronsLeft className='w-3 sm:w-4 h-3 sm:h-4' />
+            <ChevronsLeft className='w-4 h-4' />
           </Button>
         )}
 
         <Button
           variant='outline'
-          className='bg-card hover:bg-accent disabled:opacity-50 border-border w-7 sm:w-8 h-7 sm:h-8 text-card-foreground'
           size='icon'
+          className='hover:bg-muted disabled:opacity-40 border-outline-variant w-8 h-8 text-on-surface-variant rounded-lg'
           onClick={prevPage}
           disabled={!hasPrev}
         >
           <span className='sr-only'>Go to previous page</span>
-          <ChevronLeft className='w-3 sm:w-4 h-3 sm:h-4' />
+          <ChevronLeft className='w-4 h-4' />
         </Button>
 
         <Button
           variant='outline'
-          className='bg-card hover:bg-accent disabled:opacity-50 border-border w-7 sm:w-8 h-7 sm:h-8 text-card-foreground'
           size='icon'
+          className='hover:bg-muted disabled:opacity-40 border-outline-variant w-8 h-8 text-on-surface-variant rounded-lg'
           onClick={nextPage}
           disabled={!hasNext}
         >
           <span className='sr-only'>Go to next page</span>
-          <ChevronRight className='w-3 sm:w-4 h-3 sm:h-4' />
+          <ChevronRight className='w-4 h-4' />
         </Button>
 
         {showFirstLastButtons && (
           <Button
             variant='outline'
-            className='sm:flex bg-card hover:bg-accent disabled:opacity-50 border-border w-7 sm:w-8 h-7 sm:h-8 text-card-foreground'
             size='icon'
+            className='hover:bg-muted disabled:opacity-40 border-outline-variant w-8 h-8 text-on-surface-variant rounded-lg'
             onClick={goToLastPage}
             disabled={!hasNext}
           >
             <span className='sr-only'>Go to last page</span>
-            <ChevronsRight className='w-3 sm:w-4 h-3 sm:h-4' />
+            <ChevronsRight className='w-4 h-4' />
           </Button>
         )}
       </div>

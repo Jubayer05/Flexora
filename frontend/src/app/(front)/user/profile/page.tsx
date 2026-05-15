@@ -40,11 +40,9 @@ export default function UserProfilePage() {
   const userData = JSON.parse(userCookie)
   const token = typeof document !== 'undefined' ? Cookies.get('token') : null
   const [guestEmail, setGuestEmail] = useState('')
-  // Use token (same as purchased-items/orders) so profile always fetches when logged in
   const { data } = useAsync(() => (token ? '/customer/profile' : null))
   const isGuestSession = !token && !!guestEmail
 
-  // Prefer API data (has totalOrders, totalSpent, rank from server); fallback to cookie for initial paint
   const profileData = data?.data ?? userData
 
   useEffect(() => {
@@ -70,35 +68,35 @@ export default function UserProfilePage() {
 
   if (!mounted) {
     return (
-      <div className='mx-auto max-w-4xl container animate-pulse'>
-        <div className='mb-8'>
-          <div className='mb-2 h-9 w-48 rounded bg-muted' />
-          <div className='h-5 w-72 rounded bg-muted' />
+      <div className='max-w-container-max mx-auto animate-pulse'>
+        <div className='mb-lg'>
+          <div className='mb-base h-9 w-48 rounded bg-surface-container-high' />
+          <div className='h-5 w-72 rounded bg-surface-container-high mt-sm' />
         </div>
-        <div className='h-96 rounded-lg bg-muted/50' />
+        <div className='h-96 rounded-xl bg-surface-container-high' />
       </div>
     )
   }
 
   if (isGuestSession) {
     return (
-      <div className='mx-auto max-w-4xl container'>
-        <div className='mb-8'>
-          <h1 className='mb-2 text-2xl font-bold text-foreground'>Your Profile</h1>
-          <p className='text-base text-muted-foreground'>
+      <div className='max-w-container-max mx-auto'>
+        <div className='mb-lg'>
+          <h1 className='mb-base text-xl font-bold text-on-surface'>Your Profile</h1>
+          <p className='text-base text-on-surface-variant'>
             Review your guest access and continue to your delivered items.
           </p>
         </div>
 
-        <Alert className='mb-6 border-amber-500/20 bg-amber-500/10'>
-          <AlertTriangle className='h-4 w-4 text-amber-500' />
-          <AlertTitle className='text-foreground'>You&apos;re logged in as a guest.</AlertTitle>
-          <AlertDescription className='space-y-4 text-muted-foreground'>
+        <Alert className='mb-gutter border-primary/20 bg-primary-container/10'>
+          <AlertTriangle className='h-4 w-4 text-primary' />
+          <AlertTitle className='text-on-surface'>You&apos;re logged in as a guest.</AlertTitle>
+          <AlertDescription className='space-y-md text-on-surface-variant'>
             <p>
               You can still view delivered purchases as a guest. Create an account with the same
               email when you want full dashboard tools, saved settings, and support tickets.
             </p>
-            <div className='flex flex-col gap-3 sm:flex-row'>
+            <div className='flex flex-col gap-sm sm:flex-row'>
               <Button onClick={() => router.push('/user/purchased-items')} className='sm:flex-1'>
                 <Package className='mr-2 h-4 w-4' />
                 Open Purchased Items
@@ -113,80 +111,80 @@ export default function UserProfilePage() {
           </AlertDescription>
         </Alert>
 
-        <Card className='bg-card backdrop-blur-sm mb-6 p-6 border-border'>
-          <div className='flex items-start gap-4 mb-6'>
+        <div className='glass-card rounded-xl p-lg mb-gutter'>
+          <div className='flex items-start gap-md mb-lg'>
             <div className='flex-shrink-0'>
-              <div className='w-20 h-20 sm:w-24 sm:h-24 rounded-full overflow-hidden bg-muted border-2 border-border flex items-center justify-center'>
-                <User className='w-10 h-10 sm:w-12 sm:h-12 text-muted-foreground' />
+              <div className='w-20 h-20 sm:w-24 sm:h-24 rounded-full overflow-hidden bg-surface-container-highest border-2 border-outline-variant flex items-center justify-center'>
+                <User className='w-10 h-10 sm:w-12 sm:h-12 text-on-surface-variant' />
               </div>
             </div>
             <div className='flex-1'>
-              <div className='flex flex-wrap items-center gap-3 mb-2'>
-                <h2 className='font-semibold text-card-foreground text-xl'>Guest User</h2>
-                <Badge className='bg-green-500 text-primary-foreground px-2 py-1 text-xs font-normal border-0'>
+              <div className='flex flex-wrap items-center gap-sm mb-base'>
+                <h2 className='font-semibold text-on-surface text-xl'>Guest User</h2>
+                <Badge className='bg-tertiary-container text-on-tertiary-container px-sm py-xs text-xs font-normal border-0'>
                   Active
                 </Badge>
-                <Badge className='bg-muted text-card-foreground px-2 py-1 text-xs font-normal border-0'>
+                <Badge className='bg-surface-container text-on-surface-variant px-sm py-xs text-xs font-normal border-0'>
                   Guest
                 </Badge>
               </div>
-              <div className='space-y-1'>
-                <p className='text-muted-foreground text-sm'>Email: {guestEmail}</p>
-              <p className='text-muted-foreground text-sm'>Access: Guest dashboard</p>
+              <div className='space-y-xs'>
+                <p className='text-on-surface-variant text-sm'>Email: {guestEmail}</p>
+              <p className='text-on-surface-variant text-sm'>Access: Guest dashboard</p>
               </div>
             </div>
           </div>
 
-          <Separator className='bg-border mb-6' />
+          <Separator className='bg-outline-variant mb-lg' />
 
-          <div className='gap-6 grid grid-cols-1 md:grid-cols-2'>
-            <div className='space-y-2'>
-              <div className='flex items-center gap-2 font-medium text-card-foreground'>
+          <div className='gap-lg grid grid-cols-1 md:grid-cols-2'>
+            <div className='space-y-sm'>
+              <div className='flex items-center gap-sm font-medium text-on-surface'>
                 <Mail className='w-4 h-4' />
                 Email Address
               </div>
-              <p className='pl-6 text-card-foreground text-sm'>{guestEmail}</p>
+              <p className='pl-lg text-on-surface text-sm'>{guestEmail}</p>
             </div>
 
-            <div className='space-y-2'>
-              <div className='flex items-center gap-2 font-medium text-card-foreground'>
+            <div className='space-y-sm'>
+              <div className='flex items-center gap-sm font-medium text-on-surface'>
                 <Shield className='w-4 h-4' />
                 Access Level
               </div>
-              <p className='pl-6 text-card-foreground text-sm'>Limited guest dashboard access</p>
+              <p className='pl-lg text-on-surface text-sm'>Limited guest dashboard access</p>
             </div>
           </div>
-        </Card>
+        </div>
 
-        <div className='gap-6 grid grid-cols-1 lg:grid-cols-2'>
-          <Card className='bg-background/50 backdrop-blur-sm p-6 border-border'>
-            <h3 className='mb-4 font-semibold text-card-foreground text-lg'>Account Status</h3>
-            <div className='gap-4 grid grid-cols-2 sm:grid-cols-2'>
-              <div className='bg-muted/50 p-4 border border-border rounded-lg text-center'>
-                <div className='mb-1 font-semibold text-card-foreground text-2xl'>Guest</div>
-                <div className='text-muted-foreground text-sm'>Account Type</div>
+        <div className='gap-lg grid grid-cols-1 lg:grid-cols-2'>
+          <div className='glass-card rounded-xl p-lg'>
+            <h3 className='mb-md font-semibold text-on-surface text-lg'>Account Status</h3>
+            <div className='gap-md grid grid-cols-2 sm:grid-cols-2'>
+              <div className='bg-surface-container p-md border border-outline-variant rounded-lg text-center'>
+                <div className='mb-xs font-semibold text-on-surface text-2xl'>Guest</div>
+                <div className='text-on-surface-variant text-sm'>Account Type</div>
               </div>
-              <div className='bg-muted/50 p-4 border border-border rounded-lg text-center'>
-                <div className='mb-1 font-semibold text-primary text-2xl'>Active</div>
-                <div className='text-muted-foreground text-sm'>Session Status</div>
+              <div className='bg-surface-container p-md border border-outline-variant rounded-lg text-center'>
+                <div className='mb-xs font-semibold text-primary text-2xl'>Active</div>
+                <div className='text-on-surface-variant text-sm'>Session Status</div>
               </div>
-              <div className='bg-muted/50 p-4 border border-border rounded-lg text-center'>
-                <div className='mb-1 font-semibold text-accent-foreground text-2xl'>OTP</div>
-                <div className='text-muted-foreground text-sm'>Verified Access</div>
+              <div className='bg-surface-container p-md border border-outline-variant rounded-lg text-center'>
+                <div className='mb-xs font-semibold text-tertiary text-2xl'>OTP</div>
+                <div className='text-on-surface-variant text-sm'>Verified Access</div>
               </div>
-              <div className='bg-muted/50 p-4 border border-border rounded-lg text-center'>
-                <div className='mb-1 font-semibold text-card-foreground text-2xl'>2</div>
-                <div className='text-muted-foreground text-sm'>Available Sections</div>
+              <div className='bg-surface-container p-md border border-outline-variant rounded-lg text-center'>
+                <div className='mb-xs font-semibold text-on-surface text-2xl'>2</div>
+                <div className='text-on-surface-variant text-sm'>Available Sections</div>
               </div>
             </div>
-          </Card>
+          </div>
 
-          <Card className='bg-background/50 backdrop-blur-sm p-6 border-border'>
-            <h3 className='mb-4 font-semibold text-card-foreground text-lg'>
+          <div className='glass-card rounded-xl p-lg'>
+            <h3 className='mb-md font-semibold text-on-surface text-lg'>
               Keep your purchases connected to one account
             </h3>
-            <div className='space-y-4'>
-              <p className='text-muted-foreground text-sm'>
+            <div className='space-y-md'>
+              <p className='text-on-surface-variant text-sm'>
                 Sign up with the same email to save your purchases, manage account settings, and
                 open support tickets from any device.
               </p>
@@ -194,16 +192,16 @@ export default function UserProfilePage() {
                 Sign Up
               </Button>
             </div>
-          </Card>
+          </div>
         </div>
 
-        <Card className='bg-background/50 backdrop-blur-sm mt-6 p-6 border-border'>
-          <h3 className='mb-4 font-semibold text-card-foreground text-lg'>What guest access includes</h3>
-          <div className='space-y-4 text-sm text-muted-foreground'>
+        <div className='glass-card rounded-xl p-lg mt-lg'>
+          <h3 className='mb-md font-semibold text-on-surface text-lg'>What guest access includes</h3>
+          <div className='space-y-md text-sm text-on-surface-variant'>
             <p>You can review purchases and download delivered items from your dashboard.</p>
             <p>Subscriptions, tickets, profile settings, and full account tools unlock after signup with the same email.</p>
           </div>
-        </Card>
+        </div>
       </div>
     )
   }
@@ -229,59 +227,55 @@ export default function UserProfilePage() {
   const getRankColor = (rank: string) => {
     switch (rank) {
       case 'NEW':
-        return 'bg-blue-500'
+        return 'bg-tertiary-container text-on-tertiary-container'
       case 'BRONZE':
-        return 'bg-orange-600'
+        return 'bg-secondary-container text-on-secondary-container'
       case 'SILVER':
-        return 'bg-gray-500'
+        return 'bg-surface-container-highest text-on-surface-variant'
       case 'GOLD':
-        return 'bg-yellow-500'
+        return 'bg-primary-container text-on-primary-container'
       case 'PLATINUM':
-        return 'bg-purple-500'
+        return 'bg-tertiary-container text-on-tertiary-container'
       default:
-        return 'bg-gray-500'
+        return 'bg-surface-container text-on-surface-variant'
     }
   }
 
   return (
-    <div className='mx-auto max-w-4xl container'>
-      {/* Header */}
-      <div className='mb-8'>
-        <h1 className='mb-2 text-2xl font-bold text-foreground'>Your Profile</h1>
-        <p className='text-base text-muted-foreground'>
+    <div className='max-w-container-max mx-auto'>
+      <div className='mb-lg'>
+        <h1 className='mb-base text-xl font-bold text-on-surface'>Your Profile</h1>
+        <p className='text-base text-on-surface-variant'>
           Manage your account details, balance, rewards, and recent activity.
         </p>
       </div>
 
-      {/* Balance Card - Prominent Display */}
-      <div className='mb-20 z-10'>
+      <div className='mb-xl z-10'>
         <BalanceProfileCard />
       </div>
 
-      {/* Rank & Rewards Dashboard */}
-      <Card className='mb-6 bg-card/80 backdrop-blur-sm border-border overflow-hidden py-0'>
-        <div className='bg-gradient-to-br from-primary/10 via-background to-background p-6'>
-          <h3 className='mb-1 font-semibold text-card-foreground text-lg flex items-center gap-2'>
+      <div className='glass-card rounded-xl overflow-hidden mb-gutter'>
+        <div className='bg-gradient-to-br from-primary/10 via-surface to-surface p-lg'>
+          <h3 className='mb-xs font-semibold text-on-surface text-lg flex items-center gap-sm'>
             <Trophy className='w-5 h-5 text-primary' />
             Rank & Rewards
           </h3>
-          <p className='text-muted-foreground text-sm mb-5'>
+          <p className='text-on-surface-variant text-sm mb-md'>
             See your current tier, progress, and active benefits.
           </p>
 
-          {/* Progress bar full width (when next rank exists) */}
           {profileData?.nextRankName && (
-            <div className='mb-6 space-y-2'>
+            <div className='mb-lg space-y-sm'>
               <div className='flex justify-between text-sm'>
-                <span className='text-muted-foreground'>
+                <span className='text-on-surface-variant'>
                   ${Number(profileData?.totalSpent ?? 0).toFixed(0)} spent
                 </span>
-                <span className='text-muted-foreground'>
+                <span className='text-on-surface-variant'>
                   ${Number(profileData?.nextRankMinSpending ?? 0).toFixed(0)} to{' '}
                   {profileData.nextRankName}
                 </span>
               </div>
-              <div className='h-2.5 w-full rounded-full bg-muted overflow-hidden'>
+              <div className='h-2.5 w-full rounded-full bg-surface-container overflow-hidden'>
                 <div
                   className='h-full rounded-full bg-primary transition-all duration-500'
                   style={{
@@ -296,7 +290,7 @@ export default function UserProfilePage() {
                   }}
                 />
               </div>
-              <p className='text-muted-foreground text-xs'>
+              <p className='text-on-surface-variant text-xs'>
                 Spend $
                 {Math.max(
                   0,
@@ -308,17 +302,15 @@ export default function UserProfilePage() {
             </div>
           )}
 
-          {/* Left: Current rank + benefits | Right: Next rank + benefits */}
-          <div className='gap-6 grid grid-cols-1 lg:grid-cols-2'>
-            {/* Left: Current Rank & benefits */}
-            <div className='space-y-4'>
+          <div className='gap-lg grid grid-cols-1 lg:grid-cols-2'>
+            <div className='space-y-md'>
               <div>
-                <p className='text-muted-foreground text-xs font-medium uppercase tracking-wider mb-2'>
+                <p className='text-on-surface-variant text-xs font-medium uppercase tracking-wider mb-sm'>
                   Current Rank
                 </p>
-                <div className='inline-flex items-center gap-2 rounded-lg px-4 py-3 border bg-muted/40 border-border'>
+                <div className='inline-flex items-center gap-sm rounded-lg px-md py-sm border bg-surface-container'>
                   {profileData?.rankIcon ? (
-                    <span className='flex h-10 w-10 flex-shrink-0 items-center justify-center overflow-hidden rounded-md bg-muted/50'>
+                    <span className='flex h-10 w-10 flex-shrink-0 items-center justify-center overflow-hidden rounded-md bg-surface-container-high'>
                       <CustomImage
                         src={profileData.rankIcon}
                         alt={profileData?.rank || 'Rank'}
@@ -331,28 +323,28 @@ export default function UserProfilePage() {
                   ) : (
                     <Star className='w-6 h-6 flex-shrink-0 text-primary' />
                   )}
-                  <span className='font-bold text-card-foreground text-xl'>
+                  <span className='font-bold text-on-surface text-xl'>
                     {profileData?.rank || 'NEW'}
                   </span>
                 </div>
                 {profileData?.discountPercent != null && profileData.discountPercent > 0 && (
-                  <p className='mt-2 text-muted-foreground text-sm'>
+                  <p className='mt-sm text-on-surface-variant text-sm'>
                     {profileData.discountPercent}% discount on orders
                   </p>
                 )}
               </div>
               <div>
-                <p className='text-muted-foreground text-xs font-medium uppercase tracking-wider mb-2'>
+                <p className='text-on-surface-variant text-xs font-medium uppercase tracking-wider mb-sm'>
                   Current rank benefits
                 </p>
                 {profileData?.rankBenefits && profileData.rankBenefits.length > 0 ? (
-                  <ul className='gap-2 flex flex-col'>
+                  <ul className='gap-sm flex flex-col'>
                     {profileData.rankBenefits.map((benefit: string, index: number) => (
                       <li
                         key={index}
-                        className='flex items-center gap-3 text-card-foreground text-sm'
+                        className='flex items-center gap-sm text-on-surface text-sm'
                       >
-                        <span className='flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full bg-primary/20 text-primary'>
+                        <span className='flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full bg-primary-container text-on-primary-container'>
                           <Check className='w-3 h-3' />
                         </span>
                         {benefit}
@@ -360,37 +352,36 @@ export default function UserProfilePage() {
                     ))}
                   </ul>
                 ) : (
-                  <p className='text-muted-foreground text-sm'>No benefits listed for this rank.</p>
+                  <p className='text-on-surface-variant text-sm'>No benefits listed for this rank.</p>
                 )}
               </div>
             </div>
 
-            {/* Right: Next Rank & benefits */}
-            <div className='space-y-4'>
+            <div className='space-y-md'>
               <div>
-                <p className='text-muted-foreground text-xs font-medium uppercase tracking-wider mb-2'>
+                <p className='text-on-surface-variant text-xs font-medium uppercase tracking-wider mb-sm'>
                   {profileData?.nextRankName ? `Next rank: ${profileData.nextRankName}` : 'Next rank'}
                 </p>
                 {profileData?.nextRankName ? (
                   <>
-                    <div className='rounded-lg border border-primary/30 bg-primary/5 px-4 py-3'>
+                    <div className='rounded-lg border border-primary/30 bg-primary/5 px-md py-sm'>
                       <span className='font-semibold text-primary text-lg'>
                         {profileData.nextRankName}
                       </span>
                     </div>
                     {profileData?.nextRankDiscount != null && profileData.nextRankDiscount > 0 && (
-                      <p className='mt-2 text-muted-foreground text-sm'>
+                      <p className='mt-sm text-on-surface-variant text-sm'>
                         {profileData.nextRankDiscount}% discount on orders
                       </p>
                     )}
                   </>
                 ) : (
-                  <div className='rounded-lg bg-primary/10 border border-primary/20 px-4 py-3'>
-                    <p className='font-medium text-primary text-sm flex items-center gap-2'>
+                  <div className='rounded-lg bg-primary/10 border border-primary/20 px-md py-sm'>
+                    <p className='font-medium text-primary text-sm flex items-center gap-sm'>
                       <Trophy className='w-4 h-4' />
                       You&apos;re at the highest rank
                     </p>
-                    <p className='text-muted-foreground text-xs mt-1'>
+                    <p className='text-on-surface-variant text-xs mt-xs'>
                       Keep enjoying your current benefits
                     </p>
                   </div>
@@ -398,15 +389,15 @@ export default function UserProfilePage() {
               </div>
               {profileData?.nextRankName && (
                 <div>
-                  <p className='text-muted-foreground text-xs font-medium uppercase tracking-wider mb-2'>
+                  <p className='text-on-surface-variant text-xs font-medium uppercase tracking-wider mb-sm'>
                     Benefits at next rank
                   </p>
                   {profileData?.nextRankBenefits && profileData.nextRankBenefits.length > 0 ? (
-                    <ul className='gap-2 flex flex-col'>
+                    <ul className='gap-sm flex flex-col'>
                       {profileData.nextRankBenefits.map((benefit: string, index: number) => (
                         <li
                           key={index}
-                          className='flex items-center gap-3 text-muted-foreground text-sm'
+                          className='flex items-center gap-sm text-on-surface-variant text-sm'
                         >
                           <Check className='w-3.5 h-3.5 flex-shrink-0 text-primary/80' />
                           {benefit}
@@ -414,21 +405,19 @@ export default function UserProfilePage() {
                       ))}
                     </ul>
                   ) : (
-                    <p className='text-muted-foreground text-sm'>No additional benefits listed.</p>
+                    <p className='text-on-surface-variant text-sm'>No additional benefits listed.</p>
                   )}
                 </div>
               )}
             </div>
           </div>
         </div>
-      </Card>
+      </div>
 
-      {/* Profile Card */}
-      <Card className='bg-card backdrop-blur-sm mb-6 p-6 border-border'>
-        <div className='flex items-start gap-4 mb-6'>
-          {/* Profile image */}
+      <div className='glass-card rounded-xl p-lg mb-gutter'>
+        <div className='flex items-start gap-md mb-lg'>
           <div className='flex-shrink-0'>
-            <div className='w-20 h-20 sm:w-24 sm:h-24 rounded-full overflow-hidden bg-muted border-2 border-border flex items-center justify-center'>
+            <div className='w-20 h-20 sm:w-24 sm:h-24 rounded-full overflow-hidden bg-surface-container-highest border-2 border-outline-variant flex items-center justify-center'>
               {profileData?.photoUrl ? (
                 <CustomImage
                   src={profileData.photoUrl}
@@ -439,20 +428,20 @@ export default function UserProfilePage() {
                   unoptimized
                 />
               ) : (
-                <User className='w-10 h-10 sm:w-12 sm:h-12 text-muted-foreground' />
+                <User className='w-10 h-10 sm:w-12 sm:h-12 text-on-surface-variant' />
               )}
             </div>
           </div>
           <div className='flex-1'>
-            <div className='flex flex-wrap items-center gap-3 mb-2'>
-              <h2 className='font-semibold text-card-foreground text-xl'>{getFullName()}</h2>
+            <div className='flex flex-wrap items-center gap-sm mb-base'>
+              <h2 className='font-semibold text-on-surface text-xl'>{getFullName()}</h2>
               <Badge
                 className={`
-                  px-2 py-1 text-xs font-normal border-0
+                  px-sm py-xs text-xs font-normal border-0
                   ${
                     profileData?.isActive
-                      ? 'bg-green-500 text-primary-foreground font-medium'
-                      : 'bg-destructive text-primary-foreground'
+                      ? 'bg-tertiary-container text-on-tertiary-container font-medium'
+                      : 'bg-error-container text-on-error'
                   }
                 `}
               >
@@ -460,246 +449,233 @@ export default function UserProfilePage() {
               </Badge>
               {profileData?.rank && (
                 <Badge
-                  className={`px-2 py-1 text-xs font-normal border-0 ${getRankColor(
+                  className={`px-sm py-xs text-xs font-normal border-0 ${getRankColor(
                     profileData.rank
-                  )} text-primary-foreground`}
+                  )}`}
                 >
                   {profileData.rank}
                 </Badge>
               )}
               {profileData?.isVerified && (
-                <Badge className='bg-primary px-2 py-1 border-0 font-normal text-primary-foreground text-xs'>
+                <Badge className='bg-primary px-sm py-xs border-0 font-normal text-on-primary text-xs'>
                   <Verified className='mr-1 w-3 h-3' />
                   Verified
                 </Badge>
               )}
               {profileData?.isBanned && (
-                <Badge className='bg-destructive px-2 py-1 border-0 font-normal text-primary-foreground text-xs'>
+                <Badge className='bg-error-container px-sm py-xs border-0 font-normal text-on-error text-xs'>
                   <Ban className='mr-1 w-3 h-3' />
                   Banned
                 </Badge>
               )}
             </div>
-            <div className='space-y-1'>
-              <p className='text-muted-foreground text-sm'>User ID: #{profileData?.id}</p>
-              <p className='text-muted-foreground text-sm'>Role: {profileData?.role || 'N/A'}</p>
+            <div className='space-y-xs'>
+              <p className='text-on-surface-variant text-sm'>User ID: #{profileData?.id}</p>
+              <p className='text-on-surface-variant text-sm'>Role: {profileData?.role || 'N/A'}</p>
               {profileData?.username && (
-                <p className='text-muted-foreground text-sm'>@{profileData.username}</p>
+                <p className='text-on-surface-variant text-sm'>@{profileData.username}</p>
               )}
             </div>
           </div>
         </div>
 
-        <Separator className='bg-border mb-6' />
+        <Separator className='bg-outline-variant mb-lg' />
 
-        {/* User Details Grid */}
-        <div className='gap-6 grid grid-cols-1 md:grid-cols-2'>
-          {/* Personal Information */}
-          <div className='space-y-2'>
-            <div className='flex items-center gap-2 font-medium text-card-foreground'>
+        <div className='gap-lg grid grid-cols-1 md:grid-cols-2'>
+          <div className='space-y-sm'>
+            <div className='flex items-center gap-sm font-medium text-on-surface'>
               <User className='w-4 h-4' />
               Full Name
             </div>
-            <p className='pl-6 text-card-foreground text-sm'>{getFullName()}</p>
+            <p className='pl-lg text-on-surface text-sm'>{getFullName()}</p>
           </div>
 
-          {/* Email */}
-          <div className='space-y-2'>
-            <div className='flex items-center gap-2 font-medium text-card-foreground'>
+          <div className='space-y-sm'>
+            <div className='flex items-center gap-sm font-medium text-on-surface'>
               <Mail className='w-4 h-4' />
               Email Address
             </div>
-            <div className='space-y-1 pl-6'>
-              <p className='text-card-foreground text-sm'>{profileData?.email}</p>
+            <div className='space-y-xs pl-lg'>
+              <p className='text-on-surface text-sm'>{profileData?.email}</p>
             </div>
           </div>
 
-          {/* Phone */}
           {profileData?.phone && (
-            <div className='space-y-2'>
-              <div className='flex items-center gap-2 font-medium text-card-foreground'>
+            <div className='space-y-sm'>
+              <div className='flex items-center gap-sm font-medium text-on-surface'>
                 <Phone className='w-4 h-4' />
                 Phone Number
               </div>
-              <p className='pl-6 text-card-foreground text-sm'>{profileData.phone}</p>
+              <p className='pl-lg text-on-surface text-sm'>{profileData.phone}</p>
             </div>
           )}
 
-          {/* Country */}
           {profileData?.country && (
-            <div className='space-y-2'>
-              <div className='flex items-center gap-2 font-medium text-card-foreground'>
+            <div className='space-y-sm'>
+              <div className='flex items-center gap-sm font-medium text-on-surface'>
                 <MapPin className='w-4 h-4' />
                 Country
               </div>
-              <p className='pl-6 text-card-foreground text-sm'>{profileData.country}</p>
+              <p className='pl-lg text-on-surface text-sm'>{profileData.country}</p>
             </div>
           )}
 
-          {/* Telegram */}
           {profileData?.telegramUsername && (
-            <div className='space-y-2'>
-              <div className='flex items-center gap-2 font-medium text-card-foreground'>
+            <div className='space-y-sm'>
+              <div className='flex items-center gap-sm font-medium text-on-surface'>
                 <Globe className='w-4 h-4' />
                 Telegram
               </div>
-              <p className='pl-6 text-card-foreground text-sm'>{profileData.telegramUsername}</p>
+              <p className='pl-lg text-on-surface text-sm'>{profileData.telegramUsername}</p>
             </div>
           )}
 
-          {/* Customer Rank */}
-          <div className='space-y-2'>
-            <div className='flex items-center gap-2 font-medium text-card-foreground'>
+          <div className='space-y-sm'>
+            <div className='flex items-center gap-sm font-medium text-on-surface'>
               <Star className='w-4 h-4' />
               Customer Rank
             </div>
-            <p className='pl-6 text-card-foreground text-sm'>{profileData?.rank || 'NEW'}</p>
+            <p className='pl-lg text-on-surface text-sm'>{profileData?.rank || 'NEW'}</p>
           </div>
 
-          {/* Account Created */}
-          <div className='space-y-2'>
-            <div className='flex items-center gap-2 font-medium text-card-foreground'>
+          <div className='space-y-sm'>
+            <div className='flex items-center gap-sm font-medium text-on-surface'>
               <CalendarDays className='w-4 h-4' />
               Account Created
             </div>
-            <p className='pl-6 text-card-foreground text-sm'>{formatDate(profileData?.createdAt)}</p>
+            <p className='pl-lg text-on-surface text-sm'>{formatDate(profileData?.createdAt)}</p>
           </div>
 
-          {/* Last Login */}
-          <div className='space-y-2'>
-            <div className='flex items-center gap-2 font-medium text-card-foreground'>
+          <div className='space-y-sm'>
+            <div className='flex items-center gap-sm font-medium text-on-surface'>
               <UserCheck className='w-4 h-4' />
               Last Login
             </div>
-            <div className='space-y-1 pl-6'>
-              <p className='text-card-foreground'>{formatDate(profileData?.lastLoginAt)}</p>
+            <div className='space-y-xs pl-lg'>
+              <p className='text-on-surface'>{formatDate(profileData?.lastLoginAt)}</p>
               {profileData?.lastLoginDevice && (
-                <p className='text-muted-foreground text-xs'>Device: {profileData.lastLoginDevice}</p>
+                <p className='text-on-surface-variant text-xs'>Device: {profileData.lastLoginDevice}</p>
               )}
               {profileData?.lastLoginIp && (
-                <p className='text-muted-foreground text-xs'>IP: {profileData.lastLoginIp}</p>
+                <p className='text-on-surface-variant text-xs'>IP: {profileData.lastLoginIp}</p>
               )}
             </div>
           </div>
         </div>
-      </Card>
+      </div>
 
-      {/* Account Status & Statistics */}
-      <div className='gap-6 grid grid-cols-1 lg:grid-cols-2'>
-        {/* Account Status Card */}
-        <Card className='bg-background/50 backdrop-blur-sm p-6 border-border'>
-          <h3 className='mb-4 font-semibold text-card-foreground text-lg'>Account Status</h3>
-          <div className='gap-4 grid grid-cols-2 sm:grid-cols-2'>
-            <div className='bg-muted/50 p-4 border border-border rounded-lg text-center'>
-              <div className='mb-1 font-semibold text-card-foreground text-2xl'>#{profileData?.id}</div>
-              <div className='text-muted-foreground text-sm'>User ID</div>
+      <div className='gap-lg grid grid-cols-1 lg:grid-cols-2'>
+        <div className='glass-card rounded-xl p-lg'>
+          <h3 className='mb-md font-semibold text-on-surface text-lg'>Account Status</h3>
+          <div className='gap-md grid grid-cols-2 sm:grid-cols-2'>
+            <div className='bg-surface-container p-md border border-outline-variant rounded-lg text-center'>
+              <div className='mb-xs font-semibold text-on-surface text-2xl'>#{profileData?.id}</div>
+              <div className='text-on-surface-variant text-sm'>User ID</div>
             </div>
-            <div className='bg-muted/50 p-4 border border-border rounded-lg text-center'>
+            <div className='bg-surface-container p-md border border-outline-variant rounded-lg text-center'>
               <div
-                className={`font-semibold text-2xl mb-1 ${
-                  profileData?.isActive ? 'text-primary' : 'text-destructive'
+                className={`font-semibold text-2xl mb-xs ${
+                  profileData?.isActive ? 'text-primary' : 'text-error'
                 }`}
               >
                 {profileData?.isActive ? 'Active' : 'Inactive'}
               </div>
-              <div className='text-muted-foreground text-sm'>Account Status</div>
+              <div className='text-on-surface-variant text-sm'>Account Status</div>
             </div>
-            <div className='bg-muted/50 p-4 border border-border rounded-lg text-center'>
+            <div className='bg-surface-container p-md border border-outline-variant rounded-lg text-center'>
               <div
-                className={`font-semibold text-2xl mb-1 ${
-                  profileData?.isVerified ? 'text-primary' : 'text-accent-foreground'
+                className={`font-semibold text-2xl mb-xs ${
+                  profileData?.isVerified ? 'text-primary' : 'text-tertiary'
                 }`}
               >
-                {profileData?.isVerified ? '✓' : '⚠'}
+                {profileData?.isVerified ? 'Yes' : 'No'}
               </div>
-              <div className='text-muted-foreground text-sm'>Verification</div>
+              <div className='text-on-surface-variant text-sm'>Verification</div>
             </div>
-            <div className='bg-muted/50 p-4 border border-border rounded-lg text-center'>
+            <div className='bg-surface-container p-md border border-outline-variant rounded-lg text-center'>
               <div
-                className={`font-semibold text-2xl mb-1 ${
-                  profileData?.isBanned ? 'text-destructive' : 'text-primary'
+                className={`font-semibold text-2xl mb-xs ${
+                  profileData?.isBanned ? 'text-error' : 'text-primary'
                 }`}
               >
-                {profileData?.isBanned ? '⚠' : '✓'}
+                {profileData?.isBanned ? 'No' : 'OK'}
               </div>
-              <div className='text-muted-foreground text-sm'>Account Standing</div>
+              <div className='text-on-surface-variant text-sm'>Account Standing</div>
             </div>
           </div>
-        </Card>
+        </div>
 
-        {/* Order Statistics Card */}
-        <Card className='bg-background/50 backdrop-blur-sm p-6 border-border'>
-          <h3 className='mb-4 font-semibold text-card-foreground text-lg'>Order Statistics</h3>
-          <div className='gap-4 grid grid-cols-2 sm:grid-cols-2'>
-            <div className='bg-muted/50 p-4 border border-border rounded-lg text-center'>
-              <div className='flex justify-center items-center gap-2 mb-2'>
-                <ShoppingBag className='w-5 h-5 text-blue-600 dark:text-blue-400' />
-                <div className='font-semibold text-card-foreground text-2xl'>
+        <div className='glass-card rounded-xl p-lg'>
+          <h3 className='mb-md font-semibold text-on-surface text-lg'>Order Statistics</h3>
+          <div className='gap-md grid grid-cols-2 sm:grid-cols-2'>
+            <div className='bg-surface-container p-md border border-outline-variant rounded-lg text-center'>
+              <div className='flex justify-center items-center gap-sm mb-sm'>
+                <ShoppingBag className='w-5 h-5 text-tertiary' />
+                <div className='font-semibold text-on-surface text-2xl'>
                   {profileData?.totalOrders || 0}
                 </div>
               </div>
-              <div className='text-muted-foreground text-sm'>Total Orders</div>
+              <div className='text-on-surface-variant text-sm'>Total Orders</div>
             </div>
-            <div className='bg-muted/50 p-4 border border-border rounded-lg text-center'>
-              <div className='flex justify-center items-center gap-2 mb-2'>
+            <div className='bg-surface-container p-md border border-outline-variant rounded-lg text-center'>
+              <div className='flex justify-center items-center gap-sm mb-sm'>
                 <DollarSign className='w-5 h-5 text-primary' />
-                <div className='font-semibold text-card-foreground text-2xl'>
+                <div className='font-semibold text-on-surface text-2xl'>
                   ${profileData?.totalSpent || '0'}
                 </div>
               </div>
-              <div className='text-muted-foreground text-sm'>Total Spent</div>
+              <div className='text-on-surface-variant text-sm'>Total Spent</div>
             </div>
-            <div className='bg-muted/50 p-4 border border-border rounded-lg text-center'>
-              <div className='flex justify-center items-center gap-2 mb-2'>
-                <Star className='w-5 h-5 text-yellow-600 dark:text-yellow-400' />
-                <div className='font-semibold text-card-foreground text-2xl'>
+            <div className='bg-surface-container p-md border border-outline-variant rounded-lg text-center'>
+              <div className='flex justify-center items-center gap-sm mb-sm'>
+                <Star className='w-5 h-5 text-secondary' />
+                <div className='font-semibold text-on-surface text-2xl'>
                   {profileData?.rank || 'NEW'}
                 </div>
               </div>
-              <div className='text-muted-foreground text-sm'>Customer Rank</div>
+              <div className='text-on-surface-variant text-sm'>Customer Rank</div>
             </div>
-            <div className='bg-muted/50 p-4 border border-border rounded-lg text-center'>
-              <div className='flex justify-center items-center gap-2 mb-2'>
-                <Shield className='w-5 h-5 text-purple-600 dark:text-purple-400' />
-                <div className='font-semibold text-card-foreground text-2xl'>
+            <div className='bg-surface-container p-md border border-outline-variant rounded-lg text-center'>
+              <div className='flex justify-center items-center gap-sm mb-sm'>
+                <Shield className='w-5 h-5 text-tertiary-container' />
+                <div className='font-semibold text-on-surface text-2xl'>
                   {profileData?.discountPercent || 0}%
                 </div>
               </div>
-              <div className='text-muted-foreground text-sm'>Discount Rate</div>
+              <div className='text-on-surface-variant text-sm'>Discount Rate</div>
             </div>
           </div>
-        </Card>
+        </div>
       </div>
 
-      {/* Additional Information */}
       {(profileData?.note ||
         profileData?.banReason ||
         (profileData?.tags && profileData.tags.length > 0)) && (
-        <Card className='bg-background/50 backdrop-blur-sm mt-6 p-6 border-border'>
-          <h3 className='mb-4 font-semibold text-card-foreground text-lg'>Additional Information</h3>
-          <div className='space-y-4'>
+        <div className='glass-card rounded-xl p-lg mt-lg'>
+          <h3 className='mb-md font-semibold text-on-surface text-lg'>Additional Information</h3>
+          <div className='space-y-md'>
             {profileData?.note && (
               <div>
-                <h4 className='mb-2 font-medium text-card-foreground'>Note</h4>
-                <p className='text-card-foreground'>{profileData.note}</p>
+                <h4 className='mb-sm font-medium text-on-surface'>Note</h4>
+                <p className='text-on-surface'>{profileData.note}</p>
               </div>
             )}
             {profileData?.banReason && (
               <div>
-                <h4 className='mb-2 font-medium text-red-600 dark:text-red-400'>Ban Reason</h4>
-                <p className='text-red-600/90 dark:text-red-300'>{profileData.banReason}</p>
+                <h4 className='mb-sm font-medium text-error'>Ban Reason</h4>
+                <p className='text-error/90'>{profileData.banReason}</p>
               </div>
             )}
             {profileData?.tags && profileData.tags.length > 0 && (
               <div>
-                <h4 className='mb-2 font-medium text-card-foreground'>Tags</h4>
-                <div className='flex flex-wrap gap-2'>
+                <h4 className='mb-sm font-medium text-on-surface'>Tags</h4>
+                <div className='flex flex-wrap gap-sm'>
                   {profileData.tags
                     .filter((tag: string) => tag.trim())
                     .map((tag: string, index: number) => (
                       <Badge
                         key={index}
-                        className='bg-blue-500/20 border-blue-500/30 text-blue-600 dark:text-blue-300'
+                        className='bg-tertiary-container/20 border border-tertiary text-tertiary'
                       >
                         {tag}
                       </Badge>
@@ -708,10 +684,9 @@ export default function UserProfilePage() {
               </div>
             )}
           </div>
-        </Card>
+        </div>
       )}
 
-      {/* Topup History */}
       <TopupHistory />
     </div>
   )

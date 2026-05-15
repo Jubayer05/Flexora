@@ -30,14 +30,11 @@ export function UserBreadcrumbs() {
 
   const segments = pathname.split('/').filter(Boolean)
 
-  // Only show breadcrumbs for /user routes
   if (!segments.length || segments[0] !== 'user') return null
 
-  // Skip the leading 'user' segment so we don't render "Dashboard" twice
   const childSegments = segments.slice(1)
 
   const items = childSegments.map((segment, index) => {
-    // href is always /user/... built from the child segments
     const href = '/user/' + childSegments.slice(0, index + 1).join('/')
     const label =
       LABEL_OVERRIDES[segment] ||
@@ -51,24 +48,23 @@ export function UserBreadcrumbs() {
   })
 
   return (
-    <Breadcrumb className='mb-3 text-xs sm:text-sm'>
+    <Breadcrumb className='mb-gutter text-xs sm:text-sm'>
       <BreadcrumbList>
-        {/* Home / User root */}
         <BreadcrumbItem>
           <BreadcrumbLink asChild>
-            <Link href='/user'>Dashboard</Link>
+            <Link href='/user' className='text-on-surface-variant hover:text-on-surface'>Dashboard</Link>
           </BreadcrumbLink>
         </BreadcrumbItem>
 
         {items.map((item) => (
           <span key={item.href} className='inline-flex items-center'>
-            <BreadcrumbSeparator />
+            <BreadcrumbSeparator className='text-on-surface-variant' />
             <BreadcrumbItem>
               {item.isLast ? (
-                <BreadcrumbPage>{item.label}</BreadcrumbPage>
+                <BreadcrumbPage className='text-on-surface'>{item.label}</BreadcrumbPage>
               ) : (
                 <BreadcrumbLink asChild>
-                  <Link href={item.href}>{item.label}</Link>
+                  <Link href={item.href} className='text-on-surface-variant hover:text-on-surface'>{item.label}</Link>
                 </BreadcrumbLink>
               )}
             </BreadcrumbItem>

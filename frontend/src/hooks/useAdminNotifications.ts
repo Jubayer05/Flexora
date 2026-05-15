@@ -1,9 +1,11 @@
 'use client'
 
 import { usePermissions } from '@/components/providers/PermissionProvider'
+import { useMounted } from '@/hooks/useMounted'
 import { showError } from '@/lib/errMsg'
 import requests from '@/services/network/http'
 import { AdminNotification } from '@/types/notification'
+import Cookies from 'js-cookie'
 import { useCallback } from 'react'
 import { toast } from 'sonner'
 import useSWR from 'swr'
@@ -29,15 +31,18 @@ const NOTIFICATION_SWR_KEY =
   '/admin/notifications?page=1&limit=10&role=ADMIN&isRead=false&sortBy=createdAt&sortOrder=desc'
 
 export function useAdminNotifications() {
+  const mounted = useMounted()
   const { hasPermission, loading: permissionsLoading } = usePermissions()
   const canViewNotifications = hasPermission('notifications', 'index')
+  const hasAdminToken = mounted && !!Cookies.get('adminToken')
 
   const fetcher = useCallback(async (url: string): Promise<NotificationResponse> => {
-    return await requests.get<NotificationResponse>(url)
+    return await requests.get<NotificationResponse>(url, { silentError: true })
   }, [])
 
-  // Only fetch when user has permission; avoids 403 for moderators without NOTIFICATIONS access
-  const enabled = !permissionsLoading && canViewNotifications
+  // Only fetch when admin session + permission are ready
+  const enabled =
+    !permissionsLoading && canViewNotifications && hasAdminToken
 
   const { data, error, isLoading, mutate } = useSWR<NotificationResponse>(
     enabled ? NOTIFICATION_SWR_KEY : null,

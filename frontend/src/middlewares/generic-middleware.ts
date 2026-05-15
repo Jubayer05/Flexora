@@ -97,11 +97,10 @@ export async function genericMiddleware(
   //   return redirectTo(config.defaultPath, origin)
   // }
   if (isAuthRoute && token && !checkStale) {
+    const isAdminAuth = config.tokenKey === 'adminToken'
+
     if (callbackParam) {
       const decrypted = await decryptCallback(callbackParam, secret)
-      const isAdminAuth = config.tokenKey === 'adminToken'
-
-      // Only redirect to callback if it matches the token type and is a valid internal path
       if (
         decrypted &&
         decrypted.startsWith('/') &&
@@ -109,7 +108,10 @@ export async function genericMiddleware(
         decrypted !== '/admin' &&
         decrypted !== '/user' &&
         ((isAdminAuth && decrypted.startsWith('/admin')) ||
-          (!isAdminAuth && decrypted.startsWith('/user')))
+          (!isAdminAuth &&
+            (decrypted.startsWith('/user') ||
+              decrypted.startsWith('/account') ||
+              decrypted.startsWith('/checkout'))))
       ) {
         return redirectTo(decrypted, origin)
       }

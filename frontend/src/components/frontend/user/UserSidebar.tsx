@@ -38,12 +38,6 @@ const menuItems: MenuItem[] = [
     icon: BarChart3,
     description: 'Overview of your account'
   },
-  // {
-  //   label: 'My Profile',
-  //   href: '/user/profile',
-  //   icon: User,
-  //   description: 'Manage your personal information'
-  // },
   {
     label: 'Purchased Items',
     href: '/user/purchased-items',
@@ -56,12 +50,6 @@ const menuItems: MenuItem[] = [
     icon: MessageSquare,
     description: 'Manage your Telegram accounts'
   },
-  // {
-  //   label: 'Order Tracking',
-  //   href: '/user/tracking',
-  //   icon: Truck,
-  //   description: 'Track your deliveries'
-  // },
   {
     label: 'Subscription',
     href: '/user/subscription',
@@ -109,19 +97,13 @@ const actionItems: MenuItem[] = [
   }
 ]
 
-const SIDEBAR_LAYOUT_CLASSES =
-  'w-full md:w-[300px] min-h-[48px] md:min-h-[320px] border border-border bg-card md:rounded-[15px] overflow-hidden'
-
 function SidebarSkeleton() {
   return (
-    <div className={`${SIDEBAR_LAYOUT_CLASSES} animate-pulse`}>
-      <div className='p-4 md:p-6 space-y-3'>
-        <div className='h-4 w-32 rounded bg-muted' />
-        <div className='hidden md:block space-y-2'>
-          {[1, 2, 3, 4].map((i) => (
-            <div key={i} className='h-12 rounded-lg bg-muted' />
-          ))}
-        </div>
+    <div className='animate-pulse'>
+      <div className='space-y-base'>
+        {[1, 2, 3, 4].map((i) => (
+          <div key={i} className='h-12 rounded-lg bg-surface-container-highest' />
+        ))}
       </div>
     </div>
   )
@@ -147,7 +129,6 @@ export default function UserSidebar({ userData: initialUserData, isGuest = false
     }
   })()
 
-  // Combine all menu items (keeping original structure)
   const availableMenuItems = isGuest
     ? [
         {
@@ -188,10 +169,8 @@ export default function UserSidebar({ userData: initialUserData, isGuest = false
     toast.success('Logged out successfully!')
   }
 
-  // Reset sidebar to collapsed state when pathname changes
   useEffect(() => {
     setIsExpanded(false)
-    // Snap to top on route change (helps mobile)
     if (typeof window !== 'undefined') {
       document.documentElement.scrollTop = 0
       document.body.scrollTop = 0
@@ -203,237 +182,85 @@ export default function UserSidebar({ userData: initialUserData, isGuest = false
     setIsExpanded(!isExpanded)
   }
 
-  // Function to handle navigation, scroll to top, and collapse sidebar
   const handleNavigation = () => {
-    // Scroll to top of the page
     window.scrollTo({ top: 0, behavior: 'smooth' })
-
-    // Collapse sidebar on mobile after navigation
     if (window.innerWidth < 768) {
-      // md breakpoint
       setIsExpanded(false)
     }
   }
 
-  // Before mount: show skeleton to avoid hydration mismatch (Cookies not available on server)
   if (!mounted) {
     return <SidebarSkeleton />
   }
 
-  // After mount: don't render if user is not available
   if (!userData) {
     return null
   }
 
   return (
-    <div
-      className={`w-full md:w-75 min-h-12 transition-all duration-300 ease-in-out border border-border bg-card md:rounded-[15px] flex flex-col overflow-hidden z-50 md:z-auto ${
-        isExpanded ? 'h-screen' : 'h-12 md:h-screen'
-      }`}
-    >
-      {/* Back to Home Link */}
-      <div
-        className={`p-6 border-b border-border transition-all duration-300 ${
-          isExpanded ? 'block' : 'hidden md:block'
-        }`}
-      >
-        <Link
-          href='/'
-          onClick={handleNavigation}
-          className='flex items-center gap-2 text-card-foreground hover:text-muted-foreground transition-colors'
-        >
-          <ArrowLeft size={20} />
-          <span className='font-medium'>Back to Home</span>
-        </Link>
-      </div>
+    <nav className='space-y-base'>
+      <ul className='space-y-base'>
+        {(isGuest ? availableMenuItems : menuItems).map((item) => {
+          const active = isActive(item.href)
+          const Icon = item.icon
 
-      {/* User Info - Only show when expanded */}
-      {isExpanded && (
-        <div className='p-4 border-b border-border'>
-          <div className='flex items-center gap-3'>
-            <div className='w-8 h-8 bg-primary rounded-full flex items-center justify-center'>
-              <span className='text-primary-foreground text-sm font-bold'>
-                {userData?.name?.charAt(0)?.toUpperCase() ||
-                  userData?.email?.charAt(0)?.toUpperCase() ||
-                  'U'}
-              </span>
-            </div>
-            <div>
-              <p className='text-card-foreground text-sm font-medium'>
-                {userData?.name || userData?.email || 'User'}
-              </p>
-              <div className='flex items-center gap-2'>
-                <div className='w-2 h-2 bg-green-500 rounded-full'></div>
-                <span className='text-green-600 dark:text-green-400 text-sm font-medium'>
-                  {isGuest ? 'Guest' : 'User'}
+          return (
+            <li key={item.href}>
+              <CustomLink
+                href={item.href}
+                scroll={true}
+                onClick={handleNavigation}
+                className={`flex items-center gap-sm px-sm py-xs rounded-lg transition-colors font-medium ${
+                  active
+                    ? 'bg-surface-container-high text-primary font-bold border-l-2 border-primary'
+                    : 'text-on-surface-variant hover:text-on-surface hover:bg-surface-container'
+                }`}
+              >
+                <Icon size={20} />
+                <span className='text-sm'>{item.label}</span>
+              </CustomLink>
+            </li>
+          )
+        })}
+
+        {(!isGuest ? actionItems : []).map((item) => {
+          const active = isActive(item.href)
+          const Icon = item.icon
+
+          return (
+            <li key={item.href}>
+              <CustomLink
+                href={item.href}
+                scroll={true}
+                onClick={handleNavigation}
+                className={`flex items-center gap-sm px-sm py-xs rounded-lg transition-colors font-medium mt-lg ${
+                  active
+                    ? 'bg-surface-container-high text-primary font-bold border-l-2 border-primary'
+                    : 'text-on-surface-variant hover:text-on-surface hover:bg-surface-container'
+                }`}
+              >
+                <Icon size={20} />
+                <span className='text-sm'>
+                  {!userData?.isVerified && item.label === 'Reset Password'
+                    ? item.label
+                    : item.label?.replace('Reset', 'Set')}
                 </span>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
+              </CustomLink>
+            </li>
+          )
+        })}
 
-      {/* Navigation Menu - Now scrollable */}
-      <nav
-        className={`flex-1 transition-all duration-300 overflow-y-auto ${
-          isExpanded ? 'block' : 'hidden md:block'
-        }`}
-        style={{
-          scrollbarWidth: 'none' /* Firefox */,
-          msOverflowStyle: 'none' /* IE and Edge */
-        }}
-      >
-        <style jsx>{`
-          nav::-webkit-scrollbar {
-            display: none; /* Chrome, Safari and Opera */
-          }
-        `}</style>
-        <ul className='space-y-2 p-4'>
-          {/* Main Menu Items */}
-          {(isGuest ? availableMenuItems : menuItems).map((item) => {
-            const active = isActive(item.href)
-            const Icon = item.icon
-
-            return (
-              <li
-                key={item.href}
-                className={`relative flex items-center justify-between gap-3 transition-all duration-200 ${
-                  active
-                    ? 'text-primary-foreground bg-primary shadow-lg rounded-lg md:mx-2'
-                    : 'text-card-foreground hover:bg-accent rounded-lg md:mx-2'
-                }`}
-              >
-                <CustomLink
-                  href={item.href}
-                  scroll={true}
-                  onClick={handleNavigation}
-                  className={`relative flex items-center gap-3 px-4 py-3 transition-all duration-200 w-full rounded-lg ${
-                    active ? 'text-primary-foreground hover:text-primary-foreground' : 'text-card-foreground hover:text-primary'
-                  }`}
-                >
-                  {active && (
-                    <div className='h-6 w-1.25 rounded-r-[3px] bg-primary-foreground/20 absolute left-0' />
-                  )}
-                  <Icon size={20} />
-                  <span className='font-semibold text-sm font-manrope'>{item.label}</span>
-                </CustomLink>
-                {/* List icon only on mobile devices */}
-                {active && (
-                  <button
-                    onClick={toggleExpanded}
-                    className='mr-4 p-1 hover:bg-accent rounded transition-colors md:hidden'
-                  >
-                    <List
-                      className={`transition-transform duration-300 ${
-                        isExpanded ? 'rotate-180' : 'rotate-0'
-                      }`}
-                    />
-                  </button>
-                )}
-              </li>
-            )
-          })}
-
-          {/* Action Items */}
-          {(!isGuest ? actionItems : []).map((item) => {
-            const active = isActive(item.href)
-            const Icon = item.icon
-
-            return (
-              <li
-                key={item.href}
-                className={`relative flex items-center justify-between gap-3 transition-all duration-200 ${
-                  active
-                    ? 'text-primary-foreground bg-primary shadow-lg rounded-lg md:mx-2'
-                    : 'text-card-foreground hover:bg-accent rounded-lg md:mx-2'
-                }`}
-              >
-                <CustomLink
-                  href={item.href}
-                  scroll={true}
-                  onClick={handleNavigation}
-                  className={`relative flex items-center gap-3 px-4 py-3 transition-all duration-200 w-full rounded-lg ${
-                    active ? 'text-primary-foreground hover:text-primary-foreground' : 'text-card-foreground hover:text-primary'
-                  }`}
-                >
-                  {active && (
-                    <div className='h-6 w-1.25 rounded-r-[3px] bg-primary-foreground/20 absolute left-0' />
-                  )}
-                  <Icon size={20} />
-                  <span className='font-semibold text-sm font-manrope'>
-                    {!userData?.isVerified && item.label === 'Reset Password'
-                      ? item.label
-                      : item.label?.replace('Reset', 'Set')}
-                  </span>
-                </CustomLink>
-                {/* List icon only on mobile devices */}
-                {active && (
-                  <button
-                    onClick={toggleExpanded}
-                    className='mr-4 p-1 hover:bg-accent rounded transition-colors md:hidden'
-                  >
-                    <List
-                      className={`transition-transform duration-300 ${
-                        isExpanded ? 'rotate-180' : 'rotate-0'
-                      }`}
-                    />
-                  </button>
-                )}
-              </li>
-            )
-          })}
-
-          {/* Logout Button */}
-          <li className='relative flex items-center justify-between gap-3 transition-all duration-200 rounded-lg md:mx-2'>
-            <Button
-              onClick={handleLogout}
-              variant='ghost'
-              className='relative flex items-center gap-3 px-4 py-5.5 transition-all duration-200 w-full 
-              rounded-lg text-primary-foreground bg-destructive hover:bg-destructive/90'
-            >
-              <LogOut size={20} />
-              <span className='font-semibold text-sm font-manrope'>Logout</span>
-            </Button>
-          </li>
-        </ul>
-      </nav>
-
-      {/* Mobile: Show only active item when collapsed */}
-      {!isExpanded && (
-        <div className='md:hidden'>
-          {(() => {
-            const activeItem =
-              availableMenuItems.find((i) => pathname === i.href || pathname.startsWith(i.href + '/')) ||
-              availableMenuItems[0]
-
-            if (!activeItem) return null
-            const Icon = activeItem.icon
-
-            return (
-              <div className='relative flex items-center justify-between gap-3 text-black bg-primary shadow-lg h-12 rounded-lg md:mx-2'>
-                <CustomLink
-                  href={activeItem.href}
-                  scroll={true}
-                  onClick={handleNavigation}
-                  className='relative flex items-center gap-3 px-4 py-3 transition-all duration-200 w-full rounded-lg text-primary-foreground hover:text-primary-foreground'
-                >
-                  <div className='h-6 w-1.25 rounded-r-[3px] bg-primary-foreground/20 absolute left-0' />
-                  <Icon size={20} />
-                  <span className='font-semibold text-sm font-manrope'>
-                    {activeItem.label || 'Menu'}
-                  </span>
-                </CustomLink>
-                <button
-                  onClick={toggleExpanded}
-                  className='mr-4 p-1 hover:bg-accent rounded transition-colors'
-                >
-                  <List className='transition-transform duration-300' />
-                </button>
-              </div>
-            )
-          })()}
-        </div>
-      )}
-    </div>
+        <li className='mt-lg'>
+          <Button
+            onClick={handleLogout}
+            variant='ghost'
+            className='flex items-center gap-sm px-sm py-xs rounded-lg w-full text-on-surface-variant hover:text-error hover:bg-error-container/20 transition-colors'
+          >
+            <LogOut size={20} />
+            <span className='text-sm font-medium'>Logout</span>
+          </Button>
+        </li>
+      </ul>
+    </nav>
   )
 }

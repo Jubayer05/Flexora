@@ -61,55 +61,55 @@ const CustomerFilters = memo(
           : 'all'
 
     return (
-      <div className='flex flex-col sm:flex-row sm:items-end justify-between gap-4 flex-wrap'>
-        <div className='relative w-full sm:max-w-xs order-first'>
-          <Search className='absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground pointer-events-none' />
-          <Input
-            type='text'
-            placeholder='Search by name, email, username...'
-            value={searchInput}
-            onChange={(e) => onSearchInputChange(e.target.value)}
-            className='pl-9 pr-9 bg-background border-border text-foreground placeholder:text-muted-foreground h-9'
-            aria-label='Search customers'
-          />
-          {searchInput ? (
-            <button
-              type='button'
-              onClick={onClearSearch}
-              className='absolute right-2 top-1/2 -translate-y-1/2 p-1 rounded text-muted-foreground hover:text-foreground hover:bg-muted'
-              aria-label='Clear search'
-            >
-              <X className='h-4 w-4' />
-            </button>
-          ) : null}
-        </div>
-
-        <div className='flex flex-wrap items-end gap-4'>
-          <div className='w-full sm:w-52'>
-            <Combobox
-              options={countryOptions}
-              value={(filters.country as string) || ''}
-              placeholder='Filter by Country'
-              searchPlaceholder='Search country...'
-              emptyText='No country found.'
-              onSearch={() => {}}
-              onSelect={(value) => setFilter('country', value)}
-              className='[&_button]:h-9 [&_button]:border-border [&_button]:bg-background'
+      <div className='flex flex-col gap-4'>
+        <div className='flex flex-col sm:flex-row sm:items-end justify-between gap-4'>
+          <div className='relative w-full sm:max-w-xs order-first'>
+            <Search className='absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground pointer-events-none' />
+            <Input
+              type='text'
+              placeholder='Search by name, email, username...'
+              value={searchInput}
+              onChange={(e) => onSearchInputChange(e.target.value)}
+              className='pl-9 pr-9 bg-surface-container border-outline-variant text-foreground placeholder:text-muted-foreground h-9 rounded-lg'
+              aria-label='Search customers'
             />
+            {searchInput ? (
+              <button
+                type='button'
+                onClick={onClearSearch}
+                className='absolute right-2 top-1/2 -translate-y-1/2 p-1 rounded text-muted-foreground hover:text-foreground hover:bg-muted transition-colors'
+                aria-label='Clear search'
+              >
+                <X className='h-4 w-4' />
+              </button>
+            ) : null}
           </div>
 
-          <div className='space-y-0'>
+          <div className='flex flex-wrap items-end gap-3'>
+            <div className='w-full sm:w-52'>
+              <Combobox
+                options={countryOptions}
+                value={(filters.country as string) || ''}
+                placeholder='Filter by Country'
+                searchPlaceholder='Search country...'
+                emptyText='No country found.'
+                onSearch={() => {}}
+                onSelect={(value) => setFilter('country', value)}
+                className='[&_button]:h-9 [&_button]:border-outline-variant [&_button]:bg-surface-container [&_button]:rounded-lg'
+              />
+            </div>
+
             <Select
               value={selectedGuestType}
               onValueChange={(value) => setFilter('guestType', value === 'all' ? undefined : value)}
             >
               <SelectTrigger
                 id='guest-filter'
-                className='bg-background border-border w-full sm:w-44 h-9 text-foreground'
+                className='bg-surface-container border-outline-variant w-full sm:w-44 h-9 text-foreground rounded-lg'
               >
                 <SelectValue placeholder='User Type' />
               </SelectTrigger>
-              <SelectContent className='bg-background border-border'>
+              <SelectContent className='bg-popover border-outline-variant'>
                 {GUEST_FILTER_OPTIONS.map((option) => (
                   <SelectItem
                     key={option.value}
@@ -121,20 +121,18 @@ const CustomerFilters = memo(
                 ))}
               </SelectContent>
             </Select>
-          </div>
 
-          <div className='space-y-0'>
             <Select
               value={filters.spend as string}
               onValueChange={(value) => setFilter('spend', value)}
             >
               <SelectTrigger
                 id='spend-filter'
-                className='bg-background border-border w-full sm:w-40 h-9 text-foreground'
+                className='bg-surface-container border-outline-variant w-full sm:w-40 h-9 text-foreground rounded-lg'
               >
                 <SelectValue placeholder='Filter by Spent' />
               </SelectTrigger>
-              <SelectContent className='bg-background border-border'>
+              <SelectContent className='bg-popover border-outline-variant'>
                 <SelectItem value='desc' className='hover:bg-muted focus:bg-muted'>
                   <ArrowDownNarrowWide className='h-4 w-4 inline mr-2' />
                   High to low
@@ -145,13 +143,13 @@ const CustomerFilters = memo(
                 </SelectItem>
               </SelectContent>
             </Select>
-          </div>
 
-          {(search || filters.spend || filters.country || filters.guestType) && (
-            <Button variant='outline' size='sm' onClick={clearFilters} className='h-9'>
-              Clear filters
-            </Button>
-          )}
+            {(search || filters.spend || filters.country || filters.guestType) && (
+              <Button variant='outline' size='sm' onClick={clearFilters} className='h-9 px-4 rounded-lg border-outline-variant hover:bg-muted'>
+                Clear filters
+              </Button>
+            )}
+          </div>
         </div>
       </div>
     )
@@ -235,7 +233,7 @@ function CustomerList() {
   }, [data?.data?.pagination?.pages, loading, page, setPage])
 
   return (
-    <div className='w-full max-w-full overflow-x-hidden'>
+    <div className='w-full max-w-full overflow-x-hidden space-y-6'>
       <PageHeader title='All Customers' subTitle='Manage your customer accounts and their details'>
         <CustomerFilters
           filters={filters}
@@ -249,13 +247,15 @@ function CustomerList() {
         />
       </PageHeader>
 
-      <CustomTable
-        columns={useMemo(() => createCustomerColumns(mutate), [mutate])}
-        data={data?.data?.customers ?? []}
-        getRowId={(row: User) => row.id}
-        emptyMessage={loading ? 'Loading customers...' : 'No customers found.'}
-        className={loading ? 'opacity-50 pointer-events-none' : ''}
-      />
+      <div className='bg-surface-container/20 rounded-xl border border-outline-variant/20 p-1'>
+        <CustomTable
+          columns={useMemo(() => createCustomerColumns(mutate), [mutate])}
+          data={data?.data?.customers ?? []}
+          getRowId={(row: User) => row.id}
+          emptyMessage={loading ? 'Loading customers...' : 'No customers found.'}
+          className={loading ? 'opacity-50 pointer-events-none' : ''}
+        />
+      </div>
       <Pagination paginationData={data?.data?.pagination} pageSizeOptions={[5, 10, 20, 50]} />
     </div>
   )

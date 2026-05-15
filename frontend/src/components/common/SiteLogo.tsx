@@ -1,5 +1,6 @@
 import { getSiteConfig } from '@/action/data'
 import { cn } from '@/lib/utils'
+import { getLogosForThemeModes } from '@/lib/themeLogo'
 import SiteLogoClient from './SiteLogoClient'
 
 const LOGO_HEIGHT = 36
@@ -14,8 +15,10 @@ export default async function SiteLogo({ className, height = LOGO_HEIGHT }: Site
   try {
     const siteConfig = await getSiteConfig()
     // Handle both possible structures: { logo: { default, dark } } or { siteLogo }
-    const logoDefault = siteConfig?.logo?.default || siteConfig?.siteLogo || '/images/logo.svg'
-    const logoDark = siteConfig?.logo?.dark || siteConfig?.siteLogo || '/images/logo.svg'
+    const { forLightMode, forDarkMode } = getLogosForThemeModes({
+      default: siteConfig?.logo?.default || siteConfig?.siteLogo,
+      dark: siteConfig?.logo?.dark || siteConfig?.siteLogo
+    })
 
     // Ensure SiteLogoClient is properly imported and available
     if (!SiteLogoClient) {
@@ -29,8 +32,8 @@ export default async function SiteLogo({ className, height = LOGO_HEIGHT }: Site
 
     return (
       <SiteLogoClient
-        logoDefault={logoDefault}
-        logoDark={logoDark}
+        logoDefault={forLightMode}
+        logoDark={forDarkMode}
         className={cn(className)}
         height={height}
       />
@@ -38,12 +41,7 @@ export default async function SiteLogo({ className, height = LOGO_HEIGHT }: Site
   } catch (error) {
     console.error('[SiteLogo] Error loading site config:', error)
     return (
-      <SiteLogoClient
-        logoDefault={'/images/logo.svg'}
-        logoDark={'/images/logo.svg'}
-        className={cn(className)}
-        height={height}
-      />
+      <SiteLogoClient className={cn(className)} height={height} />
     )
   }
 }

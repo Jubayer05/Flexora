@@ -12,7 +12,6 @@ import {
   LayoutDashboard,
   Link2,
   Mail,
-  MessageSquare,
   Package,
   RotateCcw,
   Settings,
@@ -161,55 +160,6 @@ export const adminNavItems: AdminNavItem[] = [
         title: 'Affiliate Withdrawals',
         href: '/admin/affiliate-withdraw',
         permission: { resource: 'affiliates', action: 'index' }
-      }
-    ]
-  },
-  // Telegram Management
-  {
-    title: 'Telegram Management',
-    href: '',
-    icon: MessageSquare,
-    permission: { resource: 'telegram', action: 'index' },
-    children: [
-      {
-        title: 'Manage Accounts',
-        href: '/admin/telegram-management/manage-accounts',
-        permission: { resource: 'telegram', action: 'index' }
-      },
-      {
-        title: 'Management Channels/groups',
-        href: '/admin/telegram-management/manage-transfer-products',
-        permission: { resource: 'telegram', action: 'index' }
-      },
-      {
-        title: 'Sold Accounts',
-        href: '/admin/telegram-management/sold',
-        permission: { resource: 'telegram', action: 'index' }
-      },
-      {
-        title: 'Channels and Groups Sold',
-        href: '/admin/telegram-management/ownership-transfer',
-        permission: { resource: 'telegram', action: 'index' }
-      },
-      {
-        title: 'Settings (Premium API)',
-        href: '/admin/telegram-management/settings',
-        permission: { resource: 'telegram', action: 'index' }
-      },
-      {
-        title: 'Telegram Config',
-        href: '/admin/settings/telegram-config',
-        permission: { resource: 'settings', action: 'update' }
-      },
-      {
-        title: 'Activity Log',
-        href: '/admin/telegram-management/activity-log',
-        permission: { resource: 'telegram', action: 'index' }
-      },
-      {
-        title: 'Proxy Management',
-        href: '/admin/telegram-management/proxies',
-        permission: { resource: 'telegram', action: 'index' }
       }
     ]
   },

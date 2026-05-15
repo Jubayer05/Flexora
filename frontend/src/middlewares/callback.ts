@@ -32,14 +32,7 @@ function isValidCallbackPath(path: string): boolean {
   if (path.includes('://')) return false
 
   // Should not start with known auth routes (prevent loops)
-  const authPaths = [
-    '/login',
-    '/register',
-    '/sign-up',
-    '/admin/login',
-    '/forget-password',
-    '/admin/forget-password'
-  ]
+  const authPaths = ['/login', '/register', '/sign-up', '/forget-password']
   if (authPaths.some((authPath) => path === authPath || path.startsWith(`${authPath}?`)))
     return false
 

@@ -1,6 +1,5 @@
 'use client'
 
-import { useState } from 'react'
 import SeoForm, { SeoFormData } from '@/components/admin/form/SeoForm'
 import { EmptyState } from '@/components/common/EmptyState'
 import PageHeader from '@/components/common/PageHeader'
@@ -8,6 +7,7 @@ import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
 import useAsync from '@/hooks/useAsync'
 import requests from '@/services/network/http'
+import { useState } from 'react'
 import { toast } from 'sonner'
 
 type SettingsData<T> = {
@@ -76,7 +76,7 @@ export default function ShopSeoPage() {
         </div>
       ) : seoSettings ? (
         <div className='space-y-6'>
-          <div className='bg-card border rounded-lg p-6'>
+          <div className='bg-card border border-border rounded-lg p-6'>
             <h3 className='font-semibold mb-4 text-lg'>Current SEO Settings</h3>
             <div className='space-y-2'>
               <p>
@@ -106,6 +106,3 @@ export default function ShopSeoPage() {
     </>
   )
 }
-
-
-

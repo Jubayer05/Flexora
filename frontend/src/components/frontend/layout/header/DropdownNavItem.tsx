@@ -72,7 +72,7 @@ export default function DropdownNavItem({ item, className, onItemClick }: Dropdo
       <CustomLink
         href={item.url || `/pages/${item.slug}`}
         className={cn(
-          'relative font-medium text-card-foreground/80 hover:text-primary text-sm whitespace-nowrap transition-colors',
+          'relative font-medium text-on-surface/80 hover:text-primary text-sm whitespace-nowrap transition-colors',
           'after:absolute after:left-1/2 after:bottom-1 after:h-px after:w-0 after:-translate-x-1/2 after:bg-linear-to-r after:from-primary after:via-primary/60 after:to-transparent after:transition-all after:duration-300 hover:after:w-2/3',
           className
         )}
@@ -91,7 +91,7 @@ export default function DropdownNavItem({ item, className, onItemClick }: Dropdo
           onMouseEnter={handleTriggerEnter}
           onMouseLeave={handleTriggerLeave}
           className={cn(
-            'relative flex items-center gap-1 font-medium text-card-foreground/80 hover:text-primary text-sm transition-colors cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-full bg-transparent border-none',
+            'relative flex items-center gap-1 font-medium text-on-surface/80 hover:text-primary text-sm transition-colors cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-full bg-transparent border-none',
             'after:absolute after:left-1/2 after:bottom-1 after:h-px after:w-0 after:-translate-x-1/2 after:bg-linear-to-r after:from-primary after:via-primary/60 after:to-transparent after:transition-all after:duration-300 hover:after:w-2/3',
             className
           )}
@@ -108,7 +108,7 @@ export default function DropdownNavItem({ item, className, onItemClick }: Dropdo
         onMouseEnter={handleContentEnter}
         onMouseLeave={handleContentLeave}
         onCloseAutoFocus={(e) => e.preventDefault()}
-        className='min-w-[220px] p-1.5 border-border/60 bg-card/85 backdrop-blur-xl shadow-xl shadow-primary/10'
+        className='min-w-[220px] p-1.5 border border-outline-variant bg-surface-container text-on-surface shadow-xl'
       >
         {item.children?.map((child, index) => (
           <DropdownMenuItem key={child.id || index} asChild>
@@ -116,8 +116,8 @@ export default function DropdownNavItem({ item, className, onItemClick }: Dropdo
               href={child.url || `/pages/${child.slug}`}
               onClick={handleItemClick}
               className={cn(
-                'flex cursor-pointer rounded-lg px-3 py-2.5 text-muted-foreground hover:bg-accent/70 hover:text-foreground text-sm transition-colors focus:bg-accent/70 focus:text-foreground',
-                index < (item.children?.length ?? 0) - 1 && 'border-b border-border/50'
+                'flex cursor-pointer rounded-lg px-3 py-2.5 text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface text-sm transition-colors focus:bg-surface-container-high focus:text-on-surface',
+                index < (item.children?.length ?? 0) - 1 && 'mb-0.5'
               )}
             >
               {child.title}

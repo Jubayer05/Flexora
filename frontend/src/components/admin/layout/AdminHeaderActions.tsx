@@ -39,12 +39,12 @@ function getTimeAgo(date: string) {
 
 function getNotificationTypeBadge(type: string) {
   const colors: Record<string, string> = {
-    ORDER: 'bg-blue-500',
-    PAYMENT: 'bg-green-500',
-    RESTOCK: 'bg-purple-500',
-    SYSTEM: 'bg-gray-500',
-    PROMOTION: 'bg-yellow-500',
-    OTHERS: 'bg-slate-500'
+    ORDER: 'bg-tertiary-container text-on-tertiary-container',
+    PAYMENT: 'bg-primary-container text-on-primary-container',
+    RESTOCK: 'bg-secondary-container text-on-secondary-container',
+    SYSTEM: 'bg-surface-container text-on-surface-variant',
+    PROMOTION: 'bg-secondary text-on-secondary',
+    OTHERS: 'bg-surface-container-highest text-on-surface-variant'
   }
   return colors[type] || colors.OTHERS
 }
@@ -68,8 +68,8 @@ export function AdminHeaderActions() {
   }, [router])
 
   return (
-    <div className='flex items-center gap-2 shrink-0'>
-      <ThemeSwitcher className='h-9 w-9 shrink-0 border-border' />
+    <div className='flex items-center gap-3 shrink-0'>
+      <ThemeSwitcher className='size-9 shrink-0 rounded-full' />
 
       {mounted && canViewNotifications && (
         <DropdownMenu>
@@ -77,12 +77,12 @@ export function AdminHeaderActions() {
             <Button
               variant='ghost'
               size='icon'
-              className='relative h-9 w-9 shrink-0 text-card-foreground'
+              className='relative h-9 w-9 shrink-0 rounded-full border border-outline-variant bg-surface-container/40 text-on-surface-variant hover:bg-surface-variant hover:border-primary/30'
               aria-label='Notifications'
             >
               <Bell className='h-5 w-5' />
               {unreadCount > 0 && (
-                <Badge className='absolute -top-0.5 -right-0.5 bg-red-500 hover:bg-red-600 p-0 rounded-full min-w-[16px] h-4 text-white text-xs flex items-center justify-center'>
+                <Badge className='absolute -top-0.5 -right-0.5 bg-error hover:bg-error/90 p-0 rounded-full min-w-[16px] h-4 text-on-error text-xs flex items-center justify-center'>
                   {unreadCount > headerConfig.notifications.maxDisplayCount
                     ? `${headerConfig.notifications.maxDisplayCount}+`
                     : unreadCount}
@@ -90,12 +90,12 @@ export function AdminHeaderActions() {
               )}
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align='end' className='w-80 bg-background'>
-            <DropdownMenuLabel className='flex justify-between items-center'>
+          <DropdownMenuContent align='end' className='w-80 bg-surface-container-low border border-outline-variant rounded-xl'>
+            <DropdownMenuLabel className='flex justify-between items-center text-on-surface'>
               <span>Notifications</span>
-              <div className='flex items-center gap-2'>
+              <div className='flex items-center gap-sm'>
                 {unreadCount > 0 && (
-                  <Badge variant='secondary' className='text-xs'>
+                  <Badge variant='secondary' className='text-xs bg-primary-container text-on-primary-container'>
                     {unreadCount} new
                   </Badge>
                 )}
@@ -111,7 +111,7 @@ export function AdminHeaderActions() {
                 )}
               </div>
             </DropdownMenuLabel>
-            <DropdownMenuSeparator />
+            <DropdownMenuSeparator className='bg-outline-variant' />
             <div
               className='overflow-y-auto'
               style={{ maxHeight: `${headerConfig.notifications.maxHeight}px` }}
@@ -120,23 +120,23 @@ export function AdminHeaderActions() {
                 notifications.map((notification) => (
                   <DropdownMenuItem
                     key={notification.id}
-                    className='flex flex-col items-start p-3 cursor-pointer'
+                    className='flex flex-col items-start p-md cursor-pointer hover:bg-surface-container'
                     onClick={() => handleNotificationClick(notification.id)}
                   >
-                    <div className='flex justify-between items-start gap-2 w-full'>
+                    <div className='flex justify-between items-start gap-sm w-full'>
                       <div className='flex-1 min-w-0'>
-                        <div className='flex items-center gap-2 mb-1'>
-                          <h4 className='font-medium text-sm truncate'>{notification.title}</h4>
+                        <div className='flex items-center gap-sm mb-xs'>
+                          <h4 className='font-medium text-sm text-on-surface truncate'>{notification.title}</h4>
                         </div>
-                        <p className='text-muted-foreground text-xs line-clamp-2'>
+                        <p className='text-on-surface-variant text-xs line-clamp-2'>
                           {notification.message}
                         </p>
-                        <div className='flex items-center gap-2 mt-1.5'>
-                          <span className='text-muted-foreground text-xs'>
+                        <div className='flex items-center gap-sm mt-xs'>
+                          <span className='text-on-surface-variant text-xs'>
                             {getTimeAgo(notification.createdAt)}
                           </span>
                           <span
-                            className={`text-xs px-1.5 py-0.5 rounded text-white ${getNotificationTypeBadge(notification.type)}`}
+                            className={`text-xs px-xs py-px rounded ${getNotificationTypeBadge(notification.type)}`}
                           >
                             {notification.type}
                           </span>
@@ -146,19 +146,19 @@ export function AdminHeaderActions() {
                   </DropdownMenuItem>
                 ))
               ) : (
-                <div className='p-4 text-muted-foreground text-sm text-center'>
+                <div className='p-md text-center text-on-surface-variant text-sm'>
                   No notifications
                 </div>
               )}
             </div>
             {notifications.length > 0 && (
               <>
-                <DropdownMenuSeparator />
+                <DropdownMenuSeparator className='bg-outline-variant' />
                 <DropdownMenuItem
-                  className='justify-center cursor-pointer'
+                  className='justify-center cursor-pointer hover:bg-surface-container'
                   onClick={handleViewAllNotifications}
                 >
-                  <span className='text-sm'>{notificationActionsConfig.viewAll.label}</span>
+                  <span className='text-sm text-on-surface'>{notificationActionsConfig.viewAll.label}</span>
                 </DropdownMenuItem>
               </>
             )}

@@ -120,10 +120,10 @@ export default function LanguageSwitcher({ compact = false }: { compact?: boolea
       <DropdownMenuTrigger asChild>
         <Button
           variant='outline'
-          size={compact ? 'icon' : 'lg'}
+          size={compact ? 'icon' : 'default'}
           className={cn(
-            'font-semibold transition !border-border !bg-card !text-card-foreground hover:!bg-accent hover:!text-accent-foreground',
-            !compact && 'text-base'
+            'shrink-0 font-semibold transition !rounded-full border border-outline-variant bg-surface-container/40 text-on-surface shadow-sm backdrop-blur-md hover:bg-surface-variant hover:border-primary/30 hover:text-on-surface',
+            compact ? 'size-9 p-0' : 'h-9 gap-1.5 px-3 text-sm'
           )}
           aria-label='Change language'
         >
@@ -160,7 +160,7 @@ export default function LanguageSwitcher({ compact = false }: { compact?: boolea
               key={lang.shortName}
               onClick={() => switchLanguage(lang.shortName)}
               className={cn(
-                'flex items-center gap-3 px-3 py-2',
+                'flex items-center gap-3 rounded-full px-3 py-2',
                 currentLang === lang.shortName && 'bg-accent text-accent-foreground'
               )}
             >

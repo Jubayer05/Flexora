@@ -25,7 +25,7 @@ export const stockColumns: TableColumn<Product>[] = [
           alt={record.name}
           width={48}
           height={48}
-          className='border border-white/10 rounded-lg size-12 object-cover'
+          className='size-12 rounded-lg border border-border/80 object-cover'
         />
         <div className='flex flex-col min-w-0'>
           <div className='max-w-sm font-medium text-foreground truncate'>{record.name}</div>

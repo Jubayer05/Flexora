@@ -9,7 +9,7 @@ interface RootProvidersProps {
 }
 
 const RootProviders: React.FC<RootProvidersProps> = ({ children }) => (
-  <ThemeProvider attribute='class' defaultTheme='system' enableSystem disableTransitionOnChange>
+  <ThemeProvider attribute='class' defaultTheme='dark' enableSystem={false} disableTransitionOnChange>
     <NuqsProvider>{children}</NuqsProvider>
     <Toaster richColors closeButton position='bottom-right' />
   </ThemeProvider>

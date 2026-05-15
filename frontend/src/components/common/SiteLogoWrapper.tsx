@@ -1,8 +1,8 @@
 'use client'
 
-import SiteLogoClient from './SiteLogoClient'
-import useAsync from '@/hooks/useAsync'
+import { useSiteConfig } from '@/components/providers/store-provider'
 import { cn } from '@/lib/utils'
+import SiteLogoClient from './SiteLogoClient'
 
 type SiteLogoWrapperProps = {
   className?: string
@@ -10,19 +10,8 @@ type SiteLogoWrapperProps = {
 }
 
 export default function SiteLogoWrapper({ className, height = 36 }: SiteLogoWrapperProps) {
-  const { data } = useAsync<{
-    success: boolean
-    data: {
-      value?: {
-        logo?: {
-          default?: string | null
-          dark?: string | null
-        }
-      }
-    }
-  }>(() => '/settings/key/system_site_settings', false, false)
-
-  const logo = data?.data?.value?.logo
+  const { siteConfig } = useSiteConfig()
+  const logo = siteConfig?.logo
 
   return (
     <SiteLogoClient
@@ -33,4 +22,3 @@ export default function SiteLogoWrapper({ className, height = 36 }: SiteLogoWrap
     />
   )
 }
-

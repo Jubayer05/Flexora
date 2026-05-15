@@ -15,16 +15,6 @@ export const config = {
     '/login', // User login (auth route)
     '/register', // User registration (auth route)
     '/sign-up', // User sign-up (auth route)
-    '/forget-password', // User password recovery (auth route)
-    '/admin/login', // Admin login (auth route)
-    '/admin/forget-password' // Admin password recovery (auth route)
-    /*
-     * Match all request paths except for the ones starting with:
-     * - api (API routes)
-     * - _next/static (static files)
-     * - _next/image (image optimization files)
-     * - favicon.ico, sitemap.xml, robots.txt (metadata files)
-     */
-    // '/((?!api|_next/static|_next/image|favicon.ico).*)'
-  ] // Apply middleware only to these routes
+    '/forget-password' // User password recovery (auth route)
+  ]
 }

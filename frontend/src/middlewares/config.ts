@@ -1,9 +1,9 @@
 export const routeConfigs = {
   admin: {
-    excludedRoutes: ['/admin/login', '/admin/forget-password'], // Routes that bypass admin middleware
+    excludedRoutes: ['/login'], // Routes that bypass admin middleware (user login page)
     protectedRoutes: ['/admin'], // All routes under `/admin` are protected
     tokenKey: 'adminToken', // Cookie key for admin token
-    loginPath: '/admin/login', // Redirect path when unauthorized
+    loginPath: '/login', // Redirect path when unauthorized (to user login)
     defaultPath: '/admin/dashboard' // Redirect path when already authenticated
   },
   user: {
@@ -13,5 +13,5 @@ export const routeConfigs = {
     loginPath: '/login', // Redirect path when unauthorized
     defaultPath: '/shop' // Redirect to Services (shop) when already authenticated
   },
-  authRoutes: ['/login', '/admin/login', '/admin/forget-password', '/register', '/sign-up']
+  authRoutes: ['/login', '/register', '/sign-up']
 }

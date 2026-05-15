@@ -20,9 +20,9 @@ const UnreadTicket = dynamic(
 
 export function DashboardCardsClient() {
   return (
-    <div className='gap-4 md:gap-6 grid grid-cols-none lg:grid-cols-2'>
+    <section className='grid grid-cols-1 items-stretch gap-6 xl:grid-cols-2'>
       <LowStockProducts />
       <UnreadTicket />
-    </div>
+    </section>
   )
 }

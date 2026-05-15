@@ -1,17 +1,16 @@
 'use client'
 
-import { useState, useEffect } from 'react'
-import { useRouter, useSearchParams } from 'next/navigation'
 import SeoForm, { SeoFormData } from '@/components/admin/form/SeoForm'
-import { EmptyState } from '@/components/common/EmptyState'
+import { CustomSelect } from '@/components/common/CustomSelect'
 import PageHeader from '@/components/common/PageHeader'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
-import { CustomSelect } from '@/components/common/CustomSelect'
 import useAsync from '@/hooks/useAsync'
 import requests from '@/services/network/http'
-import { toast } from 'sonner'
 import { ArrowLeft } from 'lucide-react'
+import { useRouter, useSearchParams } from 'next/navigation'
+import { useEffect, useState } from 'react'
+import { toast } from 'sonner'
 
 type ProductGroup = {
   id: number
@@ -40,7 +39,11 @@ export default function ProductGroupSeoPage() {
   )
 
   // Fetch selected product group data
-  const { data: groupData, loading: loadingGroup, mutate: mutateGroup } = useAsync<{
+  const {
+    data: groupData,
+    loading: loadingGroup,
+    mutate: mutateGroup
+  } = useAsync<{
     data: ProductGroup
   }>(() => (selectedGroupId ? `/admin/product-groups/${selectedGroupId}` : null))
 
@@ -48,7 +51,7 @@ export default function ProductGroupSeoPage() {
   // The product-groups page uses: data={data?.data ?? []}
   // So the structure is: { data: { data: [...] } }
   const groups = groupsData?.data ?? []
-  
+
   const group = groupData?.data
   const seoSettings = group?.seo || {}
 
@@ -101,24 +104,24 @@ export default function ProductGroupSeoPage() {
 
       <div className='space-y-6'>
         {/* Group Selection */}
-        <div className='bg-card border rounded-lg p-6'>
+        <div className='bg-card border border-border rounded-lg p-6'>
           <h3 className='font-semibold mb-4 text-lg'>Select Product Group</h3>
           {loadingGroups ? (
             <Skeleton className='w-full h-10' />
           ) : groups.length > 0 ? (
-                  <CustomSelect
-                    value={selectedGroupId}
-                    onChange={handleGroupChange}
-                    options={groups.map((group: ProductGroup) => ({
-                      value: group.id.toString(),
-                      label: group.name
-                    }))}
+            <CustomSelect
+              value={selectedGroupId}
+              onChange={handleGroupChange}
+              options={groups.map((group: ProductGroup) => ({
+                value: group.id.toString(),
+                label: group.name
+              }))}
               placeholder='Select a product group to edit SEO'
             />
           ) : (
             <div className='text-muted-foreground text-sm py-2'>
-              {groupsData 
-                ? 'No product groups found. Please create a product group first.' 
+              {groupsData
+                ? 'No product groups found. Please create a product group first.'
                 : 'Failed to load product groups. Please refresh the page.'}
             </div>
           )}
@@ -141,7 +144,7 @@ export default function ProductGroupSeoPage() {
                   <h3 className='font-semibold text-lg'>Current SEO Settings</h3>
                   <Button onClick={() => setEdit(true)}>Edit</Button>
                 </div>
-                <div className='bg-card border rounded-lg p-6'>
+                <div className='bg-card border border-border rounded-lg p-6'>
                   <div className='space-y-2'>
                     <p>
                       <strong>Meta Title:</strong> {seoSettings.metaTitle || 'Not set'}
@@ -174,7 +177,7 @@ export default function ProductGroupSeoPage() {
           </div>
         ) : (
           !selectedGroupId && (
-            <div className='bg-card border rounded-lg p-12 text-center'>
+            <div className='bg-card border border-border rounded-lg p-12 text-center'>
               <p className='text-muted-foreground'>
                 Please select a product group above to configure its SEO settings.
               </p>
@@ -185,4 +188,3 @@ export default function ProductGroupSeoPage() {
     </>
   )
 }
-

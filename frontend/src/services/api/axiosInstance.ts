@@ -154,8 +154,12 @@ axiosInstance.interceptors.response.use(
       return Promise.reject(error)
     }
 
+    const silentError = (error.config as { silentError?: boolean })?.silentError
+
     // For authenticated users or skipAuthRedirect flag, handle accordingly
-    if (!skipAuthRedirect) {
+    if (silentError) {
+      // Background polling (e.g. header notifications) — skip global error logging
+    } else if (!skipAuthRedirect) {
       handleApiError(error)
     } else if (status === 401) {
       // For requests with skipAuthRedirect flag on 401, just log it

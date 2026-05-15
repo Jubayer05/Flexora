@@ -52,7 +52,7 @@ export default function PagesListPage() {
           {pages.map((p: any) => (
             <div
               key={p.id || p.slug}
-              className='flex justify-between items-center gap-4 p-4 border rounded-md'
+              className='flex justify-between items-center gap-4 p-4 border border-border rounded-md'
             >
               <div>
                 <div className='font-medium'>{p.title || '-'}</div>

@@ -77,7 +77,7 @@ const PasswordResetForm = ({ isCustomer = true }: { isCustomer?: boolean }) => {
         resetToken: token
       })
       toast.success(res.message ?? 'Password updated successfully')
-      router.push(isCustomer ? '/login' : '/admin/login')
+      router.push('/login')
     } catch (error) {
       showError(error)
     } finally {

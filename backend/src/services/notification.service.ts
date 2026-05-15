@@ -27,8 +27,8 @@ const toNumber = (value: unknown): number => {
 
 const normalizeEmail = (email: string): string => email.trim().toLowerCase()
 
-const stripHtml = (html: string): string =>
-  html
+const stripHtml = (html: string | null | undefined): string =>
+  String(html ?? '')
     .replace(/<[^>]+>/g, ' ')
     .replace(/&nbsp;/g, ' ')
     .replace(/\s+/g, ' ')

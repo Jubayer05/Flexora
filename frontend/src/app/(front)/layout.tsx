@@ -1,6 +1,6 @@
 import { MaintenanceWrapper } from '@/components/frontend/MaintenanceWrapper'
 import { GlobalRouteTracker } from '@/components/frontend/GlobalRouteTracker'
-import Footer from '@/components/frontend/layout/footer'
+import PremiumFooter from '@/components/frontend/homepage/PremiumFooter'
 import Header from '@/components/frontend/layout/header'
 import Provider from '@/components/frontend/layout/Provider'
 
@@ -25,7 +25,7 @@ export default function FrontLayout({
         <main className='min-w-0 flex-1 overflow-x-hidden bg-background'>
           <Provider>{children}</Provider>
         </main>
-        <Footer />
+        <PremiumFooter />
         {modal}
       </div>
     </MaintenanceWrapper>

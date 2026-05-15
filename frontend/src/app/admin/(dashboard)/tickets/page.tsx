@@ -5,22 +5,15 @@ import { Suspense, useCallback, useEffect, useState } from 'react'
 import TicketForm from '@/components/admin/form/Ticket'
 import TicketChatPanel from '@/components/admin/tickets/TicketChatPanel'
 import TicketTable from '@/components/admin/tickets/TicketTable'
-import { Pagination } from '@/components/common/Pagination'
 import PageHeader from '@/components/common/PageHeader'
+import { Pagination } from '@/components/common/Pagination'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
 import useAsync from '@/hooks/useAsync'
 import { useFilter } from '@/hooks/useFilter'
 import { type NewReplyPayload, useTicketSocket } from '@/hooks/useTicketSocket'
-import {
-  CheckCircle2,
-  MailOpen,
-  MessageSquare,
-  Plus,
-  Search,
-  X
-} from 'lucide-react'
+import { CheckCircle2, MailOpen, MessageSquare, Plus, Search, X } from 'lucide-react'
 
 const DEBOUNCE_MS = 350
 
@@ -70,7 +63,11 @@ function TicketList() {
     return () => clearTimeout(timer)
   }, [searchInput, search, setSearch])
 
-  const { data, loading, mutate: mutateTickets } = useAsync<{
+  const {
+    data,
+    loading,
+    mutate: mutateTickets
+  } = useAsync<{
     data: {
       tickets: Ticket[]
       pagination: any
@@ -193,8 +190,11 @@ function TicketList() {
   }
 
   return (
-    <div className='w-full max-w-full min-w-0 overflow-x-hidden rounded-xl bg-card/40 dark:bg-card/50 border border-border/60 min-h-[70vh] sm:min-h-[85vh] p-3 sm:p-4 lg:p-6 -mt-12 sm:-mt-16'>
-      <PageHeader title='Support Tickets' subTitle='Track replies, customer context, and ticket activity'>
+    <div className='w-full max-w-full min-w-0 overflow-x-hidden rounded-xl bg-card/40 dark:bg-card/50 border border-border/60 min-h-[70vh] sm:min-h-[85vh] p-3 sm:p-4 lg:p-6'>
+      <PageHeader
+        title='Support Tickets'
+        subTitle='Track replies, customer context, and ticket activity'
+      >
         <div className='flex flex-col gap-4'>
           <div className='grid gap-3 sm:grid-cols-2 xl:grid-cols-4'>
             {statusCards.map((card) => {
@@ -215,7 +215,9 @@ function TicketList() {
                     <span className='text-sm font-medium text-muted-foreground'>{card.title}</span>
                     {card.key === 'all' && <MessageSquare className='h-4 w-4 text-primary' />}
                     {card.key === 'OPEN' && <MailOpen className='h-4 w-4 text-blue-500' />}
-                    {card.key === 'IN_PROGRESS' && <MessageSquare className='h-4 w-4 text-amber-500' />}
+                    {card.key === 'IN_PROGRESS' && (
+                      <MessageSquare className='h-4 w-4 text-amber-500' />
+                    )}
                     {card.key === 'CLOSED' && <CheckCircle2 className='h-4 w-4 text-emerald-500' />}
                   </div>
                   <div className='text-3xl font-semibold text-foreground'>{count}</div>

@@ -1,0 +1,813 @@
+<!doctype html>
+
+<html class="dark" lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>FLEXORA | Performance Elite</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Bebas+Neue&amp;family=Outfit:wght@300;400;600;700&amp;family=JetBrains+Mono:wght@500;600&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+      rel="stylesheet"
+    />
+    <script id="tailwind-config">
+      tailwind.config = {
+        darkMode: 'class',
+        theme: {
+          extend: {
+            colors: {
+              'on-surface-variant': '#e8bdb3',
+              'secondary-fixed-dim': '#ffb68d',
+              'inverse-on-surface': '#402b26',
+              'tertiary-fixed-dim': '#a6c8ff',
+              secondary: '#ffb68d',
+              'on-error-container': '#ffdad6',
+              'on-tertiary-container': '#002a54',
+              'on-secondary-fixed-variant': '#763300',
+              'on-secondary-fixed': '#331200',
+              'inverse-primary': '#b42800',
+              'primary-fixed': '#ffdad2',
+              'on-secondary': '#532200',
+              'secondary-fixed': '#ffdbc9',
+              'on-primary-fixed': '#3c0700',
+              'on-background': '#fddbd3',
+              'surface-container-lowest': '#1a0a06',
+              'tertiary-fixed': '#d5e3ff',
+              'outline-variant': '#5e3f38',
+              'on-error': '#690005',
+              'surface-tint': '#ffb4a2',
+              'on-tertiary-fixed-variant': '#004787',
+              'tertiary-container': '#2d91ff',
+              'on-tertiary-fixed': '#001c3b',
+              background: '#200f0b',
+              'surface-variant': '#45302a',
+              'primary-container': '#ff562c',
+              'on-primary-container': '#560e00',
+              'error-container': '#93000a',
+              'inverse-surface': '#fddbd3',
+              'surface-container-low': '#291712',
+              'surface-container-high': '#392520',
+              'on-primary-fixed-variant': '#8a1d00',
+              'secondary-container': '#ae4f00',
+              'on-surface': '#fddbd3',
+              'surface-dim': '#200f0b',
+              error: '#ffb4ab',
+              'on-secondary-container': '#ffe7dc',
+              primary: '#ffb4a2',
+              tertiary: '#a6c8ff',
+              'on-primary': '#621100',
+              'on-tertiary': '#003060',
+              outline: '#ae887f',
+              'surface-container-highest': '#45302a',
+              'surface-container': '#2d1b16',
+              'surface-bright': '#4a342f',
+              surface: '#200f0b',
+              'primary-fixed-dim': '#ffb4a2'
+            },
+            borderRadius: {
+              DEFAULT: '0.25rem',
+              lg: '0.5rem',
+              xl: '0.75rem',
+              full: '9999px'
+            },
+            spacing: {
+              lg: '48px',
+              base: '8px',
+              sm: '12px',
+              md: '24px',
+              xs: '4px',
+              xl: '80px',
+              gutter: '24px',
+              'container-max': '1440px'
+            },
+            fontFamily: {
+              'headline-lg': ['Bebas Neue'],
+              'headline-md': ['Bebas Neue'],
+              'body-sm': ['Outfit'],
+              'body-md': ['Outfit'],
+              'data-lg': ['JetBrains Mono'],
+              'headline-lg-mobile': ['Bebas Neue'],
+              'display-lg': ['Bebas Neue'],
+              'data-md': ['JetBrains Mono'],
+              'body-lg': ['Outfit']
+            },
+            fontSize: {
+              'headline-lg': [
+                '48px',
+                { lineHeight: '48px', letterSpacing: '0.02em', fontWeight: '700' }
+              ],
+              'headline-md': [
+                '32px',
+                { lineHeight: '32px', letterSpacing: '0.02em', fontWeight: '700' }
+              ],
+              'body-sm': ['14px', { lineHeight: '20px', fontWeight: '400' }],
+              'body-md': ['16px', { lineHeight: '24px', fontWeight: '400' }],
+              'data-lg': [
+                '20px',
+                { lineHeight: '24px', letterSpacing: '-0.02em', fontWeight: '600' }
+              ],
+              'headline-lg-mobile': [
+                '36px',
+                { lineHeight: '36px', letterSpacing: '0.02em', fontWeight: '700' }
+              ],
+              'display-lg': [
+                '80px',
+                { lineHeight: '80px', letterSpacing: '0.02em', fontWeight: '700' }
+              ],
+              'data-md': [
+                '14px',
+                { lineHeight: '18px', letterSpacing: '-0.01em', fontWeight: '500' }
+              ],
+              'body-lg': ['18px', { lineHeight: '28px', fontWeight: '400' }]
+            }
+          }
+        }
+      }
+    </script>
+    <style>
+      .fire-gradient {
+        background: linear-gradient(135deg, #ff3d00 0%, #ff8c42 100%);
+      }
+      .glass-card {
+        background: rgba(255, 255, 255, 0.03);
+        backdrop-filter: blur(12px);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+      }
+      .glass-card:hover {
+        border: 1px solid rgba(255, 180, 162, 0.25);
+        transform: scale(1.02);
+        transition: all 0.3s ease;
+      }
+      .grain-overlay {
+        position: relative;
+      }
+      .grain-overlay::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: url('https://grainy-gradients.vercel.app/noise.svg');
+        opacity: 0.12;
+        pointer-events: none;
+        z-index: 1;
+      }
+    </style>
+  </head>
+  <body
+    class="bg-background text-on-background font-body-md selection:bg-primary selection:text-on-primary"
+  >
+    <!-- 1. Premium Navbar -->
+    <header
+      class="fixed top-0 w-full z-50 bg-surface/80 backdrop-blur-md border-b border-outline-variant/20 shadow-xl"
+    >
+      <div class="flex justify-between items-center w-full px-xl py-sm max-w-container-max mx-auto">
+        <a class="font-headline-lg text-headline-lg text-primary tracking-tighter" href="#"
+          >FLEXORA</a
+        >
+        <nav class="hidden md:flex items-center gap-lg">
+          <a class="text-primary font-bold border-b-2 border-primary pb-1 font-body-md" href="#"
+            >Shop</a
+          >
+          <a
+            class="text-on-surface-variant font-medium hover:text-primary transition-colors font-body-md"
+            href="#"
+            >Categories</a
+          >
+          <a
+            class="text-on-surface-variant font-medium hover:text-primary transition-colors font-body-md"
+            href="#"
+            >Deals</a
+          >
+          <a
+            class="text-on-surface-variant font-medium hover:text-primary transition-colors font-body-md"
+            href="#"
+            >About</a
+          >
+        </nav>
+        <div class="flex items-center gap-md">
+          <button class="hover:scale-105 hover:opacity-90 transition-all text-primary">
+            <span class="material-symbols-outlined" data-icon="search">search</span>
+          </button>
+          <button class="hover:scale-105 hover:opacity-90 transition-all text-primary relative">
+            <span class="material-symbols-outlined" data-icon="shopping_cart">shopping_cart</span>
+            <span
+              class="absolute -top-1 -right-1 bg-primary-container text-on-primary-container text-[10px] w-4 h-4 flex items-center justify-center rounded-full font-bold"
+              >2</span
+            >
+          </button>
+          <button class="hover:scale-105 hover:opacity-90 transition-all text-primary">
+            <span class="material-symbols-outlined" data-icon="person">person</span>
+          </button>
+        </div>
+      </div>
+    </header>
+    <main class="pt-[80px]">
+      <!-- 2. Split-Hero Section -->
+      <section class="grain-overlay relative min-h-[870px] flex items-center overflow-hidden">
+        <div
+          class="grid grid-cols-1 md:grid-cols-2 w-full max-w-container-max mx-auto px-xl gap-lg"
+        >
+          <div class="relative rounded-xl overflow-hidden shadow-2xl group border border-white/5">
+            <img
+              alt="Hero Athlete"
+              class="w-full h-[600px] object-cover transition-transform duration-700 group-hover:scale-105"
+              data-alt="A powerful professional bodybuilder mid-lift with a heavy barbell in a high-contrast industrial gym setting. Intense orange and red rim lighting highlights his muscular definition against deep black shadows. The atmosphere is cinematic and high-energy with visible chalk dust in the air, creating a premium performance athletic aesthetic."
+              src="https://lh3.googleusercontent.com/aida-public/AB6AXuCiBSy-6fb44vYtgODG8UwVvoRZMRtrF3BJzAbVt_ByGjVlxS_kHhcixLOF7LMVVSg-Z9uZxhjxVYNDA8WEotlzHJ2lNh8lqTU5H94YiMfm2P84T7NomG2O92lNkZGnrG9klQw3r5ADu0p3nHJEGJIAdcg2gYwGM6PIsZUF_5ZZnsExLmYnX9UfpsWqIzX7F-Y4iASzsh-pjELUiQNLvpSIR-2dpiH0ahkbG1SZztv4XPJpXkRDM8VSPufe_KWiM1kmOhfob0ryjYs4"
+            />
+            <div
+              class="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent opacity-60"
+            ></div>
+          </div>
+          <div class="flex flex-col justify-center">
+            <h1 class="font-display-lg text-display-lg text-on-surface leading-tight mb-md">
+              BUILT FOR <span class="text-primary-container">BEASTS.</span><br />
+              PRICED FOR EVERYONE.
+            </h1>
+            <p class="font-body-lg text-body-lg text-on-surface-variant max-w-lg mb-lg">
+              Professional bodybuilding gear forged in the furnace of elite performance.
+              Uncompromising quality meets accessible engineering.
+            </p>
+            <div class="flex gap-md">
+              <button
+                class="fire-gradient px-lg py-sm rounded-full font-headline-md text-headline-md text-white uppercase shadow-lg shadow-primary/20 hover:scale-105 active:scale-95 transition-all"
+              >
+                Shop Now
+              </button>
+              <button
+                class="border-2 border-outline-variant px-lg py-sm rounded-full font-headline-md text-headline-md text-on-surface uppercase hover:bg-surface-variant transition-all active:scale-95"
+              >
+                Explore
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+      <!-- 3. Trust Badges -->
+      <section class="bg-surface-container-low py-md border-y border-outline-variant/10">
+        <div class="max-w-container-max mx-auto px-xl grid grid-cols-2 md:grid-cols-4 gap-md">
+          <div class="flex items-center gap-sm">
+            <span class="material-symbols-outlined text-primary" data-icon="local_shipping"
+              >local_shipping</span
+            >
+            <span class="font-data-md text-data-md uppercase tracking-wider text-on-surface-variant"
+              >Free Shipping</span
+            >
+          </div>
+          <div class="flex items-center gap-sm">
+            <span class="material-symbols-outlined text-primary" data-icon="sync">sync</span>
+            <span class="font-data-md text-data-md uppercase tracking-wider text-on-surface-variant"
+              >30-Day Returns</span
+            >
+          </div>
+          <div class="flex items-center gap-sm">
+            <span class="material-symbols-outlined text-primary" data-icon="verified_user"
+              >verified_user</span
+            >
+            <span class="font-data-md text-data-md uppercase tracking-wider text-on-surface-variant"
+              >Secure Checkout</span
+            >
+          </div>
+          <div class="flex items-center gap-sm">
+            <span class="material-symbols-outlined text-primary" data-icon="support_agent"
+              >support_agent</span
+            >
+            <span class="font-data-md text-data-md uppercase tracking-wider text-on-surface-variant"
+              >Expert Support</span
+            >
+          </div>
+        </div>
+      </section>
+      <!-- 4. Visual Category Grid -->
+      <section class="py-xl max-w-container-max mx-auto px-xl">
+        <h2 class="font-headline-lg text-headline-lg text-on-surface mb-lg">
+          CHOOSE YOUR DISCIPLINE
+        </h2>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-gutter">
+          <div
+            class="relative h-[450px] rounded-xl overflow-hidden glass-card group cursor-pointer"
+          >
+            <img
+              alt="Strength"
+              class="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+              data-alt="Close up of a muscular athlete gripping a heavy iron dumbbell. Dark, dramatic lighting with amber highlights on the skin and equipment. The focus is on strength and intensity within a premium obsidian-themed fitness environment."
+              src="https://lh3.googleusercontent.com/aida-public/AB6AXuDyJJpXe4gHPOgj5pYi0swYdniWKRUb08nA9p8plPsxTXb2iUz5PaFxHsLq2KqIfJRFyPTmvgmzwTqSNgw4WPpT9fERiPZhgy91Nq2VHurc6N3dA5AfqGlSEJ4_En3_Ie8iE11cbUK2_GkTnKyUwljs5TtjaBsMEyeP3VWNRlmWsEF9l3oEuPu3RG6ukbcQWCtWIVPll11KLMpPDVkXHhAsVBZQSVEZte7GPLw8cNR6eqaee884BWwXVTAZSDo5-InhaImgY6zTMNmG"
+            />
+            <div
+              class="absolute inset-0 bg-gradient-to-t from-primary-container/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"
+            ></div>
+            <div class="absolute bottom-md left-md">
+              <h3 class="font-headline-lg text-headline-lg text-white">STRENGTH</h3>
+              <div class="h-1 w-0 bg-white transition-all duration-300 group-hover:w-full"></div>
+            </div>
+          </div>
+          <div
+            class="relative h-[450px] rounded-xl overflow-hidden glass-card group cursor-pointer"
+          >
+            <img
+              alt="Cardio"
+              class="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+              data-alt="A female runner sprinting on a track at dusk. The lighting is low-key with sharp red backlighting from stadium lights, capturing the motion and high-performance energy of endurance training. The style is moody and cinematic."
+              src="https://lh3.googleusercontent.com/aida-public/AB6AXuATbLu9kRTOLMU4VdWoqeZ1oJD6XSyM8bfpCJUvmJjXYz511NjtQHOYdEEsHoktzXQkUYzoEtY-IbpK2MyVoP9lbQXIFDeXJZQ_Ix8-VqEfDkdJcUD--i6tY4Thc7hRFbYlj288PypgynEo1i7su75aHVr3gZXo9sUwif-_I1NrotcKqeEwGXf_Mywj_3Z2owEZpD07rCSJ-aPEN4oT0yIqZOtI2hU0uZ3C9pMr3xXH06jq0BG8T_XUkk81Iw9aAxAycS2Nlzd6bVM5"
+            />
+            <div
+              class="absolute inset-0 bg-gradient-to-t from-primary-container/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"
+            ></div>
+            <div class="absolute bottom-md left-md">
+              <h3 class="font-headline-lg text-headline-lg text-white">CARDIO</h3>
+              <div class="h-1 w-0 bg-white transition-all duration-300 group-hover:w-full"></div>
+            </div>
+          </div>
+          <div
+            class="relative h-[450px] rounded-xl overflow-hidden glass-card group cursor-pointer"
+          >
+            <img
+              alt="Recovery"
+              class="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+              data-alt="A focused athlete performing static stretching in a serene, dark-toned yoga studio. Soft volumetric lighting creates a calm yet powerful recovery atmosphere with deep orange accents highlighting the form and concentration."
+              src="https://lh3.googleusercontent.com/aida-public/AB6AXuC7aQaFbqS6byC4JJ1Zm1FtmfFUvhVoPbHLFj9ryxl_4NBbm2vbAlWPrxPZh0_E5kBYTnyzP1ldBFrd35fXvSe51SoErtwIA8CBsupC8-nObxbXz0wLWudRUjhtyw_A8zhkMq49MUxBr_lZuwv0mlCdnWAXtLYb2T-UbpxgLKj7iSKzIlyTO-5pePtWA-u-GWTHSDvP5gHULJ1nQQk1LPGEqj-_QvA-6YxUmHZFKPvVMtNmAvyKRgrTzjhzVjDBJyd2UbULTdqDZ2JG"
+            />
+            <div
+              class="absolute inset-0 bg-gradient-to-t from-primary-container/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"
+            ></div>
+            <div class="absolute bottom-md left-md">
+              <h3 class="font-headline-lg text-headline-lg text-white">RECOVERY</h3>
+              <div class="h-1 w-0 bg-white transition-all duration-300 group-hover:w-full"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+      <!-- 5. Shop by Goal -->
+      <section class="bg-surface-container py-xl">
+        <div class="max-w-container-max mx-auto px-xl">
+          <div class="flex justify-between items-end mb-lg">
+            <div>
+              <p class="text-primary font-data-md tracking-widest uppercase mb-xs">Selection</p>
+              <h2 class="font-headline-lg text-headline-lg text-on-surface">SHOP BY GOAL</h2>
+            </div>
+            <div class="flex gap-sm">
+              <button
+                class="w-12 h-12 rounded-full border border-outline-variant flex items-center justify-center text-on-surface hover:bg-primary hover:text-on-primary transition-all"
+              >
+                <span class="material-symbols-outlined" data-icon="chevron_left">chevron_left</span>
+              </button>
+              <button
+                class="w-12 h-12 rounded-full border border-outline-variant flex items-center justify-center text-on-surface hover:bg-primary hover:text-on-primary transition-all"
+              >
+                <span class="material-symbols-outlined" data-icon="chevron_right"
+                  >chevron_right</span
+                >
+              </button>
+            </div>
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-gutter">
+            <!-- Goal Card 1 -->
+            <div class="glass-card p-md rounded-xl group overflow-hidden">
+              <div class="aspect-[4/5] rounded-lg overflow-hidden mb-md">
+                <img
+                  alt="Hypertrophy"
+                  class="w-full h-full object-cover transition-transform group-hover:scale-105"
+                  data-alt="A high-contrast black and white photograph of a male bodybuilder tensed, showing extreme muscle definition. Vibrant orange neon lights cast a glow along the contours of his muscles, creating a hyper-modern and aggressive hypertrophic goal aesthetic."
+                  src="https://lh3.googleusercontent.com/aida-public/AB6AXuAAfvHmr-qvMia4HDUCEU1k2JzF4qCX4yqaJ84_ISVmVudO9pNlDtqEJdIABk3bddDe1vgJ1_pBFl5YkLsFA4p6ltFBMhcHU-GBeAsY0eXI0jUNfK5B2NY_FsGW2jjyf9Onj8GycCJl7fGW_r1jGq7gy4wMJbVGXxqth1f9O03k6PoujbZLvtQCSyvORj1ZdNqLONMzMOZILQRp0kSVoocIDWcSc9Iqc5dkrnl5F3M37PDKE8d9wJcCx4aRKoUM_sN4WQ86dLiqFSYH"
+                />
+              </div>
+              <h4
+                class="font-headline-md text-headline-md text-on-surface text-center uppercase group-hover:text-primary transition-colors"
+              >
+                Hypertrophy
+              </h4>
+            </div>
+            <!-- Goal Card 2 -->
+            <div class="glass-card p-md rounded-xl group overflow-hidden">
+              <div class="aspect-[4/5] rounded-lg overflow-hidden mb-md">
+                <img
+                  alt="Endurance"
+                  class="w-full h-full object-cover transition-transform group-hover:scale-105"
+                  data-alt="Close up of high-performance running shoes in mid-stride on asphalt during blue hour. Sharp orange light trails flow behind the feet to represent speed and endurance. The background is a dark, cinematic urban landscape."
+                  src="https://lh3.googleusercontent.com/aida-public/AB6AXuBb5pSqeWIxVnOmOMwBldcQIb0NyxdplwdIGYwh3roh8W065We7baRtDGl0sZi5gD4lMwMTzclPuxVcl5jiN7zyF1JZAJT9-GNyHcUO0MTkXKlUCfa5R9mHa6QMPMCEK-oC8ICeTaj2CtgcDocPRq5OHrK58fmzwc96jEAQ5tiqwy7U9wn8hPeQ2HtRqydXb0KR3jM9ynDTvtSwBmsC-1k9aRw1pEvu7UWx3eKoCiILo5QuGXe1rawOUDCXb1cB16kuqoIMGHHqtYES"
+                />
+              </div>
+              <h4
+                class="font-headline-md text-headline-md text-on-surface text-center uppercase group-hover:text-primary transition-colors"
+              >
+                Endurance
+              </h4>
+            </div>
+            <!-- Goal Card 3 -->
+            <div class="glass-card p-md rounded-xl group overflow-hidden">
+              <div class="aspect-[4/5] rounded-lg overflow-hidden mb-md">
+                <img
+                  alt="Mobility"
+                  class="w-full h-full object-cover transition-transform group-hover:scale-105"
+                  data-alt="An athlete performing a deep mobility stretch on a yoga mat. Top-down cinematic lighting creates deep shadows while warm orange highlights emphasize the fluid movement and flexibility. The scene is minimalist and professional."
+                  src="https://lh3.googleusercontent.com/aida-public/AB6AXuBoV1zo1PrLq_cL4m1YC9Qs17X3CeFIadrpRygIBd2xFIHOh99hRk-IttPKDTTdpq3xUdpub6VMvKT8ijQiFnBU9IJZmFGp8vV1Tuw5932c4J-RtwBJWuJtQ4cQOJxCKCgN-et3DjfUHuyOkIQOwdAdjQnRfJXWU1smihUbiqU8B0ANjsqG_XNqmEWQZJ9gRFlmIkf8g2MqLiSAoYt4FiEAI2GT7Fi6RK3vXKNHbT1KjaXdbDsHE0S8q5L6cPfsfsiTwT3Lc5VBmKEp"
+                />
+              </div>
+              <h4
+                class="font-headline-md text-headline-md text-on-surface text-center uppercase group-hover:text-primary transition-colors"
+              >
+                Mobility
+              </h4>
+            </div>
+          </div>
+        </div>
+      </section>
+      <!-- 6. Trending Gear -->
+      <section class="py-xl max-w-container-max mx-auto px-xl">
+        <h2 class="font-headline-lg text-headline-lg text-on-surface mb-lg">TRENDING GEAR</h2>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-gutter">
+          <!-- Product Card 1 -->
+          <div class="glass-card p-sm rounded-xl relative group">
+            <div
+              class="aspect-square rounded-lg bg-surface-container-lowest overflow-hidden mb-md relative"
+            >
+              <img
+                alt="Product"
+                class="w-full h-full object-cover transition-transform group-hover:scale-105"
+                data-alt="A sleek black matte protein supplement bottle standing on a reflective obsidian surface. A subtle orange rim light defines the edges of the product. The overall vibe is pharmaceutical-grade quality and high-end fitness tech."
+                src="https://lh3.googleusercontent.com/aida-public/AB6AXuBSwYdpdNSdaDAMvpBcWrhstJjM2fj9wjCz1c3woBFuPEJoX4meplh2RRaYrPnX02g7Gw9-O1ZvVc2jEXI223I9YQUHbpOSwJQbUBjNpiYFk0WIB0VrwX18QswjHd6pK2SnVVFapHvY1nSApq4dL2iHa6gj2NjbO819KVeKSP6bk7DkGr-l-5OhvCZwI4EHHcigF1AYubUR9aDB1XvY0FAnS40mEl08VIG_8xJkLNWOHRG897DM5scz7vT2H6VUiaumTGXV-2xKrroR"
+              />
+              <button
+                class="absolute top-sm right-sm w-10 h-10 rounded-full glass-card flex items-center justify-center text-on-surface hover:text-primary transition-colors"
+              >
+                <span class="material-symbols-outlined" data-icon="favorite">favorite</span>
+              </button>
+            </div>
+            <div class="px-xs">
+              <p class="font-data-md text-data-md text-primary uppercase mb-xs tracking-tighter">
+                Supplements
+              </p>
+              <h5 class="font-body-lg font-bold text-on-surface mb-xs truncate">
+                ISOLATE ELITE PRO
+              </h5>
+              <div class="flex items-center gap-sm">
+                <span class="font-data-lg text-data-lg text-primary">$59.99</span>
+                <span class="font-data-md text-data-md text-on-surface-variant line-through"
+                  >$75.00</span
+                >
+              </div>
+            </div>
+          </div>
+          <!-- Product Card 2 (Active/Hover State shown) -->
+          <div
+            class="glass-card p-sm rounded-xl relative group border-primary/40 ring-1 ring-primary/20"
+          >
+            <div
+              class="aspect-square rounded-lg bg-surface-container-lowest overflow-hidden mb-md relative"
+            >
+              <img
+                alt="Product"
+                class="w-full h-full object-cover transition-transform group-hover:scale-105"
+                data-alt="A premium black technical performance t-shirt displayed in a professional studio setting. The fabric has a visible moisture-wicking texture, illuminated by sharp side lighting that creates a deep, athletic atmosphere with orange accent shadows."
+                src="https://lh3.googleusercontent.com/aida-public/AB6AXuBxbYOdEiDc4ujUOW37dZbs2gQessA2EVAgBfIGW75Ia8Cg6AXTFgA494DgCynGsbP0pQOTYrWR2l6Xt9ByB_f-GXMkzfnzi_oa9-6CXI5-jiZY0gcMOYTAwYMTbjO8D8c1VckuOmnKAh87gD0FtuxdEc5hTpMpDRBBB7EB07iPHiPaniCd0RIwRmYINvDo7GqsY6cqy38i9Urq6C1cZNG5xPi4uahf9psPy_0fc1mlLRNgERBjmDiwlaTh5o0lt1phLBeeDDwNrGPB"
+              />
+              <button
+                class="absolute top-sm right-sm w-10 h-10 rounded-full fire-gradient flex items-center justify-center text-white"
+              >
+                <span
+                  class="material-symbols-outlined"
+                  data-icon="favorite"
+                  style="font-variation-settings: 'FILL' 1"
+                  >favorite</span
+                >
+              </button>
+            </div>
+            <div class="px-xs">
+              <p class="font-data-md text-data-md text-primary uppercase mb-xs tracking-tighter">
+                Apparel
+              </p>
+              <h5 class="font-body-lg font-bold text-on-surface mb-xs truncate">
+                TECH-FLUX PERFORMANCE TEE
+              </h5>
+              <div class="flex items-center gap-sm">
+                <span class="font-data-lg text-data-lg text-primary">$34.99</span>
+              </div>
+            </div>
+          </div>
+          <!-- Product Card 3 -->
+          <div class="glass-card p-sm rounded-xl relative group">
+            <div
+              class="aspect-square rounded-lg bg-surface-container-lowest overflow-hidden mb-md relative"
+            >
+              <img
+                alt="Product"
+                class="w-full h-full object-cover transition-transform group-hover:scale-105"
+                data-alt="A professional-grade matte black foam roller and resistance bands set on a dark textured gym floor. High-contrast orange spot lighting focuses on the equipment, emphasizing its rugged and durable performance quality."
+                src="https://lh3.googleusercontent.com/aida-public/AB6AXuA1qD45EUVLaeTy2hVwY9bLGyBiaUkXUC2PBQ1hhQ8PEOuGzhQ7laABfQFas9HARx6SEYuea9wSgqJy06Sc_N0wmcKu9lxaqWF7qBPbs_ixjLMSubNHdE3jQQUbPxVpTslgPSM9iFg0MNLORs3AeWGk4bUcSLW8ICKkAUMvYrHpzbMOOm4w3C6sJW4HFXuUmYdlIfrBON7dKNDE0m3X_3sTvRD3lxdMqqJvkRXkc7fT9--b1XgX4Jb2sbLsEyigfQhtSaPiCXZ_fUht"
+              />
+              <button
+                class="absolute top-sm right-sm w-10 h-10 rounded-full glass-card flex items-center justify-center text-on-surface"
+              >
+                <span class="material-symbols-outlined" data-icon="favorite">favorite</span>
+              </button>
+            </div>
+            <div class="px-xs">
+              <p class="font-data-md text-data-md text-primary uppercase mb-xs tracking-tighter">
+                Recovery
+              </p>
+              <h5 class="font-body-lg font-bold text-on-surface mb-xs truncate">
+                DEEP RECOVERY BUNDLE
+              </h5>
+              <div class="flex items-center gap-sm">
+                <span class="font-data-lg text-data-lg text-primary">$129.99</span>
+                <span class="font-data-md text-data-md text-on-surface-variant line-through"
+                  >$150.00</span
+                >
+              </div>
+            </div>
+          </div>
+          <!-- Product Card 4 -->
+          <div class="glass-card p-sm rounded-xl relative group">
+            <div
+              class="aspect-square rounded-lg bg-surface-container-lowest overflow-hidden mb-md relative"
+            >
+              <img
+                alt="Product"
+                class="w-full h-full object-cover transition-transform group-hover:scale-105"
+                data-alt="A pair of heavy professional dumbbells on a rack in a premium dark gym. The metal surfaces reflect a vibrant orange neon glow, emphasizing the elite and hardcore training nature of the brand."
+                src="https://lh3.googleusercontent.com/aida-public/AB6AXuCSAEFA8Ln2URHdhpMcYL1SBl_xww_BKN800O10O86fF9dbEpkw-ald_up0dYS9Z3uWnsAPpT3VkjQlO704b8JJDaCfGZSUQNleklItLkHv7JRpH8KJqfZ94hnB86DwnSnHZB_xN-gKef4DRC63V4PVbaUlYmJU1kvQx01djApRNBt1eG9B4mMGFEIr89r76lF4bJCtdpV4PY6NWsB16EoifeQMnFh64YR7H9rsKncDZoy_xtzEBrp3-c3bY3srMTp5xmOdZyzpShC8"
+              />
+              <button
+                class="absolute top-sm right-sm w-10 h-10 rounded-full glass-card flex items-center justify-center text-on-surface"
+              >
+                <span class="material-symbols-outlined" data-icon="favorite">favorite</span>
+              </button>
+            </div>
+            <div class="px-xs">
+              <p class="font-data-md text-data-md text-primary uppercase mb-xs tracking-tighter">
+                Equipment
+              </p>
+              <h5 class="font-body-lg font-bold text-on-surface mb-xs truncate">
+                HEX-BOLT DUMBBELLS (25KG)
+              </h5>
+              <div class="flex items-center gap-sm">
+                <span class="font-data-lg text-data-lg text-primary">$199.99</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+      <!-- 7. Promotional Sale Banner -->
+      <section class="max-w-container-max mx-auto px-xl py-xl">
+        <div
+          class="fire-gradient rounded-xl overflow-hidden relative min-h-[300px] flex items-center px-lg grain-overlay"
+        >
+          <div class="grid grid-cols-1 md:grid-cols-2 w-full items-center">
+            <div class="z-10 py-md">
+              <h2 class="font-display-lg text-display-lg text-white mb-sm">SEASONAL PEAK SALE</h2>
+              <p class="font-body-lg text-body-lg text-white/90 mb-md max-w-md">
+                Get up to 40% off on all performance gear and supplements. Limited time only.
+              </p>
+              <button
+                class="bg-surface p-sm px-lg rounded-full font-headline-md text-headline-md text-primary uppercase hover:bg-surface-bright transition-all"
+              >
+                Claim Discount
+              </button>
+            </div>
+            <div class="flex justify-center md:justify-end gap-md z-10">
+              <div class="flex flex-col items-center">
+                <div
+                  class="bg-surface/20 backdrop-blur-md rounded-lg w-20 h-20 flex items-center justify-center text-white font-data-lg text-[32px]"
+                >
+                  01
+                </div>
+                <span class="font-data-md text-white/70 uppercase mt-xs">Days</span>
+              </div>
+              <div class="flex flex-col items-center">
+                <div
+                  class="bg-surface/20 backdrop-blur-md rounded-lg w-20 h-20 flex items-center justify-center text-white font-data-lg text-[32px]"
+                >
+                  14
+                </div>
+                <span class="font-data-md text-white/70 uppercase mt-xs">Hrs</span>
+              </div>
+              <div class="flex flex-col items-center">
+                <div
+                  class="bg-surface/20 backdrop-blur-md rounded-lg w-20 h-20 flex items-center justify-center text-white font-data-lg text-[32px]"
+                >
+                  30
+                </div>
+                <span class="font-data-md text-white/70 uppercase mt-xs">Min</span>
+              </div>
+              <div class="flex flex-col items-center">
+                <div
+                  class="bg-surface/20 backdrop-blur-md rounded-lg w-20 h-20 flex items-center justify-center text-white font-data-lg text-[32px]"
+                >
+                  45
+                </div>
+                <span class="font-data-md text-white/70 uppercase mt-xs">Sec</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+      <!-- 8. Brand Story / About -->
+      <section class="py-xl bg-surface-container-lowest">
+        <div
+          class="max-w-container-max mx-auto px-xl grid grid-cols-1 md:grid-cols-2 gap-xl items-center"
+        >
+          <div class="order-2 md:order-1">
+            <h2 class="font-headline-lg text-headline-lg text-on-surface mb-md">
+              THE SCIENCE OF<br /><span class="text-primary-container">UNSTOPPABLE.</span>
+            </h2>
+            <p class="font-body-lg text-body-lg text-on-surface-variant mb-md leading-relaxed">
+              At Flexora, we don't just sell equipment; we engineer progress. Founded by athletes
+              for athletes, our products are rigorously tested in the world's most demanding
+              environments. We believe that professional-grade performance shouldn't be a privilege
+              of the elite few, but a standard for everyone who dares to push their limits.
+            </p>
+            <div class="grid grid-cols-3 gap-md">
+              <div>
+                <p class="font-headline-md text-headline-md text-primary">150K+</p>
+                <p class="font-body-sm text-body-sm text-on-surface-variant uppercase">Athletes</p>
+              </div>
+              <div>
+                <p class="font-headline-md text-headline-md text-primary">12</p>
+                <p class="font-body-sm text-body-sm text-on-surface-variant uppercase">
+                  Pro Awards
+                </p>
+              </div>
+              <div>
+                <p class="font-headline-md text-headline-md text-primary">24/7</p>
+                <p class="font-body-sm text-body-sm text-on-surface-variant uppercase">
+                  Expert Care
+                </p>
+              </div>
+            </div>
+          </div>
+          <div class="order-1 md:order-2 rounded-xl overflow-hidden glass-card h-[500px]">
+            <img
+              alt="Brand Story"
+              class="w-full h-full object-cover"
+              data-alt="A wide panoramic shot of a premium modern athletic laboratory where scientists and athletes collaborate. The room is dark with glowing orange digital displays and sleek black gym equipment. The aesthetic is extremely high-tech and future-forward, emphasizing the research behind the brand."
+              src="https://lh3.googleusercontent.com/aida-public/AB6AXuChYjuI4TJLulSQkJ3q4LJ0GkrKRF4UQUhjg9_bZAdBMv3kh1u2AY3yXDf-PgciUVAfQQkNnY9B6yII642nRqCSjjXK0T6mf5ayybBzr40Uikfzp_DPgEHuncLYhQ-ueFzQ4JInZeJqvRZnFj6-9DnD6QEaaZM8_tOJw1hEFP7niidLRpZrTt_KElvfm-FG64RitzmCQ9GDrlp6wyt4gowmhio4zwjrmIVqN-I7DocJOw-3cAXojwkRQvQQ6OuqJDpBi8JzGtLOzyFI"
+            />
+          </div>
+        </div>
+      </section>
+      <!-- 9. Newsletter Signup -->
+      <section class="max-w-container-max mx-auto px-xl py-xl">
+        <div
+          class="glass-card rounded-xl p-xl flex flex-col md:flex-row items-center gap-lg border-primary/20"
+        >
+          <div class="flex-1">
+            <h2 class="font-headline-lg text-headline-lg text-on-surface mb-xs">
+              JOIN THE ELITE LIST
+            </h2>
+            <p class="font-body-md text-body-md text-on-surface-variant">
+              Get early access to drops, exclusive training programs, and elite athlete insights.
+            </p>
+          </div>
+          <div class="flex-1 w-full max-w-md">
+            <form class="flex gap-base">
+              <input
+                class="flex-1 bg-surface-container-highest border border-outline-variant rounded-lg px-md py-sm focus:ring-2 focus:ring-primary focus:border-primary text-on-surface placeholder:text-on-surface-variant/50"
+                placeholder="Enter your email address"
+                type="email"
+              />
+              <button
+                class="fire-gradient px-lg py-sm rounded-lg font-headline-md text-headline-md text-white uppercase shadow-lg shadow-primary/20 hover:scale-105 transition-all"
+              >
+                Sign Up
+              </button>
+            </form>
+          </div>
+        </div>
+      </section>
+    </main>
+    <!-- 10. Enhanced Footer -->
+    <footer class="bg-surface-container-lowest border-t border-outline-variant/10">
+      <div
+        class="grid grid-cols-1 md:grid-cols-4 gap-gutter px-xl py-lg max-w-container-max mx-auto"
+      >
+        <div class="col-span-1 md:col-span-1">
+          <h3 class="font-headline-md text-headline-md text-primary mb-md">FLEXORA</h3>
+          <p class="font-body-sm text-body-sm text-on-surface-variant mb-md">
+            Engineered for high-performance energy and premium exclusivity. Push beyond your limits
+            with professional-grade gear.
+          </p>
+          <div class="flex gap-md">
+            <a class="text-on-surface-variant hover:text-primary transition-colors" href="#"
+              ><span class="material-symbols-outlined" data-icon="facebook"
+                >social_leaderboard</span
+              ></a
+            >
+            <a class="text-on-surface-variant hover:text-primary transition-colors" href="#"
+              ><span class="material-symbols-outlined" data-icon="instagram">Pentagram</span></a
+            >
+            <a class="text-on-surface-variant hover:text-primary transition-colors" href="#"
+              ><span class="material-symbols-outlined" data-icon="youtube_activity"
+                >youtube_activity</span
+              ></a
+            >
+          </div>
+        </div>
+        <div>
+          <h4 class="font-headline-md text-headline-md text-on-surface mb-md">Product</h4>
+          <ul class="space-y-sm">
+            <li>
+              <a
+                class="font-body-sm text-body-sm text-on-surface-variant hover:text-on-surface transition-colors"
+                href="#"
+                >Men's Training</a
+              >
+            </li>
+            <li>
+              <a
+                class="font-body-sm text-body-sm text-on-surface-variant hover:text-on-surface transition-colors"
+                href="#"
+                >Women's Elite</a
+              >
+            </li>
+            <li>
+              <a
+                class="font-body-sm text-body-sm text-on-surface-variant hover:text-on-surface transition-colors"
+                href="#"
+                >Pro Supplements</a
+              >
+            </li>
+            <li>
+              <a
+                class="font-body-sm text-body-sm text-on-surface-variant hover:text-on-surface transition-colors"
+                href="#"
+                >Recovery Tools</a
+              >
+            </li>
+          </ul>
+        </div>
+        <div>
+          <h4 class="font-headline-md text-headline-md text-on-surface mb-md">Support</h4>
+          <ul class="space-y-sm">
+            <li>
+              <a
+                class="font-body-sm text-body-sm text-on-surface-variant hover:text-on-surface transition-colors"
+                href="#"
+                >Shipping &amp; Returns</a
+              >
+            </li>
+            <li>
+              <a
+                class="font-body-sm text-body-sm text-on-surface-variant hover:text-on-surface transition-colors"
+                href="#"
+                >Track Order</a
+              >
+            </li>
+            <li>
+              <a
+                class="font-body-sm text-body-sm text-on-surface-variant hover:text-on-surface transition-colors"
+                href="#"
+                >Privacy Policy</a
+              >
+            </li>
+            <li>
+              <a
+                class="font-body-sm text-body-sm text-on-surface-variant hover:text-on-surface transition-colors"
+                href="#"
+                >Terms of Service</a
+              >
+            </li>
+          </ul>
+        </div>
+        <div>
+          <h4 class="font-headline-md text-headline-md text-on-surface mb-md">Payment Methods</h4>
+          <div class="flex flex-wrap gap-sm">
+            <div class="w-12 h-8 bg-surface-variant rounded flex items-center justify-center">
+              <span class="material-symbols-outlined text-[18px]" data-icon="credit_card"
+                >credit_card</span
+              >
+            </div>
+            <div class="w-12 h-8 bg-surface-variant rounded flex items-center justify-center">
+              <span class="material-symbols-outlined text-[18px]" data-icon="account_balance"
+                >account_balance</span
+              >
+            </div>
+            <div class="w-12 h-8 bg-surface-variant rounded flex items-center justify-center">
+              <span class="material-symbols-outlined text-[18px]" data-icon="contactless"
+                >contactless</span
+              >
+            </div>
+          </div>
+          <p class="font-body-sm text-body-sm text-on-surface-variant mt-md">
+            Secure 256-bit SSL encrypted checkout.
+          </p>
+        </div>
+      </div>
+      <div
+        class="max-w-container-max mx-auto px-xl py-md border-t border-outline-variant/5 text-center md:text-left"
+      >
+        <p class="font-body-sm text-body-sm text-on-surface-variant/60">
+          © 2024 FLEXORA Performance. All rights reserved.
+        </p>
+      </div>
+    </footer>
+  </body>
+</html>

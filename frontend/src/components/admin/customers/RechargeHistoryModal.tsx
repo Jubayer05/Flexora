@@ -121,10 +121,10 @@ export function RechargeHistoryModal({ open, onOpenChange, user }: RechargeHisto
               <p>No balance transactions found.</p>
             </div>
           ) : (
-            <div className='rounded-lg border border-border overflow-hidden'>
+            <div className='rounded-lg border border-outline-variant/60 overflow-hidden'>
               <table className='w-full text-sm'>
                 <thead>
-                  <tr className='bg-muted/50 border-b border-border'>
+                  <tr className='bg-muted/50 border-b border-outline-variant/60'>
                     <th className='px-4 py-3 text-left font-medium'>Date</th>
                     <th className='px-4 py-3 text-left font-medium'>Type</th>
                     <th className='px-4 py-3 text-right font-medium'>Amount</th>
@@ -138,7 +138,7 @@ export function RechargeHistoryModal({ open, onOpenChange, user }: RechargeHisto
                     const amount = Number(tx.amount)
                     const isCredit = amount >= 0
                     return (
-                      <tr key={tx.id} className='border-b border-border last:border-0'>
+                      <tr key={tx.id} className='border-b border-outline-variant/60 last:border-0'>
                         <td className='px-4 py-3 whitespace-nowrap text-muted-foreground'>
                           {formatDate(tx.createdAt)}
                         </td>
@@ -169,7 +169,7 @@ export function RechargeHistoryModal({ open, onOpenChange, user }: RechargeHisto
           )}
         </div>
         {paginationData && paginationData.pages > 1 && (
-          <div className='border-t border-border pt-4'>
+          <div className='border-t border-outline-variant/60 pt-4'>
             <Pagination paginationData={paginationData} pageSizeOptions={[10, 20, 50]} />
           </div>
         )}

@@ -5,10 +5,10 @@ import dynamic from 'next/dynamic'
 import { usePathname, useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 
-import { userLogout } from '@/action/auth'
+import { adminLogout, userLogout } from '@/action/auth'
+import { getDashboardPath, isAdminRole } from '@/lib/authRedirect'
 import CustomLink from '@/components/common/CustomLink'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { buttonVariants } from '@/components/ui/button'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -26,7 +26,6 @@ import MobileNav from './MobileNav'
 import { Notifications } from './Notifications'
 import PromotionalIcons from './PromotionalIcons'
 
-// Load only on client to avoid "reading 'call'" / next-themes SSR issues
 const ThemeSwitcher = dynamic(
   () => import('@/components/common/ThemeSwitcher').then((m) => m.default),
   { ssr: false }
@@ -51,7 +50,7 @@ function HeaderBalance({ compact = false }: { compact?: boolean }) {
   return (
     <div
       className={cn(
-        'inline-flex items-center rounded-lg border border-border bg-background/60 text-card-foreground shadow-sm',
+        'inline-flex items-center rounded-full border border-outline-variant bg-surface-container/60 text-on-surface shadow-sm',
         compact ? 'h-9 max-w-[118px]' : 'h-10'
       )}
     >
@@ -59,7 +58,7 @@ function HeaderBalance({ compact = false }: { compact?: boolean }) {
         type='button'
         onClick={() => router.push('/user/profile')}
         className={cn(
-          'inline-flex h-full min-w-0 items-center gap-1.5 rounded-l-lg px-2.5 text-left transition-colors hover:bg-accent',
+          'inline-flex h-full min-w-0 items-center gap-1.5 rounded-l-full px-2.5 text-left transition-colors hover:bg-surface-variant',
           compact ? 'text-xs' : 'text-sm'
         )}
         aria-label={`Wallet balance $${balance.toFixed(2)}`}
@@ -74,8 +73,8 @@ function HeaderBalance({ compact = false }: { compact?: boolean }) {
         type='button'
         onClick={() => router.push('/wallet/topup')}
         className={cn(
-          'inline-flex h-full items-center justify-center border-l border-border text-primary transition-colors hover:bg-primary hover:text-primary-foreground',
-          compact ? 'w-8 rounded-r-lg' : 'w-9 rounded-r-lg'
+          'inline-flex h-full items-center justify-center border-l border-outline-variant text-primary transition-colors hover:bg-primary hover:text-on-primary rounded-r-full',
+          compact ? 'w-8' : 'w-9'
         )}
         aria-label='Add balance'
         title='Add balance'
@@ -88,12 +87,16 @@ function HeaderBalance({ compact = false }: { compact?: boolean }) {
 
 type HeaderActionsProps = {
   token: string | undefined
+  adminToken?: string
+  userRole?: string
   promotionalIcons: any
   activeMenuItems: PageItem[]
 }
 
 export default function HeaderActions({
   token,
+  adminToken,
+  userRole,
   promotionalIcons,
   activeMenuItems
 }: HeaderActionsProps) {
@@ -102,7 +105,6 @@ export default function HeaderActions({
   const [user, setUser] = useState<any | null>(null)
   const [guestUser, setGuestUser] = useState<any | null>(null)
 
-  // Fetch fresh profile when logged in so photoUrl and role are always current
   const { data: profileResponse } = useAsync<any>(() => (token ? '/customer/profile' : null))
   const profileUser = profileResponse?.data
 
@@ -150,22 +152,29 @@ export default function HeaderActions({
   }, [pathname, token])
 
   const effectiveUser = profileUser || user || (!token ? guestUser : null)
-  const isSignedIn = !!token || !!guestUser
+  const isSignedIn = !!token || !!adminToken || !!guestUser
+  const isAdmin = isAdminRole(userRole) || isAdminRole(effectiveUser?.role)
+  const dashboardHref = getDashboardPath(userRole ?? effectiveUser?.role, !!adminToken)
 
-  const isAdmin = effectiveUser?.role === 'ADMIN' || effectiveUser?.role === 'MODERATOR'
-
-  const initials =
-    (effectiveUser?.firstName?.charAt(0) || effectiveUser?.email?.charAt(0) || 'U').toUpperCase() ||
-    'U'
+  const initials = (
+    effectiveUser?.firstName?.charAt(0) ||
+    effectiveUser?.email?.charAt(0) ||
+    (isAdmin ? 'A' : 'U')
+  ).toUpperCase()
 
   const handleLogout = async () => {
-    if (guestUser && !token) {
+    if (guestUser && !token && !adminToken) {
       sessionStorage.removeItem('guestVerifiedEmail')
       sessionStorage.removeItem('guestOrderEmail')
       sessionStorage.removeItem('guestAccessToken')
       document.cookie = 'guestAccessToken=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT'
       document.cookie = 'guestAccessEmail=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT'
       router.push('/login')
+      return
+    }
+
+    if (adminToken) {
+      await adminLogout()
       return
     }
 
@@ -184,12 +193,21 @@ export default function HeaderActions({
 
         {isSignedIn ? (
           <div className='flex items-center gap-3'>
+            <CustomLink
+              href={dashboardHref}
+              className={cn(
+                'font-outfit font-medium text-on-surface border border-outline-variant bg-surface-container/40 hover:bg-surface-variant hover:border-primary/30 text-sm px-4 py-2 rounded-full transition-colors backdrop-blur-md inline-flex items-center gap-2'
+              )}
+            >
+              <LayoutDashboard className='h-4 w-4 text-primary' />
+              Dashboard
+            </CustomLink>
             {token && <Notifications variant='desktop' />}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <button
                   className={cn(
-                    'relative inline-flex items-center justify-center p-0 rounded-full border border-border/60 bg-background/40 hover:bg-accent/70 hover:border-primary/30 cursor-pointer transition-colors backdrop-blur-md shadow-sm',
+                    'relative inline-flex items-center justify-center p-0 rounded-full border border-outline-variant bg-surface-container/40 hover:bg-surface-variant hover:border-primary/30 cursor-pointer transition-colors backdrop-blur-md shadow-sm',
                     'min-w-[36px]'
                   )}
                 >
@@ -201,15 +219,15 @@ export default function HeaderActions({
                       />
                       <AvatarFallback>{initials}</AvatarFallback>
                     </Avatar>
-                    <span className='absolute -bottom-0.5 -right-0.5 h-4 w-4 rounded-full bg-background border border-border flex items-center justify-center shadow-sm'>
-                      <ChevronDown className='h-3 w-3 text-muted-foreground' />
+                    <span className='absolute -bottom-0.5 -right-0.5 h-4 w-4 rounded-full bg-surface border border-outline-variant flex items-center justify-center shadow-sm'>
+                      <ChevronDown className='h-3 w-3 text-on-surface-variant' />
                     </span>
                   </div>
                 </button>
               </DropdownMenuTrigger>
               <DropdownMenuContent
                 align='end'
-                className='w-56 font-manrope border-border/60 bg-card/85 backdrop-blur-xl shadow-xl shadow-primary/10'
+                className='w-56 font-outfit border-outline-variant/60 bg-surface-container/85 backdrop-blur-xl shadow-xl'
               >
                 <DropdownMenuLabel>
                   <div className='flex items-center gap-2'>
@@ -221,75 +239,69 @@ export default function HeaderActions({
                       <AvatarFallback>{initials}</AvatarFallback>
                     </Avatar>
                     <div className='flex flex-col'>
-                      <span className='text-sm font-medium'>
-                        {effectiveUser?.firstName || effectiveUser?.email || 'User'}
+                      <span className='text-sm font-medium text-on-surface'>
+                        {effectiveUser?.firstName ||
+                          effectiveUser?.email ||
+                          (isAdmin ? 'Admin' : 'User')}
                       </span>
                       {effectiveUser?.email && (
-                        <span className='text-xs text-muted-foreground'>{effectiveUser.email}</span>
+                        <span className='text-xs text-on-surface-variant'>{effectiveUser.email}</span>
                       )}
                     </div>
                   </div>
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                {isAdmin ? (
+                <DropdownMenuItem
+                  onClick={() => router.push(dashboardHref)}
+                  className='cursor-pointer gap-2 rounded-full focus:bg-surface-variant'
+                >
+                  <LayoutDashboard className='h-4 w-4 text-primary' />
+                  <span className='text-on-surface'>Dashboard</span>
+                </DropdownMenuItem>
+                {isAdmin && token ? (
+                  <DropdownMenuItem
+                    onClick={() => router.push('/user/profile')}
+                    className='cursor-pointer gap-2 rounded-full focus:bg-surface-variant'
+                  >
+                    <UserIcon className='h-4 w-4 text-primary' />
+                    <span className='text-on-surface'>User Area</span>
+                  </DropdownMenuItem>
+                ) : null}
+                {!isAdmin ? (
                   <>
-                    <DropdownMenuItem
-                      onClick={() => router.push('/admin/dashboard')}
-                      className='cursor-pointer gap-2 rounded-lg focus:bg-accent/70'
-                    >
-                      <LayoutDashboard className='h-4 w-4' />
-                      <span>Admin Dashboard</span>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem
-                      onClick={() => router.push('/user/profile')}
-                      className='cursor-pointer gap-2 rounded-lg focus:bg-accent/70'
-                    >
-                      <UserIcon className='h-4 w-4' />
-                      <span>User Dashboard</span>
-                    </DropdownMenuItem>
-                    <DropdownMenuSeparator />
-                  </>
-                ) : (
-                  <>
-                    <DropdownMenuItem
-                      onClick={() => router.push('/user/profile')}
-                      className='cursor-pointer gap-2 rounded-lg focus:bg-accent/70'
-                    >
-                      <LayoutDashboard className='h-4 w-4' />
-                      <span>Dashboard</span>
-                    </DropdownMenuItem>
                     {effectiveUser?.isGuest ? (
                       <DropdownMenuItem
                         onClick={() => router.push('/user/purchased-items')}
-                        className='cursor-pointer gap-2 rounded-lg focus:bg-accent/70'
+                        className='cursor-pointer gap-2 rounded-full focus:bg-surface-variant'
                       >
-                        <Settings className='h-4 w-4' />
-                        <span>Purchased Items</span>
+                        <Settings className='h-4 w-4 text-primary' />
+                        <span className='text-on-surface'>Purchased Items</span>
                       </DropdownMenuItem>
                     ) : (
                       <>
                         <DropdownMenuItem
                           onClick={() => router.push('/user/update-profile')}
-                          className='cursor-pointer gap-2 rounded-lg focus:bg-accent/70'
+                          className='cursor-pointer gap-2 rounded-full focus:bg-surface-variant'
                         >
-                          <Settings className='h-4 w-4' />
-                          <span>Quick Settings</span>
+                          <Settings className='h-4 w-4 text-primary' />
+                          <span className='text-on-surface'>Quick Settings</span>
                         </DropdownMenuItem>
                         <DropdownMenuItem
                           onClick={() => router.push('/user/update-profile')}
-                          className='cursor-pointer gap-2 rounded-lg focus:bg-accent/70'
+                          className='cursor-pointer gap-2 rounded-full focus:bg-surface-variant'
                         >
-                          <UserIcon className='h-4 w-4' />
-                          <span>Edit Profile</span>
+                          <UserIcon className='h-4 w-4 text-primary' />
+                          <span className='text-on-surface'>Edit Profile</span>
                         </DropdownMenuItem>
                       </>
                     )}
                     <DropdownMenuSeparator />
                   </>
-                )}
+                ) : null}
+                <DropdownMenuSeparator />
                 <DropdownMenuItem
                   onClick={handleLogout}
-                  className='cursor-pointer gap-2 rounded-lg text-destructive focus:text-destructive focus:bg-destructive/10'
+                  className='cursor-pointer gap-2 rounded-full text-error focus:text-error focus:bg-error/10'
                 >
                   <LogOut className='h-4 w-4' />
                   <span>Logout</span>
@@ -302,11 +314,7 @@ export default function HeaderActions({
             <CustomLink
               href='/login'
               className={cn(
-                'font-medium text-card-foreground/80 hover:text-card-foreground border border-border/60 bg-background/40 hover:bg-accent/70 hover:border-primary/30 text-sm px-4 py-2 rounded-lg transition-colors backdrop-blur-md',
-                buttonVariants({
-                  variant: 'outline',
-                  size: 'default'
-                })
+                'font-outfit font-medium text-on-surface border border-outline-variant bg-surface-container/40 hover:bg-surface-variant hover:border-primary/30 text-sm px-4 py-2 rounded-full transition-colors backdrop-blur-md'
               )}
             >
               Log In
@@ -314,11 +322,7 @@ export default function HeaderActions({
             <CustomLink
               href='/sign-up'
               className={cn(
-                'font-semibold text-primary-foreground bg-linear-to-r from-primary to-violet-500 hover:opacity-90 text-sm px-4 py-2 rounded-lg transition-opacity shadow-sm shadow-primary/20',
-                buttonVariants({
-                  variant: 'default',
-                  size: 'default'
-                })
+                'fire-gradient font-outfit font-semibold text-white text-sm px-4 py-2 rounded-full transition-opacity shadow-sm shadow-primary/20 hover:scale-105'
               )}
             >
               Sign Up
@@ -327,16 +331,23 @@ export default function HeaderActions({
         )}
       </div>
 
-      {/* Mobile row - compact layout with proper touch targets */}
+      {/* Mobile row */}
       <div className='xl:hidden flex items-center gap-1.5 sm:gap-2'>
         <CartButton />
         {token && <HeaderBalance compact />}
         {token && <Notifications variant='mobile' />}
-        <ThemeSwitcher className='shrink-0 [&_button]:size-8! [&_button]:sm:size-9!' />
+        <ThemeSwitcher className='shrink-0' />
         <div className='shrink-0'>
           <LanguageSwitcher compact />
         </div>
-        <MobileNav items={activeMenuItems} icons={promotionalIcons} />
+        <MobileNav
+          items={activeMenuItems}
+          icons={promotionalIcons}
+          token={token}
+          adminToken={adminToken}
+          userRole={userRole}
+          dashboardHref={dashboardHref}
+        />
       </div>
     </>
   )

@@ -9,9 +9,8 @@ export default function FeedbackLayout({ children }: { children: React.ReactNode
   const isMobile = useIsMobile()
 
   return (
-      <div className='space-y-2 lg:space-y-5 mx-auto pt-6 w-full max-w-5xl overflow-x-hidden'>
-    <div className='flex flex-wrap gap-3 justify-center md:justify-start'>
-
+    <div className='space-y-2 lg:space-y-5 mx-auto pt-6 w-full max-w-5xl overflow-x-hidden'>
+      <div className='flex flex-wrap gap-3 justify-center md:justify-start'>
         <Button
           size={isMobile ? 'sm' : 'lg'}
           variant={pathname.includes('feedbacks-management') ? 'secondary' : 'outline'}
@@ -34,7 +33,7 @@ export default function FeedbackLayout({ children }: { children: React.ReactNode
           Unique Name Handling
         </Button>
       </div>
-      <div className='p-0 lg:p-6 lg:border rounded-xl'>{children}</div>
+      <div className='p-0 lg:p-6 lg:border lg:border-border rounded-xl'>{children}</div>
     </div>
   )
 }

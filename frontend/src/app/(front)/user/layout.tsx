@@ -159,13 +159,13 @@ export default function FrontLayout({
   if (!mounted || (!token && !guestSessionChecked) || (token && loading && !resolvedUser)) {
     return (
       <div className='bg-background pb-8 sm:pb-16'>
-        <div className='max-w-7xl mx-auto px-4 pt-10'>
+        <div className='max-w-container-max mx-auto px-gutter xl:p-xl pt-10'>
           <div className='animate-pulse space-y-6'>
-            <div className='mx-auto h-10 w-72 rounded bg-muted' />
-            <div className='mx-auto h-5 w-64 rounded bg-muted' />
-            <div className='flex flex-col md:flex-row gap-6'>
-              <div className='w-full md:w-72 lg:w-80 h-[420px] rounded-[15px] border border-border bg-card' />
-              <div className='flex-1 h-[520px] rounded-[15px] border border-border bg-card' />
+            <div className='mx-auto h-10 w-72 rounded bg-surface-container-high' />
+            <div className='mx-auto h-5 w-64 rounded bg-surface-container-high' />
+            <div className='flex flex-col md:flex-row gap-gutter'>
+              <div className='w-full md:w-64 h-[420px] rounded-xl bg-surface-container-high' />
+              <div className='flex-1 h-[520px] rounded-xl bg-surface-container-high' />
             </div>
           </div>
         </div>
@@ -174,25 +174,29 @@ export default function FrontLayout({
   }
 
   return (
-    <div className='bg-background pb-8 sm:pb-16'>
-      <div className='max-w-7xl mx-auto px-4'>
-        <div className='flex flex-col font-secondary justify-end items-center pb-4 sm:pb-6 md:pb-8 pt-10'>
-          <h2 className='text-xl sm:text-2xl md:text-3xl lg:text-[40px] font-bold text-center text-foreground'>
-            Welcome back, {userName}
-          </h2>
-          <p className='text-muted-foreground text-center mt-2 sm:mt-4 text-sm sm:text-base'>
-            Manage your account and track your orders
-          </p>
-        </div>
-      </div>
-
-      <div className='max-w-7xl mx-auto px-4'>
-        <div className='flex flex-col md:flex-row gap-6'>
-          <aside className='w-full md:w-72 lg:w-80 md:sticky md:top-6 z-10'>
-            <UserSidebar userData={resolvedUser} isGuest={isGuestSession} />
+    <div className='bg-background text-on-surface min-h-screen'>
+      <div className='max-w-container-max mx-auto p-gutter xl:p-xl'>
+        <div className='flex flex-col md:flex-row gap-gutter'>
+          <aside className='w-full md:w-64 flex-shrink-0'>
+            <div className='glass-card rounded-xl p-md sticky top-gutter transition-all duration-300'>
+              <h2 className='font-headline-md text-headline-md text-primary mb-lg tracking-tighter uppercase'>
+                User Portal
+              </h2>
+              <UserSidebar userData={resolvedUser} isGuest={isGuestSession} />
+            </div>
           </aside>
 
-          <main className='flex-1 min-w-0 font-manrope'>
+          <main className='flex-1 min-w-0 space-y-gutter'>
+            <header className='flex justify-between items-end border-b border-outline-variant/20 pb-md'>
+              <div>
+                <h1 className='font-headline-lg text-headline-lg-mobile md:text-headline-lg tracking-tighter'>
+                  Welcome Back, {userName}
+                </h1>
+                <p className='font-body-md text-body-md text-on-surface-variant mt-xs'>
+                  Here is your recent activity and stats.
+                </p>
+              </div>
+            </header>
             <UserBreadcrumbs />
             {children}
           </main>
@@ -200,15 +204,15 @@ export default function FrontLayout({
       </div>
 
       <Dialog open={showReviewReminder} onOpenChange={setShowReviewReminder}>
-        <DialogContent className='sm:max-w-md'>
+        <DialogContent className='sm:max-w-md bg-surface-container-low border-outline-variant'>
           <DialogHeader>
-            <DialogTitle>Pending Product Reviews</DialogTitle>
-            <DialogDescription>
+            <DialogTitle className='text-on-surface'>Pending Product Reviews</DialogTitle>
+            <DialogDescription className='text-on-surface-variant'>
               You have {Number(reviewSummary?.data?.pendingReviewsCount || 0)} remaining review
               {Number(reviewSummary?.data?.pendingReviewsCount || 0) === 1 ? '' : 's'} to leave.
             </DialogDescription>
           </DialogHeader>
-          <div className='text-sm text-muted-foreground'>
+          <div className='text-sm text-on-surface-variant'>
             Leave feedback for each purchased product so your reviews appear on the related product
             pages and help other customers.
           </div>

@@ -83,7 +83,7 @@ export default function SecurityModal({ isOpen, onClose }: SecurityModalProps) {
         Cookies.remove('permissions')
         Cookies.remove('userRole')
         onClose()
-        window.location.replace('/admin/login')
+        window.location.replace('/login')
       }
     } catch (error) {
       showError(error)

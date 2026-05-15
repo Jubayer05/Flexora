@@ -38,7 +38,7 @@ const MenuItemCard = ({
   const watchType = watch(`footerMenus.${groupIndex}.children.${itemIndex}.type`) ?? 'EXTERNAL'
 
   return (
-    <div className='relative flex flex-wrap *:flex-[1_1_calc(50%-16px)] gap-4 p-4 border border-muted-foreground rounded-lg'>
+    <div className='relative flex flex-wrap *:flex-[1_1_calc(50%-16px)] gap-4 p-4 border border-border rounded-lg'>
       <div className='lg:col-span-2'>
         <Controller
           control={control}
@@ -207,18 +207,18 @@ const MenuGroupCard = ({
               errors={errors}
             />
           ))}
-           
-           <div className='flex justify-center sm:justify-end'> 
-          <Button
-            type='button'
-            variant='outline'
-            onClick={() => append({ title: '', url: '' })}
-            className='float-right '
-          >
-            <Plus className='w-4 h-4' />
-            Add Menu Item
-          </Button>
-           </div>
+
+          <div className='flex justify-center sm:justify-end'>
+            <Button
+              type='button'
+              variant='outline'
+              onClick={() => append({ title: '', url: '' })}
+              className='float-right '
+            >
+              <Plus className='w-4 h-4' />
+              Add Menu Item
+            </Button>
+          </div>
 
           {/* Children error display */}
           {errors?.footerMenus?.[groupIndex]?.children?.message && (

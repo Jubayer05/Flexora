@@ -16,6 +16,7 @@ interface CustomTableProps<T> {
   emptyMessage?: string | React.ReactNode
   className?: string
   getRowId?: (data: T, index: number) => string | number
+  variant?: 'default' | 'dashboard'
 }
 
 export function CustomTable<T>({
@@ -23,14 +24,14 @@ export function CustomTable<T>({
   data,
   emptyMessage = 'No results.',
   className = '',
-  getRowId = (data: any, index: number) => data.id ?? index
+  getRowId = (data: any, index: number) => data.id ?? index,
+  variant = 'default'
 }: CustomTableProps<T>) {
-  // Get cell value directly from data using column key
+  const isDashboard = variant === 'dashboard'
   const getCellValue = (data: T, column: TableColumn<T>) => {
     return (data as any)[column.key]
   }
 
-  // Render cell content
   const renderCell = (column: TableColumn<T>, data: T, index: number) => {
     const value = getCellValue(data, column)
 
@@ -42,60 +43,78 @@ export function CustomTable<T>({
   }
 
   return (
-    <div className={`w-full min-w-0 ${className}`}>
-      {/* Table Container - theme-aware */}
-      <div className='rounded-lg w-full overflow-hidden border border-border bg-card'>
-        <div className='overflow-x-auto custom-scrollbar min-w-0'>
-          <table className='w-full'>
-            <thead>
-              <tr>
-                {columns.map((column, idx) => (
-                  <th
-                    key={idx}
-                    className={`
-                      px-2.5 py-2.5 text-left text-sm font-normal text-foreground whitespace-nowrap font-manrope
-                      border-y-2 border-border
-                      ${column.className || ''}
-                    `}
-                  >
-                    {column.header}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {data?.length > 0 ? (
-                data?.map((item, rowIndex) => (
-                  <tr key={getRowId(item, rowIndex)} className='group'>
-                    {columns.map((column, idx) => (
-                      <td
-                        key={idx}
-                        className={`px-2.5 py-2.5 text-sm text-foreground whitespace-nowrap font-manrope border-b border-border ${
-                          column.className || ''
-                        }`}
-                      >
-                        <div className='min-w-0'>{renderCell(column, item, rowIndex)}</div>
-                      </td>
-                    ))}
-                  </tr>
-                ))
-              ) : (
-                <tr>
-                  <td
-                    colSpan={columns.length}
-                    className='px-4 py-8 text-muted-foreground text-sm'
-                    style={{
-                      fontFamily: 'Manrope',
-                      fontSize: '14px'
-                    }}
-                  >
-                    {emptyMessage}
-                  </td>
+    <div className={`w-full min-w-0 overflow-hidden rounded-lg border border-outline-variant/60 bg-card ${className}`}>
+      <div className='w-full overflow-x-auto'>
+        <table className='w-full text-left whitespace-nowrap'>
+          <thead
+            className={
+              isDashboard
+                ? 'border-b border-outline-variant/60 bg-muted/30 text-xs font-medium uppercase tracking-wide text-muted-foreground'
+                : 'border-b border-outline-variant/60 bg-surface-container/60 text-xs font-semibold uppercase tracking-wider text-on-surface-variant'
+            }
+          >
+            <tr>
+              {columns.map((column, idx) => (
+                <th
+                  key={idx}
+                  className={
+                    isDashboard
+                      ? 'px-4 py-3.5 font-medium'
+                      : 'px-4 py-4 font-semibold'
+                  }
+                >
+                  {column.header}
+                </th>
+              ))}
+            </tr>
+          </thead>
+          <tbody
+            className={
+              isDashboard
+                ? 'divide-y divide-outline-variant/60 text-sm'
+                : 'divide-y divide-outline-variant/60 font-body-md text-body-md'
+            }
+          >
+            {data?.length > 0 ? (
+              data?.map((item, rowIndex) => (
+                <tr
+                  key={getRowId(item, rowIndex)}
+                  className={
+                    isDashboard
+                      ? 'transition-colors duration-150 hover:bg-muted/40'
+                      : 'table-row-hover transition-colors duration-150'
+                  }
+                >
+                  {columns.map((column, idx) => (
+                    <td
+                      key={idx}
+                      className={
+                        isDashboard
+                          ? 'px-4 py-4 text-foreground'
+                          : 'px-4 py-3.5 text-on-surface'
+                      }
+                    >
+                      <div className='min-w-0'>{renderCell(column, item, rowIndex)}</div>
+                    </td>
+                  ))}
                 </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
+              ))
+            ) : (
+              <tr>
+                <td
+                  colSpan={columns.length}
+                  className={
+                    isDashboard
+                      ? 'px-4 py-12 text-center text-muted-foreground'
+                      : 'px-4 py-12 text-center text-on-surface-variant'
+                  }
+                >
+                  {emptyMessage}
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
       </div>
     </div>
   )

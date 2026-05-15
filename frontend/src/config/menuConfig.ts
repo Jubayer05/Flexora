@@ -64,7 +64,7 @@ export const createUserProfileMenuConfig = (
       } catch (error) {
         console.error('Logout failed:', error)
         clearAdminInfo()
-        router.replace('/admin/login')
+        router.replace('/login')
       }
     }
   }
@@ -88,7 +88,8 @@ export const notificationActionsConfig = {
 // Header configuration
 export const headerConfig = {
   logo: {
-    src: '/logo.svg',
+    forLightMode: '/images/logo-dark.webp',
+    forDarkMode: '/images/logo-white.webp',
     alt: 'UHQ Logo',
     width: 227,
     height: 36

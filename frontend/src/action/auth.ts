@@ -1,10 +1,11 @@
 'use server'
 
+import { getPostLoginRedirectPath } from '@/lib/authRedirect'
 import { cookies } from 'next/headers'
 import { redirect } from 'next/navigation'
 
 // Use the public API URL for both server and client
-const baseURL = process.env.NEXT_PUBLIC_APP_ROOT_API || 'http://localhost:5001/api/v1'
+const baseURL = process.env.NEXT_PUBLIC_APP_ROOT_API || 'http://localhost:5015/api/v1'
 
 // Decide if cookies should be marked secure based on the public app URL.
 // On HTTPS domains (e.g. Vercel / production), cookies are secure.
@@ -320,7 +321,12 @@ export const verifyEmailCodeAndLogin = async (
 export const authenticate = async (
   data: any,
   userAgent?: string
-): Promise<{ data: { token: string; user: User } | null; errors?: any; message?: string }> => {
+): Promise<{
+  data: { token: string; user: User; admin?: any } | null
+  redirectTo?: string
+  errors?: any
+  message?: string
+}> => {
   try {
     const res = await fetch(baseURL + '/auth/login', {
       method: 'POST',
@@ -346,13 +352,38 @@ export const authenticate = async (
       return { data: null, errors: userData?.message || 'Login failed', message: userData?.message }
     }
 
-    await setUserSessionCookies({
-      user: userData?.data?.user,
-      token: userData?.data?.token,
-      refreshToken: userData?.data?.refreshToken
-    })
+    const sessionData = userData.data
 
-    return { data: userData?.data, errors: userData?.message }
+    // Check if this is an admin login (response has admin property)
+    if (sessionData?.admin) {
+      const userRole = sessionData.admin?.role
+      const rawPermissions = sessionData.admin?.customRole?.permissions || []
+      const transformedPermissions = rawPermissions.reduce((acc: any, permission: any) => {
+        acc[permission.resource] = permission.actions
+        return acc
+      }, {})
+
+      await clearUserSessionCookies()
+      await setAdminSessionCookies({
+        token: sessionData.token,
+        refreshToken: sessionData.refreshToken,
+        userRole,
+        permissions: userRole === 'ADMIN' ? { __superAdmin: true } : transformedPermissions
+      })
+    } else {
+      await clearAdminSessionCookies()
+      await setUserSessionCookies({
+        user: sessionData?.user,
+        token: sessionData?.token,
+        refreshToken: sessionData?.refreshToken
+      })
+    }
+
+    return {
+      data: sessionData,
+      redirectTo: getPostLoginRedirectPath(sessionData),
+      errors: userData?.message
+    }
   } catch {
     return { data: null, errors: 'Something went wrong!', message: 'Something went wrong!' }
   }

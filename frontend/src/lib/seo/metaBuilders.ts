@@ -32,7 +32,7 @@ export const buildSiteMetadata = (data: SiteSettings | null): Metadata => {
     ? toAbsoluteSeoMediaUrl(data.seo.ogImage)
     : data?.logo?.default
     ? toAbsoluteSeoMediaUrl(data.logo.default)
-    : toAbsoluteSeoUrl('/images/logo.svg', baseUrl)
+    : toAbsoluteSeoUrl('/images/logo-white.webp', baseUrl)
 
   const faviconUrl = data?.favicon ? toAbsoluteSeoMediaUrl(data.favicon) : toAbsoluteSeoUrl('/favicon.ico', baseUrl)
 

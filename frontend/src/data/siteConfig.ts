@@ -43,8 +43,8 @@ export const siteConfig = {
   name: 'UHQ',
   description: 'Premium aged & verified accounts for growth',
   logo: {
-    default: '/logo.svg',
-    dark: '/logo.svg'
+    default: '/images/logo-dark.webp',
+    dark: '/images/logo-white.webp'
   },
   phone: '+8801234567890',
   email: 'info@uhq.com',
@@ -130,49 +130,6 @@ export const navItems: NavItem[] = [
         title: 'Withdraws',
         href: '/admin/customers/withdraws',
         permission: { resource: 'users', action: 'index' }
-      }
-    ]
-  },
-  {
-    title: 'Telegram Management',
-    href: '',
-    icon: MessageSquare,
-    permission: { resource: 'telegram', action: 'index' },
-    children: [
-      {
-        title: 'Manage Accounts',
-        href: '/admin/telegram-management/manage-accounts',
-        permission: { resource: 'telegram', action: 'index' }
-      },
-      {
-        title: 'Sold Accounts',
-        href: '/admin/telegram-management/sold',
-        permission: { resource: 'telegram', action: 'index' }
-      },
-      {
-        title: 'Management Channels/groups',
-        href: '/admin/telegram-management/manage-transfer-products',
-        permission: { resource: 'telegram', action: 'index' }
-      },
-      {
-        title: 'Channels and Groups Sold',
-        href: '/admin/telegram-management/ownership-transfer',
-        permission: { resource: 'telegram', action: 'index' }
-      },
-      {
-        title: 'Activity Log',
-        href: '/admin/telegram-management/activity-log',
-        permission: { resource: 'telegram', action: 'index' }
-      },
-      {
-        title: 'Proxy Management',
-        href: '/admin/telegram-management/proxies',
-        permission: { resource: 'telegram', action: 'index' }
-      },
-      {
-        title: 'Settings',
-        href: '/admin/telegram-management/settings',
-        permission: { resource: 'telegram', action: 'index' }
       }
     ]
   },
@@ -616,12 +573,6 @@ export const navItems: NavItem[] = [
       {
         title: 'Addons Management',
         href: '/admin/settings/addons-management',
-        permission: { resource: 'settings', action: 'update' }
-      },
-
-      {
-        title: 'Telegram Config',
-        href: '/admin/settings/telegram-config',
         permission: { resource: 'settings', action: 'update' }
       }
     ]

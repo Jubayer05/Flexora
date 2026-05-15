@@ -1,6 +1,7 @@
 'use client'
 
 import { authenticate, resendVerificationEmail } from '@/action/auth'
+import { getPostLoginRedirectPath } from '@/lib/authRedirect'
 import CustomInput from '@/components/common/CustomInput'
 import CustomLink from '@/components/common/CustomLink'
 import { Typography } from '@/components/common/typography'
@@ -79,16 +80,15 @@ export default function LoginCard({ className = '', compact = false, onSuccess }
         setEmailNotVerified(false)
         toast.success('Welcome back. Redirecting you now.')
 
-        // If there's a callback URL, do a full page navigation
-        // so the middleware can handle the encrypted callback redirect
-        if (callbackUrl) {
-          onSuccess?.()
-          // Use window.location for full page reload to trigger middleware
+        onSuccess?.()
+        const redirectTo =
+          res.redirectTo ?? getPostLoginRedirectPath(res.data, callbackUrl)
+
+        // Encrypted callbacks are decrypted by middleware on /login
+        if (callbackUrl && !callbackUrl.startsWith('/')) {
           window.location.href = `${window.location.pathname}${window.location.search}`
         } else {
-          // No callback - send the user to shop without overriding their theme
-          onSuccess?.()
-          window.location.href = '/shop'
+          window.location.href = redirectTo
         }
       } else {
         const msg = typeof res?.errors === 'string' ? res.errors : res?.message

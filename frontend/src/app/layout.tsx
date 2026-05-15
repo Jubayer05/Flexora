@@ -2,22 +2,42 @@ import { getFacebookPixelId, getSiteConfig } from '@/action/data'
 import { AuthProvider } from '@/components/providers/auth-provider'
 import { SiteProvider } from '@/components/providers/store-provider'
 import { buildSiteMetadata } from '@/lib/seo/metaBuilders'
+import { getLogosForThemeModes } from '@/lib/themeLogo'
 import { toAbsoluteSeoMediaUrl } from '@/lib/seo/url'
 import type { Metadata } from 'next'
-import { Manrope } from 'next/font/google'
+import { Bebas_Neue, JetBrains_Mono, Outfit } from 'next/font/google'
 import Script from 'next/script'
 import './globals.css'
 
 // Force dynamic rendering - avoids static prerender conflicts with API fetches during Vercel build
 export const dynamic = 'force-dynamic'
+
 // Load fonts using Next.js font optimization
-const manrope = Manrope({
+const outfit = Outfit({
   subsets: ['latin'],
-  weight: ['400', '500', '600'],
-  variable: '--font-manrope',
+  weight: ['300', '400', '500', '600', '700'],
+  variable: '--font-outfit',
   display: 'swap',
   fallback: ['system-ui', '-apple-system', 'sans-serif'],
-  preload: true // Preload critical font weights
+  preload: true
+})
+
+const bebasNeue = Bebas_Neue({
+  subsets: ['latin'],
+  weight: ['400'],
+  variable: '--font-headline',
+  display: 'swap',
+  fallback: ['system-ui', 'sans-serif'],
+  preload: true
+})
+
+const jetbrainsMono = JetBrains_Mono({
+  subsets: ['latin'],
+  weight: ['500', '600'],
+  variable: '--font-mono',
+  display: 'swap',
+  fallback: ['monospace'],
+  preload: true
 })
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -44,9 +64,13 @@ export default async function RootLayout({
     // Continue with null siteConfig - app should still work
   }
   const pixelId = await getFacebookPixelId()
-  const logoPreloadUrl = siteConfig?.logo?.default
-    ? toAbsoluteSeoMediaUrl(siteConfig.logo.default)
-    : '/logo.svg'
+  const { forLightMode, forDarkMode } = getLogosForThemeModes(siteConfig?.logo ?? {})
+  const logoPreloadLight = forLightMode.startsWith('/')
+    ? forLightMode
+    : toAbsoluteSeoMediaUrl(forLightMode)
+  const logoPreloadDark = forDarkMode.startsWith('/')
+    ? forDarkMode
+    : toAbsoluteSeoMediaUrl(forDarkMode)
 
   return (
     <html lang='en' suppressHydrationWarning className='bg-background'>
@@ -56,13 +80,22 @@ export default async function RootLayout({
         <meta name='mobile-web-app-capable' content='yes' />
         <meta name='apple-mobile-web-app-capable' content='yes' />
 
-        {/* Preload the visible site logo only. */}
-        <link rel='preload' as='image' href={logoPreloadUrl} fetchPriority='high' />
+        {/* Preload both theme logos for instant theme switching */}
+        <link rel='preload' as='image' href={logoPreloadLight} fetchPriority='high' />
+        <link rel='preload' as='image' href={logoPreloadDark} fetchPriority='high' />
 
-
+        {/* Google Fonts */}
+        <link
+          href='https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Outfit:wght@300;400;600;700&family=JetBrains+Mono:wght@500;600&display=swap'
+          rel='stylesheet'
+        />
+        <link
+          href='https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap'
+          rel='stylesheet'
+        />
       </head>
       <body
-        className={`${manrope.variable} font-manrope antialiased bg-background`}
+        className={`${outfit.variable} ${bebasNeue.variable} ${jetbrainsMono.variable} font-outfit antialiased bg-background`}
         suppressHydrationWarning
       >
         {/* Google Translate config + loader (global) */}

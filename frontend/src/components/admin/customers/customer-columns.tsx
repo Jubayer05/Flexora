@@ -447,13 +447,13 @@ export const createCustomerColumns = (mutate?: () => void): TableColumn<User>[] 
         const photoUrl = getVersionedPhotoUrl(record)
 
         return (
-          <div className='w-8 h-8 rounded-full overflow-hidden bg-muted border border-border flex items-center justify-center flex-shrink-0'>
+          <div className='w-9 h-9 rounded-full overflow-hidden bg-muted/50 border border-outline-variant/30 flex items-center justify-center flex-shrink-0'>
             {photoUrl ? (
               <CustomImage
                 src={photoUrl}
                 alt={[record.firstName, record.lastName].filter(Boolean).join(' ') || record.email}
-                width={32}
-                height={32}
+                width={36}
+                height={36}
                 className='w-full h-full object-cover'
                 unoptimized
               />
@@ -467,32 +467,36 @@ export const createCustomerColumns = (mutate?: () => void): TableColumn<User>[] 
     },
     {
       key: 'name',
-      header: 'Name',
+      header: 'Customer',
       render: (_, record) => (
-        <div className='flex items-center gap-2'>
-          <span>{[record.firstName, record.lastName].filter(Boolean).join(' ') || record.email}</span>
+        <div className='flex items-center gap-2.5 min-w-0'>
+          <span className='font-medium text-foreground truncate'>
+            {[record.firstName, record.lastName].filter(Boolean).join(' ') || record.email}
+          </span>
           {record.isGuest && (
-            <Badge variant='secondary' className='text-[10px] uppercase tracking-wide'>
+            <Badge variant='secondary' className='text-[10px] uppercase tracking-wide shrink-0'>
               Guest
             </Badge>
           )}
         </div>
       ),
-      width: 'w-40'
+      width: 'min-w-[180px]'
     },
     {
       key: 'email',
       header: 'Email',
-      render: (value) => <span>{value ?? '-'}</span>,
-      width: 'w-56'
+      render: (value) => (
+        <span className='text-foreground/80 truncate block max-w-[180px]'>{value ?? '-'}</span>
+      ),
+      width: 'min-w-[160px]'
     },
     {
       key: 'country',
       header: 'Country',
       render: (value) => (
-        <span className='block max-w-32 font-normal text-foreground truncate'>{value ?? '-'}</span>
+        <span className='text-on-surface-variant truncate max-w-[140px] block'>{value ?? '-'}</span>
       ),
-      width: 'w-32'
+      width: 'min-w-[120px]'
     },
     {
       key: 'note',
@@ -500,7 +504,7 @@ export const createCustomerColumns = (mutate?: () => void): TableColumn<User>[] 
       render: (value, record) => (
         <EditableNotes value={value} onClose={mutate} customerId={record.id} />
       ),
-      width: 'w-48'
+      width: 'min-w-[160px]'
     },
     {
       key: 'lastLoginAt',
@@ -514,8 +518,8 @@ export const createCustomerColumns = (mutate?: () => void): TableColumn<User>[] 
           return <span className='text-muted-foreground'>-</span>
         }
         return (
-          <div>
-            <div>
+          <div className='text-sm'>
+            <div className='text-foreground'>
               {date.toLocaleDateString('en-US', {
                 year: 'numeric',
                 month: 'short',
@@ -531,17 +535,17 @@ export const createCustomerColumns = (mutate?: () => void): TableColumn<User>[] 
           </div>
         )
       },
-      width: 'w-32'
+      width: 'min-w-[130px]'
     },
     {
       key: 'ip',
-      header: 'IP',
+      header: 'IP Address',
       render: (_, record) => (
-        <span className='font-mono font-normal text-foreground text-xs'>
+        <span className='font-mono text-xs text-on-surface-variant'>
           {record.lastLoginIp ?? '-'}
         </span>
       ),
-      width: 'w-32'
+      width: 'min-w-[120px]'
     },
     {
       key: 'device',
@@ -549,42 +553,44 @@ export const createCustomerColumns = (mutate?: () => void): TableColumn<User>[] 
       render: (_, record) => {
         const device = record.lastLoginDevice ?? '-'
         if (device === '-') {
-          return <span className='block max-w-32 font-normal text-foreground truncate'>{device}</span>
+          return <span className='text-on-surface-variant truncate max-w-[130px] block'>{device}</span>
         }
         return (
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>
-                <span className='block max-w-32 font-normal text-foreground truncate cursor-help'>
+                <span className='text-on-surface-variant truncate max-w-[130px] block cursor-help'>
                   {device}
                 </span>
               </TooltipTrigger>
               <TooltipContent className='max-w-md break-words'>
-                <p className='text-xs'>{device}</p>
+                <p className='text-xs font-normal'>{device}</p>
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>
         )
       },
-      width: 'w-32'
+      width: 'min-w-[120px]'
     },
     {
       key: 'totalSpent',
-      header: 'totalSpent',
+      header: 'Total Spent',
       render: (value) => (
-        <span className='block max-w-32 font-normal text-foreground truncate'>{value ?? '-'}</span>
+        <span className='font-semibold text-foreground tabular-nums'>
+          ${value != null ? Number(value).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : '0.00'}
+        </span>
       ),
-      width: 'w-32'
+      width: 'min-w-[100px]'
     },
     {
       key: 'balance',
       header: 'Balance',
       render: (value) => (
-        <span className='block max-w-32 font-semibold text-foreground tracking-wide'>
-          ${value ?? '0'}
+        <span className='font-semibold text-foreground tabular-nums tracking-wide'>
+          ${value != null ? Number(value).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : '0.00'}
         </span>
       ),
-      width: 'w-32'
+      width: 'min-w-[100px]'
     },
     {
       key: 'isBanned',
@@ -592,11 +598,14 @@ export const createCustomerColumns = (mutate?: () => void): TableColumn<User>[] 
       render: (_, record) => (
         <Badge
           className={`
-          px-2 py-1 text-xs font-normal border-0 
-          ${record.isBanned ? 'bg-[#EF4444] text-black' : 'bg-[#10B981] text-black'}
+          px-2.5 py-1 text-xs font-medium border-0 shrink-0
+          ${record.isBanned
+            ? 'bg-red-500/15 text-red-600 dark:text-red-400 dark:bg-red-500/20'
+            : 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 dark:bg-emerald-500/20'
+          }
         `}
         >
-          {record.isBanned ? <Ban /> : <Check />}
+          {record.isBanned ? <Ban size={12} className="mr-1" /> : <Check size={12} className="mr-1" />}
           {record.isBanned ? 'Banned' : 'Active'}
         </Badge>
       ),
@@ -605,15 +614,15 @@ export const createCustomerColumns = (mutate?: () => void): TableColumn<User>[] 
     },
     {
       key: 'sendMail',
-      header: 'Send Mail',
+      header: 'Mail',
       render: (_, record) => <SendMailButton data={record} />,
-      width: 'w-24'
+      width: 'w-16'
     },
     {
       key: 'actions',
-      header: 'Actions',
+      header: '',
       render: (_, data) => <ActionsCell data={data} mutate={mutate} />,
-      width: 'w-20'
+      width: 'w-16'
     }
   ]
 }

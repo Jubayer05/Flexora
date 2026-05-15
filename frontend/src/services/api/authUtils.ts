@@ -35,7 +35,7 @@ export const getUserData = (): any | null => {
  */
 export const getLoginUrl = (): string => {
   const isAdminRoute = window.location.pathname.includes('/admin')
-  return isAdminRoute ? '/admin/login' : '/login'
+  return isAdminRoute ? '/login' : '/login'
 }
 
 /**

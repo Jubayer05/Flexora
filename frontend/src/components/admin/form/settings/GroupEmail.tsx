@@ -8,6 +8,7 @@ import { Input } from '@/components/ui/input'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import requests from '@/services/network/http'
 import { ChevronDown, Eye, EyeOff, Loader2, Mail, Send, Users, X } from 'lucide-react'
+import { useMounted } from '@/hooks/useMounted'
 import { useEffect, useMemo, useState } from 'react'
 import { toast } from 'sonner'
 import TextEditor from '../../common/TextEditor'
@@ -151,7 +152,11 @@ const MultiSelectBox = ({
   )
 }
 
+const inputSkeletonClassName =
+  'h-9 w-full rounded-md border border-input bg-transparent'
+
 const GroupEmailForm = () => {
+  const mounted = useMounted()
   const [stats, setStats] = useState<GroupEmailStats>(emptyStats)
   const [targetUsers, setTargetUsers] = useState<TargetUsers>('all')
   const [selectedCountries, setSelectedCountries] = useState<string[]>([])
@@ -342,24 +347,38 @@ const GroupEmailForm = () => {
 
             <div className='space-y-2'>
               <label className='font-medium text-sm'>Min Spent $ (Optional)</label>
-              <Input
-                type='number'
-                min='0'
-                step='0.01'
-                value={minSpent}
-                onChange={(event) => setMinSpent(event.target.value)}
-                placeholder='e.g., 100'
-              />
+              {mounted ? (
+                <Input
+                  type='number'
+                  min='0'
+                  step='0.01'
+                  value={minSpent}
+                  onChange={(event) => setMinSpent(event.target.value)}
+                  placeholder='e.g., 100'
+                  autoComplete='off'
+                  data-lpignore='true'
+                  data-1p-ignore
+                />
+              ) : (
+                <div className={inputSkeletonClassName} aria-hidden />
+              )}
             </div>
           </div>
 
           <div className='space-y-2'>
             <label className='font-medium text-sm'>Email Subject *</label>
-            <Input
-              value={subject}
-              onChange={(event) => setSubject(event.target.value)}
-              placeholder='Enter email subject...'
-            />
+            {mounted ? (
+              <Input
+                value={subject}
+                onChange={(event) => setSubject(event.target.value)}
+                placeholder='Enter email subject...'
+                autoComplete='off'
+                data-lpignore='true'
+                data-1p-ignore
+              />
+            ) : (
+              <div className={inputSkeletonClassName} aria-hidden />
+            )}
           </div>
 
           <div className='space-y-2'>
@@ -436,10 +455,10 @@ const GroupEmailForm = () => {
                   <X className='size-5' />
                 </Button>
               </div>
-              <div className='max-h-80 overflow-auto rounded-lg border border-border'>
+              <div className='max-h-80 overflow-auto rounded-lg border border-outline-variant/60'>
                 <table className='w-full text-left text-sm'>
                   <thead className='sticky top-0 bg-background'>
-                    <tr className='border-border border-b'>
+                    <tr className='border-outline-variant/60 border-b'>
                       <th className='p-3'>Email</th>
                       <th className='p-3'>Name</th>
                       <th className='p-3'>Country</th>
@@ -456,7 +475,7 @@ const GroupEmailForm = () => {
                       </tr>
                     ) : (
                       previewData.users.map((user) => (
-                        <tr key={`${user.source}-${user.email}`} className='border-border border-b last:border-0'>
+                        <tr key={`${user.source}-${user.email}`} className='border-outline-variant/60 border-b last:border-0'>
                           <td className='p-3'>{user.email}</td>
                           <td className='p-3'>{user.name || '-'}</td>
                           <td className='p-3'>{user.country || '-'}</td>

@@ -76,7 +76,11 @@ function SortableRow({ product }: SortableRowProps) {
   }
 
   return (
-    <TableRow ref={setNodeRef} style={style} className={isDragging ? 'bg-muted/50' : ''}>
+    <TableRow
+      ref={setNodeRef}
+      style={style}
+      className={`border-b border-outline-variant/30 transition-colors duration-150 ${isDragging ? 'bg-muted/50' : 'hover:bg-muted/30'}`}
+    >
       <TableCell className='w-12'>
         <div
           {...attributes}
@@ -88,12 +92,12 @@ function SortableRow({ product }: SortableRowProps) {
           <GripVertical className='h-5 w-5 text-muted-foreground' />
         </div>
       </TableCell>
-      <TableCell className='font-medium'>{product.name}</TableCell>
-      <TableCell>{product.sku}</TableCell>
-      <TableCell>{product.platform}</TableCell>
-      <TableCell>${product.price}</TableCell>
+      <TableCell className='font-medium text-on-surface'>{product.name}</TableCell>
+      <TableCell className='text-on-surface-variant'>{product.sku}</TableCell>
+      <TableCell className='text-on-surface-variant'>{product.platform}</TableCell>
+      <TableCell className='text-on-surface font-semibold tabular-nums'>${product.price}</TableCell>
       <TableCell>
-        <span className={`text-xs ${product.isActive ? 'text-green-600' : 'text-red-600'}`}>
+        <span className={`text-xs font-medium ${product.isActive ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-600 dark:text-red-400'}`}>
           {product.isActive ? 'Active' : 'Inactive'}
         </span>
       </TableCell>
@@ -242,26 +246,26 @@ export default function ProductSortingPage() {
 
   return (
     <div className='container mx-auto py-6 space-y-6'>
-      <Card>
-        <CardHeader>
+      <Card className='border border-outline-variant/40 overflow-hidden'>
+        <CardHeader className='border-b border-outline-variant/30 bg-surface-container/30'>
           <CardTitle>Product Sorting</CardTitle>
           <CardDescription>
             Drag and drop products to reorder them. Changes are saved automatically.
           </CardDescription>
         </CardHeader>
-        <CardContent className='space-y-4'>
+        <CardContent className='space-y-4 p-6'>
           {/* Category Filter */}
           <div className="w-full flex justify-center sm:justify-start">
             <div className="flex w-full max-w-sm flex-col gap-2 sm:max-w-none sm:flex-row sm:items-center sm:gap-4">
-              <label className="text-sm font-medium text-center sm:text-left">
+              <label className="text-sm font-medium text-on-surface-variant">
                 Filter by Category:
               </label>
 
               <Select value={selectedCategory} onValueChange={setSelectedCategory}>
-                <SelectTrigger className="w-full sm:w-64">
+                <SelectTrigger className="w-full sm:w-64 bg-surface-container border-outline-variant text-foreground rounded-lg">
                   <SelectValue placeholder="Select category" />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="bg-popover border-outline-variant rounded-lg">
                   <SelectItem value="all">All Categories</SelectItem>
                   {categories.map((category) => (
                     <SelectItem key={category.id} value={String(category.id)}>
@@ -289,22 +293,22 @@ export default function ProductSortingPage() {
 
           {/* Products Table */}
           {!loading && products.length > 0 && (
-            <div className='border rounded-lg'>
+            <div className='border border-outline-variant/30 rounded-lg overflow-hidden'>
               <DndContext
                 sensors={sensors}
                 collisionDetection={closestCenter}
                 onDragEnd={handleDragEnd}
               >
                 <Table>
-                  <TableHeader className='text-white'>
-                    <TableRow>
-                      <TableHead className='w-12'></TableHead>
-                      <TableHead className='text-white'>Product Name</TableHead>
-                      <TableHead className='text-white'>SKU</TableHead>
-                      <TableHead className='text-white'>Platform</TableHead>
-                      <TableHead className='text-white'>Price</TableHead>
-                      <TableHead className='text-white'>Status</TableHead>
-                      <TableHead className='text-white'>Sort Order</TableHead>
+                  <TableHeader>
+                    <TableRow className='bg-surface-container/50 border-b border-outline-variant/40'>
+                      <TableHead className='w-12 text-on-surface-variant'></TableHead>
+                      <TableHead className='text-on-surface-variant font-semibold'>Product Name</TableHead>
+                      <TableHead className='text-on-surface-variant font-semibold'>SKU</TableHead>
+                      <TableHead className='text-on-surface-variant font-semibold'>Platform</TableHead>
+                      <TableHead className='text-on-surface-variant font-semibold'>Price</TableHead>
+                      <TableHead className='text-on-surface-variant font-semibold'>Status</TableHead>
+                      <TableHead className='text-on-surface-variant font-semibold'>Sort Order</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>

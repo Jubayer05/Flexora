@@ -23,7 +23,8 @@
       "Bash(curl -s http://localhost:5000/api/v1/settings/key/system_site_settings)",
       "Bash(taskkill //F //PID 31532)",
       "Bash(taskkill //F //PID 19136)",
-      "Bash(taskkill //F //PID 32480)"
+      "Bash(taskkill //F //PID 32480)",
+      "Bash(curl -s http://localhost:3015/admin/customers/customers-list)"
     ],
     "additionalDirectories": [
       "e:\\web\\my-personal-use\\flexora\\backend\\src\\services",

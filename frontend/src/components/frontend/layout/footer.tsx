@@ -46,34 +46,29 @@ export default async function Footer() {
   }
 
   return (
-    <footer className='relative overflow-hidden bg-card text-card-foreground'>
+    <footer className='relative overflow-hidden bg-surface-container-lowest text-on-surface'>
       <div className='pointer-events-none absolute inset-0 -z-10'>
-        <div className='absolute -top-32 left-1/4 h-[420px] w-[420px] rounded-full bg-primary/7 blur-[110px]' />
-        <div className='absolute -bottom-32 right-1/4 h-[380px] w-[380px] rounded-full bg-violet-500/6 blur-[110px]' />
-        <div
-          className='absolute inset-0 opacity-[0.02]'
-          style={{
-            backgroundImage:
-              'radial-gradient(rgba(99,102,241,0.75) 1px, transparent 1px)',
-            backgroundSize: '40px 40px'
-          }}
-        />
+        <div className='absolute -top-32 left-1/4 h-[420px] w-[420px] rounded-full bg-primary/10 blur-[110px]' />
+        <div className='absolute -bottom-32 right-1/4 h-[380px] w-[380px] rounded-full bg-tertiary/10 blur-[110px]' />
       </div>
 
       {/* Top accent line */}
       <div className='h-px bg-linear-to-r from-transparent via-primary/30 to-transparent' />
       <Container>
-        <div className='flex flex-col items-center gap-y-14 py-12 text-muted-foreground'>
+        <div className='flex flex-col items-center gap-y-14 py-12 text-on-surface-variant'>
           <div className='flex flex-col justify-center items-center space-y-3'>
-            <SiteLogo />
-            <Typography className='text-center text-muted-foreground'>
+            <SiteLogo
+              height={40}
+              className='mx-auto justify-center max-w-[200px] [&_img]:object-center'
+            />
+            <Typography className='text-center text-on-surface-variant'>
               {siteSettings?.shortDescription || ''}
             </Typography>
           </div>
           <div className='justify-between items-start gap-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 lg:pb-10 w-full'>
             {footerNav?.footerMenus?.map((nav: any, index: number) => (
               <div key={index} className='space-y-4'>
-                <Typography variant='h5' className='text-card-foreground' weight='semibold'>
+                <Typography variant='h5' className='text-on-surface' weight='semibold'>
                   {nav.groupName}
                 </Typography>
                 <div className='flex flex-col items-start space-y-2.5'>
@@ -81,7 +76,7 @@ export default async function Footer() {
                     <CustomLink
                       key={idx}
                       href={child.url || `/pages/${child?.slug}`}
-                      className='font-manrope text-muted-foreground max-sm:text-sm hover:text-primary transition-colors'
+                      className='font-outfit text-on-surface-variant max-sm:text-sm hover:text-primary transition-colors'
                     >
                       {child.title}
                     </CustomLink>
@@ -94,7 +89,7 @@ export default async function Footer() {
               {siteConfig?.payments?.map((item, index) => (
                 <div
                   key={index}
-                  className='mx-auto rounded-xl border border-border/60 bg-background/40 px-3 py-2 backdrop-blur-md transition-all hover:border-primary/30 hover:bg-accent/60'
+                  className='mx-auto rounded-xl border border-outline-variant bg-surface-container-lowest px-3 py-2 backdrop-blur-md transition-all hover:border-primary/30 hover:bg-surface-container'
                 >
                   <CustomImage
                     src={item}
@@ -121,7 +116,7 @@ export default async function Footer() {
                     href={socialItem.url}
                     target='_blank'
                     rel='noreferrer'
-                    className='group relative flex items-center justify-center rounded-full border border-border/60 bg-background/40 backdrop-blur-md transition-all hover:border-primary/30 hover:bg-accent/70'
+                    className='group relative flex items-center justify-center rounded-full border border-outline-variant bg-surface-container hover:border-primary/30 hover:bg-surface-container-high transition-all'
                     style={{
                       width: 40,
                       height: 40
@@ -133,7 +128,7 @@ export default async function Footer() {
                       width={34}
                       height={34}
                       alt={socialItem.displayText || platform}
-                      className='relative size-5 object-contain invert dark:invert-0 opacity-85 group-hover:opacity-100 transition-opacity'
+                      className='relative size-5 object-contain opacity-85 group-hover:opacity-100 transition-opacity'
                     />
                   </CustomLink>
                 )
@@ -143,7 +138,7 @@ export default async function Footer() {
                 {Array.from({ length: 4 }).map((_, idx) => (
                   <div
                     key={idx}
-                    className='bg-muted animate-pulse rounded-full'
+                    className='bg-surface-container animate-pulse rounded-full'
                     style={{ width: 34, height: 34 }}
                   />
                 ))}
@@ -152,9 +147,9 @@ export default async function Footer() {
           </div>
         </div>
       </Container>
-      <div className='bg-linear-to-r from-primary to-violet-600 py-6'>
+      <div className='bg-primary text-on-primary py-6'>
         <Container>
-          <div className='flex justify-between items-center font-manrope text-primary-foreground'>
+          <div className='flex justify-between items-center font-outfit'>
             <Typography variant='body2'>{siteSettings?.footer?.copyright || ''}</Typography>
             <GotoTop />
           </div>

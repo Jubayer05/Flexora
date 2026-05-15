@@ -165,7 +165,7 @@ const PromotionalIconForm = ({ settingsKey, initialValues, refetch }: TProps) =>
                   </div>
 
                   {/* Active Status */}
-                  <div className='flex justify-between items-center p-3 border rounded-lg'>
+                  <div className='flex justify-between items-center rounded-lg border border-border p-3'>
                     <div>
                       <label className='font-medium text-sm'>Active Status</label>
                       <p className='text-muted-foreground text-xs'>
@@ -223,7 +223,7 @@ const PromotionalIconForm = ({ settingsKey, initialValues, refetch }: TProps) =>
           )}
 
           {/* Submit Button */}
-          <div className='flex justify-end pt-4 border-t'>
+          <div className='flex justify-end border-t border-border pt-4'>
             <Button type='submit' disabled={isSubmitting}>
               {isSubmitting ? 'Updating...' : 'Update Promotional Icons'}
             </Button>

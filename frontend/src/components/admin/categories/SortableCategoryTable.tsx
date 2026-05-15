@@ -72,7 +72,7 @@ function SortableRow<T extends { id: number }>({
       {columns.map((column, idx) => (
         <td
           key={idx}
-          className={`px-2.5 py-2.5 text-sm text-foreground whitespace-nowrap font-manrope border-b border-border ${
+          className={`px-2.5 py-2.5 text-sm text-foreground whitespace-nowrap font-manrope border-b border-outline-variant/60 ${
             column.className || ''
           }`}
         >
@@ -93,7 +93,7 @@ export function SortableCategoryTable<T extends { id: number }>({
   return (
     <div className={`w-full ${className}`}>
       {/* Table Container - theme-aware */}
-      <div className='rounded-lg w-full overflow-hidden border border-border bg-card'>
+      <div className='rounded-lg w-full overflow-hidden border border-outline-variant/60 bg-card'>
         <div className='overflow-x-auto custom-scrollbar'>
           <table className='w-full'>
             <thead>
@@ -103,7 +103,7 @@ export function SortableCategoryTable<T extends { id: number }>({
                     key={idx}
                     className={`
                       px-2.5 py-2.5 text-left text-sm font-normal text-foreground whitespace-nowrap font-manrope
-                      border-y-2 border-border
+                      border-b border-outline-variant/60
                       ${column.className || ''}
                     `}
                   >

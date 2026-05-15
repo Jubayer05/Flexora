@@ -5,7 +5,7 @@ import { MoveUp } from 'lucide-react'
 export default function GotoTop() {
   return (
     <button
-      className='inline-flex items-center gap-1.5 rounded-full border border-border/60 bg-background/40 px-3 py-1.5 text-xs font-semibold text-muted-foreground transition-all hover:text-primary hover:border-primary/30 hover:bg-accent/70 backdrop-blur-md'
+      className='inline-flex items-center gap-1.5 rounded-full border border-outline-variant bg-surface-container px-3 py-1.5 text-xs font-semibold text-on-surface-variant transition-all hover:text-primary hover:border-primary/30 hover:bg-surface-container-high backdrop-blur-md'
       onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
       type='button'
     >

@@ -56,7 +56,7 @@ export function Notifications({ variant }: { variant: 'mobile' | 'desktop' }) {
         <Button
           variant={variant === 'mobile' ? 'ghost' : 'default'}
           size={'icon'}
-          className='relative bg-background/40 hover:bg-accent/70 border border-border/60 hover:border-primary/30 backdrop-blur-md shadow-sm'
+          className='relative rounded-full bg-background/40 hover:bg-accent/70 border border-border/60 hover:border-primary/30 backdrop-blur-md shadow-sm'
         >
           <Bell />
           {mounted && unreadCount > 0 && (

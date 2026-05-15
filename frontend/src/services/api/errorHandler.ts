@@ -26,8 +26,23 @@ export const handleApiError = (error: AxiosError) => {
       (error.response?.data as { message?: string })?.message || 'An unexpected error occurred.'
   }
 
-  // Get the appropriate error message
-  const message = errorMessages[status || 'default'] || errorMessages.default
+  // Network / CORS failures have no response payload
+  if (!error.response) {
+    const networkMessage =
+      error.code === 'ERR_NETWORK'
+        ? 'Unable to reach the API server. Check that the backend is running and NEXT_PUBLIC_APP_ROOT_API is set correctly.'
+        : error.message || 'Network request failed.'
+    const logMessage = requestLabel ? `${requestLabel} ${networkMessage}` : networkMessage
+    console.error(logMessage)
+    return
+  }
+
+  // Prefer API message when present, then status-specific defaults
+  const apiMessage = (error.response?.data as { message?: string })?.message
+  const message =
+    apiMessage ||
+    errorMessages[status || 'default'] ||
+    errorMessages.default
   const logMessage = requestLabel ? `${requestLabel} ${message}` : message
 
   // Handle different error status codes with appropriate error messages

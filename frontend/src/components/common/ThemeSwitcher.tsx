@@ -1,87 +1,73 @@
 'use client'
 
-import { Button } from '@/components/ui/button'
+import { useSiteConfig } from '@/components/providers/store-provider'
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger
-} from '@/components/ui/dropdown-menu'
+  dispatchThemeLogoChange,
+  getLogoSrcForTheme,
+  getLogosForThemeModes,
+  preloadLogo
+} from '@/lib/themeLogo'
 import { cn } from '@/lib/utils'
-import { Laptop, Moon, Sun } from 'lucide-react'
+import { Moon, Sun } from 'lucide-react'
 import { useTheme } from 'next-themes'
 import { useEffect, useState } from 'react'
 
-type ThemeMode = 'system' | 'light' | 'dark'
-
 export default function ThemeSwitcher({ className }: { className?: string }) {
-  const { theme, setTheme, systemTheme } = useTheme()
+  const { theme, setTheme } = useTheme()
+  const { siteConfig } = useSiteConfig()
   const [mounted, setMounted] = useState(false)
 
-  useEffect(() => setMounted(true), [])
+  useEffect(() => {
+    setMounted(true)
+  }, [])
 
-  const currentTheme: ThemeMode = (theme as ThemeMode) || 'system'
-  const effectiveTheme =
-    currentTheme === 'system'
-      ? ((systemTheme as 'light' | 'dark' | undefined) ?? 'light')
-      : currentTheme
+  const isDark = theme === 'dark'
+  const logoUrls = siteConfig?.logo
 
-  const Icon = effectiveTheme === 'dark' ? Moon : Sun
+  const toggleTheme = () => {
+    const nextTheme = isDark ? 'light' : 'dark'
+    const nextLogo = getLogoSrcForTheme(nextTheme, logoUrls ?? {})
+    setTheme(nextTheme)
+    preloadLogo(nextLogo)
+    dispatchThemeLogoChange(nextTheme, nextLogo)
+  }
+
+  useEffect(() => {
+    if (!mounted) return
+    const { forLightMode, forDarkMode } = getLogosForThemeModes(logoUrls ?? {})
+    preloadLogo(forLightMode)
+    preloadLogo(forDarkMode)
+  }, [mounted, logoUrls])
+
+  if (!mounted) {
+    return <div className={cn('size-9 rounded-full bg-transparent shrink-0', className)} />
+  }
 
   return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button
-          size='icon'
-          className={cn('border border-border bg-background/60 hover:bg-accent', className)}
-          aria-label='Toggle theme'
-          suppressHydrationWarning
-        >
-          {/* Avoid hydration mismatch on first render */}
-          {mounted ? (
-            <Icon
-              className={cn(
-                'h-4 w-4 transition-colors',
-                effectiveTheme === 'dark' ? 'text-yellow-300' : 'text-amber-500'
-              )}
-            />
-          ) : (
-            <Sun className='h-4 w-4 opacity-70 text-amber-500' />
-          )}
-        </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent align='end' className='bg-background text-card-foreground font-manrope'>
-        <DropdownMenuItem
-          onClick={() => setTheme('system')}
+    <button
+      type='button'
+      onClick={toggleTheme}
+      className={cn(
+        'flex items-center justify-center rounded-full border border-outline-variant bg-surface-container/40 hover:bg-surface-variant hover:border-primary/30 size-9 shrink-0 cursor-pointer transition-colors backdrop-blur-md shadow-sm',
+        className
+      )}
+      aria-label='Toggle theme'
+      title={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
+    >
+      <div className='relative size-4'>
+        <Moon
           className={cn(
-            'flex items-center gap-2 cursor-pointer',
-            currentTheme === 'system' && 'bg-accent text-accent-foreground'
+            'h-4 w-4 transition-all duration-300 absolute',
+            isDark ? 'opacity-100 rotate-0 text-yellow-300' : 'opacity-0 rotate-90'
           )}
-        >
-          <Laptop className='h-4 w-4' />
-          <span>System</span>
-        </DropdownMenuItem>
-        <DropdownMenuItem
-          onClick={() => setTheme('light')}
+        />
+        <Sun
           className={cn(
-            'flex items-center gap-2 cursor-pointer',
-            currentTheme === 'light' && 'bg-accent text-accent-foreground'
+            'h-4 w-4 transition-all duration-300 absolute',
+            isDark ? 'opacity-0 -rotate-90' : 'opacity-100 rotate-0 text-amber-500'
           )}
-        >
-          <Sun className='h-4 w-4' />
-          <span>Light</span>
-        </DropdownMenuItem>
-        <DropdownMenuItem
-          onClick={() => setTheme('dark')}
-          className={cn(
-            'flex items-center gap-2 cursor-pointer',
-            currentTheme === 'dark' && 'bg-accent text-accent-foreground'
-          )}
-        >
-          <Moon className='h-4 w-4' />
-          <span>Dark</span>
-        </DropdownMenuItem>
-      </DropdownMenuContent>
-    </DropdownMenu>
+        />
+      </div>
+    </button>
   )
 }

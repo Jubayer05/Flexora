@@ -152,12 +152,12 @@ export default function ProductPerformancePage() {
           `}</style>
 
           <div className='grid gap-4 xl:grid-cols-2'>
-            <Card>
-              <CardHeader>
+            <Card className='border border-outline-variant/40'>
+              <CardHeader className='border-b border-outline-variant/30 bg-surface-container/30'>
                 <CardTitle>Top Product Revenue</CardTitle>
                 <CardDescription>Highest-earning products in the selected timeframe.</CardDescription>
               </CardHeader>
-              <CardContent className='h-[340px]'>
+              <CardContent className='h-[340px] p-6'>
                 <ResponsiveContainer width='100%' height='100%'>
                   <BarChart data={topProducts}>
                     <CartesianGrid strokeDasharray='3 3' stroke='rgba(148,163,184,0.18)' />
@@ -170,12 +170,12 @@ export default function ProductPerformancePage() {
               </CardContent>
             </Card>
 
-            <Card>
-              <CardHeader>
+            <Card className='border border-outline-variant/40'>
+              <CardHeader className='border-b border-outline-variant/30 bg-surface-container/30'>
                 <CardTitle>Stock Turnover Rate</CardTitle>
                 <CardDescription>Products moving fastest through available stock.</CardDescription>
               </CardHeader>
-              <CardContent className='h-[340px]'>
+              <CardContent className='h-[340px] p-6'>
                 <ResponsiveContainer width='100%' height='100%'>
                   <BarChart data={topProducts}>
                     <CartesianGrid strokeDasharray='3 3' stroke='rgba(148,163,184,0.18)' />
@@ -189,34 +189,34 @@ export default function ProductPerformancePage() {
             </Card>
           </div>
 
-          <Card>
-            <CardHeader>
+          <Card className='border border-outline-variant/40'>
+            <CardHeader className='border-b border-outline-variant/30 bg-surface-container/30'>
               <CardTitle>Product Metrics Table</CardTitle>
               <CardDescription>Conversion, turnover, revenue, and quantity for sold products.</CardDescription>
             </CardHeader>
-            <CardContent className='overflow-x-auto'>
+            <CardContent className='overflow-x-auto p-6'>
               <table className='min-w-[980px] w-full table-fixed text-sm'>
-                <thead className='text-muted-foreground'>
-                  <tr className='border-b border-border'>
-                    <th className='w-[34%] py-3 pr-4 text-left'>Product</th>
-                    <th className='w-[26%] py-3 pr-4 text-left'>Category</th>
-                    <th className='w-[8%] py-3 text-right whitespace-nowrap'>Units</th>
-                    <th className='w-[10%] py-3 text-right whitespace-nowrap'>Revenue</th>
-                    <th className='w-[8%] py-3 text-right whitespace-nowrap'>Orders</th>
-                    <th className='w-[7%] py-3 text-right whitespace-nowrap'>Conversion</th>
-                    <th className='w-[7%] py-3 text-right whitespace-nowrap'>Turnover</th>
+                <thead>
+                  <tr className='border-b border-outline-variant/40'>
+                    <th className='w-[34%] py-3 pr-4 text-left text-on-surface-variant font-semibold'>Product</th>
+                    <th className='w-[26%] py-3 pr-4 text-left text-on-surface-variant font-semibold'>Category</th>
+                    <th className='w-[8%] py-3 text-right text-on-surface-variant font-semibold whitespace-nowrap'>Units</th>
+                    <th className='w-[10%] py-3 text-right text-on-surface-variant font-semibold whitespace-nowrap'>Revenue</th>
+                    <th className='w-[8%] py-3 text-right text-on-surface-variant font-semibold whitespace-nowrap'>Orders</th>
+                    <th className='w-[7%] py-3 text-right text-on-surface-variant font-semibold whitespace-nowrap'>Conversion</th>
+                    <th className='w-[7%] py-3 text-right text-on-surface-variant font-semibold whitespace-nowrap'>Turnover</th>
                   </tr>
                 </thead>
                 <tbody>
                   {paginatedProducts.map((product) => (
-                    <tr key={product.productId} className='border-b border-border/50'>
-                      <td className='py-3 pr-4 align-top break-words'>{product.name}</td>
-                      <td className='py-3 pr-4 align-top break-words text-muted-foreground'>{product.categoryName}</td>
-                      <td className='py-3 text-right align-top whitespace-nowrap'>{product.quantity.toLocaleString()}</td>
-                      <td className='py-3 text-right align-top whitespace-nowrap'>${product.revenue.toFixed(2)}</td>
-                      <td className='py-3 text-right align-top whitespace-nowrap'>{product.orders.toLocaleString()}</td>
-                      <td className='py-3 text-right align-top whitespace-nowrap'>{product.conversionRate.toFixed(2)}%</td>
-                      <td className='py-3 text-right align-top whitespace-nowrap'>{product.stockTurnoverRate.toFixed(2)}%</td>
+                    <tr key={product.productId} className='border-b border-outline-variant/20 hover:bg-muted/20 transition-colors'>
+                      <td className='py-3 pr-4 align-top break-words text-on-surface font-medium'>{product.name}</td>
+                      <td className='py-3 pr-4 align-top break-words text-on-surface-variant'>{product.categoryName}</td>
+                      <td className='py-3 text-right align-top whitespace-nowrap text-on-surface tabular-nums'>{product.quantity.toLocaleString()}</td>
+                      <td className='py-3 text-right align-top whitespace-nowrap text-on-surface font-semibold tabular-nums'>${product.revenue.toFixed(2)}</td>
+                      <td className='py-3 text-right align-top whitespace-nowrap text-on-surface tabular-nums'>{product.orders.toLocaleString()}</td>
+                      <td className='py-3 text-right align-top whitespace-nowrap text-on-surface-variant tabular-nums'>{product.conversionRate.toFixed(2)}%</td>
+                      <td className='py-3 text-right align-top whitespace-nowrap text-on-surface-variant tabular-nums'>{product.stockTurnoverRate.toFixed(2)}%</td>
                     </tr>
                   ))}
                 </tbody>
@@ -234,10 +234,11 @@ export default function ProductPerformancePage() {
                     size='sm'
                     onClick={() => setProductsPage((current) => Math.max(1, current - 1))}
                     disabled={productsPage === 1}
+                    className='border-outline-variant hover:bg-muted'
                   >
                     Previous
                   </Button>
-                  <span className='min-w-[84px] text-center text-sm text-muted-foreground'>
+                  <span className='min-w-[84px] text-center text-sm text-on-surface-variant'>
                     Page {productsPage} / {totalProductPages}
                   </span>
                   <Button
@@ -247,6 +248,7 @@ export default function ProductPerformancePage() {
                       setProductsPage((current) => Math.min(totalProductPages, current + 1))
                     }
                     disabled={productsPage === totalProductPages}
+                    className='border-outline-variant hover:bg-muted'
                   >
                     Next
                   </Button>
