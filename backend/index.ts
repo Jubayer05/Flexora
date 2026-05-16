@@ -183,6 +183,8 @@ const startServer = async () => {
   }
 }
 
-startServer()
+if (!process.env.VERCEL) {
+  startServer()
+}
 
 export default app

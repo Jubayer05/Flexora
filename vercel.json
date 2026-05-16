@@ -6,8 +6,10 @@
       "framework": "nextjs"
     },
     "backend": {
-      "entrypoint": "backend",
-      "routePrefix": "/_/backend"
+      "entrypoint": "backend/dist/index.js",
+      "routePrefix": "/_/backend",
+      "framework": "express",
+      "includeFiles": ["backend/generated/**"]
     }
   }
 }
