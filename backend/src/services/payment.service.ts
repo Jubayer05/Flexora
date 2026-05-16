@@ -1200,6 +1200,10 @@ export class PaymentService {
       throw new Error('Payment not found')
     }
 
+    if (!payment.method) {
+      throw new Error('Payment method not found')
+    }
+
     // Initialize gateway with decrypted keys
     const gateway = await this.getGatewayInstance(payment.method.id, payment.method.testMode)
 
@@ -1329,6 +1333,10 @@ export class PaymentService {
 
     if (payment.status !== 'COMPLETED') {
       throw new Error('Only completed payments can be refunded')
+    }
+
+    if (!payment.method) {
+      throw new Error('Payment method not found')
     }
 
     // Initialize gateway with decrypted keys
@@ -1624,7 +1632,7 @@ Total Paid: $${paidAmount.toString()}
 Status: COMPLETED
 Payment Date: ${new Date().toLocaleDateString()}
 
-${(order.product.type === 'SERVICE' && order.product.platform !== 'TELEGRAM') || order.product.type === 'PREMIUM' || isTelegramTransferProduct(order.product)
+${order.product.type === 'SERVICE' || order.product.type === 'PREMIUM' || isTelegramTransferProduct(order.product)
   ? 'Your service will be processed and delivered shortly. You will receive another email once it\'s ready.' 
   : 'Your order is being processed and will be delivered shortly. You will receive another email with your account credentials once delivery is complete.'}
 

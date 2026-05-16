@@ -253,10 +253,10 @@ export const sendGuestVerificationCode = async (req: Request, res: Response) => 
       })
     }
 
-    order = order || ({
+    const orderContext = order ?? {
       orderNumber: '',
       customerName: 'Customer'
-    } as any)
+    }
 
     // Check rate limit
     const rateLimitKey = `guest_code_rate:${normalizedEmail}`
@@ -287,8 +287,8 @@ export const sendGuestVerificationCode = async (req: Request, res: Response) => 
     const frontendUrl = process.env.FRONTEND_URL || 'https://flexora.com'
     const guestAccessUrl = `${frontendUrl}/guest-login`
     const signUpUrl = `${frontendUrl}/sign-up`
-    const customerName = order?.customerName || 'Customer'
-    const latestOrderNumber = order?.orderNumber
+    const customerName = orderContext.customerName || 'Customer'
+    const latestOrderNumber = orderContext.orderNumber
 
     const defaultSubject = latestOrderNumber
       ? `Your Guest Login OTP - ${latestOrderNumber} | UHQ Accounts`
@@ -307,7 +307,7 @@ Your verification code to access your guest dashboard:
     ${verificationCode}
 
 ⏱️  Code Expires In: 10 minutes
-📦 Order Number: ${order.orderNumber}
+📦 Order Number: ${orderContext.orderNumber}
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 📝 QUICK START - 2 WAYS TO ACCESS YOUR ORDER
@@ -374,7 +374,7 @@ A: TXT, Excel (.csv), or JSON - choose what works best for you!
 
 📧 Email: support@flexora.com
 🌐 Website: ${frontendUrl}
-📋 Order Number: ${order.orderNumber}
+📋 Order Number: ${orderContext.orderNumber}
 
 We're here to help! Just reply to this email or contact support.
 
@@ -393,7 +393,7 @@ all your orders, exclusive rewards, and special offers! 🎁
       const authTemplate = await deliveryTemplateService.getAuthTemplate('VERIFICATION_CODE')
       if (authTemplate?.body) {
         emailSubject = deliveryTemplateService.replaceVariables(authTemplate.subject, {
-          orderNumber: order.orderNumber,
+          orderNumber: orderContext.orderNumber,
           customerName,
           verificationCode,
           guestAccessUrl,
@@ -401,7 +401,7 @@ all your orders, exclusive rewards, and special offers! 🎁
           email
         })
         emailText = deliveryTemplateService.replaceVariables(authTemplate.body, {
-          orderNumber: order.orderNumber,
+          orderNumber: orderContext.orderNumber,
           customerName,
           verificationCode,
           guestAccessUrl,

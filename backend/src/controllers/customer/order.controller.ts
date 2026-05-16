@@ -173,7 +173,7 @@ const buildMultiItemOrderItems = (order: {
         sku: order.product?.sku || null,
         thumbnail: order.product?.thumbnail || null,
         platform: order.product?.platform || null,
-        type: order.product?.type || null
+        type: (order.product as { type?: string | null } | null | undefined)?.type || null
       }
     })
   }
@@ -1069,7 +1069,7 @@ export const createCartOrders = async (req: AuthRequest, res: Response) => {
         ...(isTelegramTransferProduct(product) && item.customerTelegram
           ? { customerTelegram: item.customerTelegram }
           : {}),
-        ...(product.type === 'SERVICE' && product.platform !== 'TELEGRAM' && item.clientInput
+        ...(product.type === 'SERVICE' && item.clientInput
           ? { clientInput: item.clientInput }
           : {}),
         ...(item.premiumTargets?.length
@@ -2597,98 +2597,9 @@ export const sendInvoiceEmail = async (req: AuthRequest, res: Response) => {
  * Get Telegram account details for a specific order
  * Retrieves phone number, password, and other account metadata
  */
-export const getTelegramAccountDetails = async (req: AuthRequest, res: Response) => {
-  try {
-    const orderId = parseInt(req.params.orderId!)
-    const userId = req.user?.userId
-    let guestEmail = req.query.guestEmail as string
-
-    if (isNaN(orderId)) {
-      return res.status(400).json({
-        success: false,
-        message: 'Invalid order ID'
-      })
-    }
-
-    if (!userId && !guestEmail) {
-      return res.status(401).json({
-        success: false,
-        message: 'Authentication required or guest email must be provided'
-      })
-    }
-
-    if (!userId && guestEmail) {
-      const guestAccess = validateGuestSessionAccess(req, guestEmail)
-      if (!guestAccess.ok) {
-        return res.status(guestAccess.status).json({
-          success: false,
-          message: guestAccess.message
-        })
-      }
-      guestEmail = guestAccess.email
-    }
-
-    // Verify order belongs to customer and is a Telegram order
-    const order = await db.order.findFirst({
-      where: {
-        id: orderId,
-        product: {
-          platform: 'TELEGRAM',
-          OR: [{ type: 'ACCOUNT' }, { type: 'TELEGRAM_ACCOUNTS' }]
-        },
-        OR: [{ userId: userId || undefined }, { guestEmail: guestEmail || undefined }].filter(
-          Boolean
-        )
-      },
-      select: {
-        deliveryStatus: true,
-        product: true,
-        deliveries: {
-          orderBy: {
-            createdAt: 'desc'
-          },
-          take: 1,
-          select: {
-            accounts: true
-          }
-        }
-      }
-    })
-
-    if (!order) {
-      return res.status(404).json({
-        success: false,
-        message: 'Telegram account order not found'
-      })
-    }
-
-    // Check if order is delivered
-    if (order.deliveryStatus !== 'DELIVERED') {
-      return res.status(400).json({
-        success: false,
-        message: 'Order is not yet delivered'
-      })
-    }
-
-    const accounts = normalizeDeliveryAccounts(order.deliveries[0]?.accounts)
-
-    if (accounts.length === 0) {
-      return res.status(404).json({
-        success: false,
-        message: 'No account details found for this order'
-      })
-    }
-
-    res.json({
-      success: true,
-      accounts,
-      message: 'Telegram account details retrieved successfully'
-    })
-  } catch (error) {
-    console.error('Get Telegram account details error:', error)
-    res.status(500).json({
-      success: false,
-      message: error instanceof Error ? error.message : 'Failed to get account details'
-    })
-  }
+export const getTelegramAccountDetails = async (_req: AuthRequest, res: Response) => {
+  return res.status(410).json({
+    success: false,
+    message: 'Telegram account delivery is no longer supported'
+  })
 }

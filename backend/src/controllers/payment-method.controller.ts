@@ -107,7 +107,7 @@ export const deletePaymentMethod = async (
   try {
     const { id } = paymentMethodIdParamsSchema.parse(req.params);
     // Check for force query parameter
-    const force = req.query.force === 'true' || req.query.force === true;
+    const force = req.query.force === 'true' || req.query.force === '1';
     
     const result = await paymentMethodService.delete(id, force);
 

@@ -19,7 +19,13 @@ export interface AuthRequest extends Request {
 // Extended User type with login session information (used for profile API)
 export interface UserWithLoginInfo extends Omit<
   User,
-  'passwordHash' | 'guestToken' | 'rank' | 'totalSpent' | 'totalOrders' | 'discountPercent'
+  | 'passwordHash'
+  | 'guestToken'
+  | 'rank'
+  | 'totalSpent'
+  | 'totalOrders'
+  | 'discountPercent'
+  | 'lastLoginAt'
 > {
   lastLoginIp?: string | null;
   lastLoginDevice?: string | null;

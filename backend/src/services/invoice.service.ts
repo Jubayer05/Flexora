@@ -625,4 +625,40 @@ export class InvoiceService {
         }
       )
   }
+
+  async generateInvoiceHTML(orderId: number): Promise<string> {
+    const order = await db.order.findUnique({
+      where: { id: orderId },
+      select: { orderNumber: true, total: true, createdAt: true }
+    })
+    if (!order) {
+      throw new Error('Order not found')
+    }
+    return `<!DOCTYPE html><html><body><h1>Invoice ${order.orderNumber}</h1><p>Total: ${order.total}</p><p>Date: ${order.createdAt.toISOString()}</p></body></html>`
+  }
+
+  async sendInvoiceEmail(orderId: number): Promise<void> {
+    const order = await db.order.findUnique({
+      where: { id: orderId },
+      include: {
+        user: { select: { email: true, firstName: true } }
+      }
+    })
+    if (!order) {
+      throw new Error('Order not found')
+    }
+
+    const recipient = order.user?.email || order.guestEmail
+    if (!recipient) {
+      throw new Error('No recipient email found for this order')
+    }
+
+    const html = await this.generateInvoiceHTML(orderId)
+    await sendEmail(
+      recipient,
+      `Invoice ${order.orderNumber}`,
+      `Invoice for order ${order.orderNumber}`,
+      html
+    )
+  }
 }

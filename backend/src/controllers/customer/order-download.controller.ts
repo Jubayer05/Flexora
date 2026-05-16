@@ -289,7 +289,7 @@ ACCOUNT CREDENTIALS
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 `
 
-    if (order.product.platform === 'TELEGRAM') {
+    if (false) {
       // Telegram account format
       accounts.forEach((acc: any, index: number) => {
         textContent += `

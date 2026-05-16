@@ -16,8 +16,8 @@ export const uploadFiles = async (req: AuthRequest, res: Response) => {
 
     // Debug: log upload request state
     console.log('[Gallery Upload] req.files:', files?.length ?? 0, Array.isArray(files) ? 'array' : typeof files);
-    if (files?.length) {
-      const first = files[0];
+    const first = files?.[0];
+    if (first) {
       console.log('[Gallery Upload] First file:', {
         fieldname: first.fieldname,
         originalname: first.originalname,

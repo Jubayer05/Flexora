@@ -8,6 +8,8 @@
     "@prisma/client/*": "./generated/prisma/*"
   },
   "scripts": {
+    "postinstall": "prisma generate",
+    "build": "prisma generate",
     "dev": "bun --watch index.ts",
     "start": "bun index.ts",
     "db:generate": "prisma generate",

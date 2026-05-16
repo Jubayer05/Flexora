@@ -26,10 +26,15 @@ export const verifyGuestCode = async (req: Request, res: Response) => {
   // Mark as verified
   await db.guestAccess.update({ where: { id: record.id }, data: { verified: true } })
 
+  const secret = process.env.JWT_SECRET
+  if (!secret) {
+    return res.status(500).json({ success: false, message: 'Server misconfigured' })
+  }
+
   // Generate Guest JWT
   const token = jwt.sign(
     { email, cartGroup, type: 'guest' },
-    process.env.JWT_SECRET,
+    secret,
     { expiresIn: '20m' }
   )
   res.json({ success: true, token })

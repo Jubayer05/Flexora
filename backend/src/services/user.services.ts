@@ -36,7 +36,7 @@ export class UserService {
     return user?.email === this.SUPER_ADMIN_EMAIL
   }
 
-  private excludeSuperAdminWhere(): UserWhereInput {
+  private excludeSuperAdminWhere(): Prisma.UserWhereInput {
     return {
       email: { not: this.SUPER_ADMIN_EMAIL }
     }
@@ -330,7 +330,7 @@ export class UserService {
     const skip = (page - 1) * limit
 
     // Build where clause - Always exclude super admin
-    const where: UserWhereInput = {
+    const where: Prisma.UserWhereInput = {
       ...this.excludeSuperAdminWhere()
     }
 
@@ -431,7 +431,7 @@ export class UserService {
 
     const skip = (page - 1) * limit
 
-    const where: UserWhereInput = {
+    const where: Prisma.UserWhereInput = {
       ...this.excludeSuperAdminWhere(),
       role: {
         in: ['CUSTOMER', 'GUEST']
@@ -1036,7 +1036,7 @@ export class UserService {
 
     const resolvedCountry =
       params.country || (params.ipAddress ? await getCountryFromIP(params.ipAddress) : null)
-    const updateData: UserUpdateInput = {}
+    const updateData: Prisma.UserUpdateInput = {}
 
     if (params.firstName && !existingUser?.firstName) {
       updateData.firstName = params.firstName

@@ -180,6 +180,7 @@ export class BlogService {
     const created: Blog[] = [];
     for (let i = 0; i < blogs.length; i++) {
       const item = blogs[i];
+      if (!item) continue;
       const baseSlug = this.generateSlug(item.title);
       const slug = await this.ensureUniqueSlug(baseSlug);
       const authorId = authorIds[i % authorIds.length];

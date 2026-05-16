@@ -195,7 +195,8 @@ export const uploadBlogImage = async (req: Request, res: Response): Promise<void
   try {
     const file = req.file as Express.Multer.File | undefined;
     if (!file || !file.buffer) {
-      return handleControllerError(res, new Error('No file provided'), 'No file provided');
+      handleControllerError(res, new Error('No file provided'), 'No file provided');
+      return;
     }
     const ext = path.extname(file.originalname);
     const filename = `${generateRandomString(16)}${ext}`;

@@ -58,7 +58,10 @@ export class OrderService {
   private async updateTelegramTransferStatus(params: any) {
     return null
   }
-  private async assignTelegramAccountToOrder(productId: number, quantity: number) {
+  private async assignTelegramAccountToOrder(
+    _productId: number,
+    _quantity: number
+  ): Promise<Array<{ id: number }>> {
     return []
   }
   private async markTelegramAccountAsUsed(accountId: number, orderId: number) {

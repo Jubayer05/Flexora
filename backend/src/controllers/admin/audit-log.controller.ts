@@ -15,7 +15,7 @@ export const getAuditLogs = async (req: Request, res: Response, next: NextFuncti
     if (!validatedQuery.success) {
       return sendErrorResponse(
         res,
-        `Validation error: ${validatedQuery.error.errors.map(e => `${e.path.join('.')}: ${e.message}`).join(', ')}`,
+        `Validation error: ${validatedQuery.error.issues.map((e) => `${e.path.join('.')}: ${e.message}`).join(', ')}`,
         400
       )
     }

@@ -1879,6 +1879,71 @@ Note: This topup was processed automatically via Stripe payment gateway. The bal
   /**
    * Send PayGate topup completion notification
    */
+  async createStripePaymentIntent(params: { userId: number; amount: number }) {
+    const Stripe = (await import('stripe')).default
+    const stripeKey = process.env.STRIPE_SECRET_KEY
+    if (!stripeKey) {
+      throw new Error('Stripe is not configured')
+    }
+
+    const stripe = new Stripe(stripeKey, { apiVersion: '2025-09-30.clover' })
+    const fee = params.amount * 0.02
+    const totalAmount = params.amount + fee
+
+    return stripe.paymentIntents.create({
+      amount: Math.round(totalAmount * 100),
+      currency: 'usd',
+      metadata: {
+        userId: String(params.userId),
+        topupAmount: String(params.amount)
+      }
+    })
+  }
+
+  async processStripeTopup(paymentIntent: { id: string; metadata?: Record<string, string>; amount: number }) {
+    const userId = Number(paymentIntent.metadata?.userId)
+    const topupAmount = Number(paymentIntent.metadata?.topupAmount)
+    if (!userId || !topupAmount) {
+      throw new Error('Invalid Stripe payment metadata')
+    }
+
+    const existing = await db.balanceTransaction.findFirst({
+      where: { userId, reference: paymentIntent.id }
+    })
+    if (existing) {
+      return existing
+    }
+
+    return this.addBalance(
+      userId,
+      topupAmount,
+      'TOPUP' as BalanceTransactionType,
+      'Stripe wallet topup',
+      { reference: paymentIntent.id, meta: { paymentIntentId: paymentIntent.id } }
+    )
+  }
+
+  async verifyStripeWebhook(signature: string, req: { body: Buffer | string }) {
+    const Stripe = (await import('stripe')).default
+    const stripeKey = process.env.STRIPE_SECRET_KEY
+    const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET
+    if (!stripeKey || !webhookSecret) {
+      return false
+    }
+
+    const stripe = new Stripe(stripeKey, { apiVersion: '2025-09-30.clover' })
+    try {
+      stripe.webhooks.constructEvent(
+        typeof req.body === 'string' ? req.body : req.body,
+        signature,
+        webhookSecret
+      )
+      return true
+    } catch {
+      return false
+    }
+  }
+
   private async notifyPayGateTopupCompletion(user: any, amount: number, paymentMethod: string) {
     try {
       const htmlContent = `

@@ -27,7 +27,7 @@ export const binanceVerifyLimiter = rateLimit({
       return `binance-verify:user:${userId}`
     }
     // Use ipKeyGenerator helper for proper IPv4/IPv6 handling
-    return ipKeyGenerator(req)
+    return ipKeyGenerator(req.ip ?? 'unknown')
   },
   // Skip rate limiting for admin users (optional)
   skip: (req) => {

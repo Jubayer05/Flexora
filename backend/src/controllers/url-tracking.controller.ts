@@ -41,7 +41,9 @@ export async function getUrlTrackingById(
   next: NextFunction
 ): Promise<Response<ApiResponse<any>> | void> {
   try {
-    const id = parseInt(req.params.id, 10)
+    const rawId = req.params.id
+    if (!rawId) return sendErrorResponse(res, 'Invalid ID', 400)
+    const id = parseInt(rawId, 10)
     if (isNaN(id)) return sendErrorResponse(res, 'Invalid ID', 400)
     const data = await urlTrackingService.getById(id)
     return sendSuccessResponse(res, data, 'URL tracking retrieved')
@@ -76,7 +78,9 @@ export async function updateUrlTracking(
   next: NextFunction
 ): Promise<Response<ApiResponse<any>> | void> {
   try {
-    const id = parseInt(req.params.id, 10)
+    const rawId = req.params.id
+    if (!rawId) return sendErrorResponse(res, 'Invalid ID', 400)
+    const id = parseInt(rawId, 10)
     if (isNaN(id)) return sendErrorResponse(res, 'Invalid ID', 400)
 
     const validation = UpdateUrlTrackingSchema.safeParse(req.body)
@@ -96,7 +100,9 @@ export async function deleteUrlTracking(
   next: NextFunction
 ): Promise<Response<ApiResponse<any>> | void> {
   try {
-    const id = parseInt(req.params.id, 10)
+    const rawId = req.params.id
+    if (!rawId) return sendErrorResponse(res, 'Invalid ID', 400)
+    const id = parseInt(rawId, 10)
     if (isNaN(id)) return sendErrorResponse(res, 'Invalid ID', 400)
     await urlTrackingService.delete(id)
     return sendSuccessResponse(res, { id }, 'URL tracking deleted')
@@ -129,7 +135,9 @@ export async function getAnalytics(
   next: NextFunction
 ): Promise<Response<ApiResponse<any>> | void> {
   try {
-    const id = parseInt(req.params.id, 10)
+    const rawId = req.params.id
+    if (!rawId) return sendErrorResponse(res, 'Invalid ID', 400)
+    const id = parseInt(rawId, 10)
     if (isNaN(id)) return sendErrorResponse(res, 'Invalid ID', 400)
     const validation = AnalyticsQuerySchema.safeParse(req.query)
     const query = validation.success ? validation.data : { period: 'all' as const }

@@ -23,7 +23,7 @@ export class StripeGatewayService implements IPaymentGateway {
 
   constructor(apiKey: string, webhookSecret: string, testMode: boolean = false) {
     this.stripe = new Stripe(apiKey, {
-      apiVersion: '2025-10-29.clover',
+      apiVersion: '2025-09-30.clover',
       typescript: true
     })
     this.webhookSecret = webhookSecret
