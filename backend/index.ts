@@ -58,22 +58,18 @@ const corsOptions: cors.CorsOptions = {
     if (isDevelopment) {
       // Allow localhost with any port
       if (/^https?:\/\/localhost(:\d+)?$/i.test(origin)) {
-        console.log(`[CORS] Allowed localhost origin: ${origin}`)
         return callback(null, true)
       }
       // Allow IP addresses (IPv4) with any port
       if (/^https?:\/\/\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}(:\d+)?$/i.test(origin)) {
-        console.log(`[CORS] Allowed IP address origin: ${origin}`)
         return callback(null, true)
       }
       // Allow 127.0.0.1 with any port
       if (/^https?:\/\/127\.0\.0\.1(:\d+)?$/i.test(origin)) {
-        console.log(`[CORS] Allowed 127.0.0.1 origin: ${origin}`)
         return callback(null, true)
       }
     }
 
-    console.error(`[CORS] Blocked origin: ${origin} (isDevelopment: ${isDevelopment}, NODE_ENV: ${process.env.NODE_ENV}, ALLOW_IP_ORIGINS: ${process.env.ALLOW_IP_ORIGINS})`)
     return callback(new Error(`CORS blocked for origin: ${origin}`))
   },
   credentials: true,
@@ -83,9 +79,6 @@ const corsOptions: cors.CorsOptions = {
 }
 
 app.use(cors(corsOptions))
-// NOTE: Express 5 + path-to-regexp v6 does not accept "*" as a path pattern.
-// Using a regex keeps this compatible and prevents the server from crashing.
-app.options(/.*/, cors(corsOptions))
 
 // ⚠️ IMPORTANT: Webhook routes MUST be registered BEFORE body parsers
 // Stripe and other gateways require raw body for signature verification
@@ -99,20 +92,7 @@ app.use(express.urlencoded({ extended: true, limit: '10mb' }))
 // Compression middleware can be added here if required
 
 // Static file serving for uploaded files
-// app.use('/files', express.static(path.join(__dirname, 'files')))
-// Static file serving for uploaded files
 app.use('/files', express.static(path.resolve(process.cwd(), 'files')))
-
-// Request logging (development only) - optimized to not block
-if (process.env.NODE_ENV === 'development') {
-  app.use((req, res, next) => {
-    // Use setImmediate to not block the request
-    setImmediate(() => {
-      console.log(`${new Date().toISOString()} - ${req.method} ${req.path}`)
-    })
-    next()
-  })
-}
 
 // ================================
 // HEALTH CHECK
@@ -166,7 +146,6 @@ const startServer = async () => {
   try {
     // Test database connection
     await db.$connect()
-    console.log('✅ Database connected successfully')
 
     // Seed database if empty (optional - only in development)
     if (process.env.NODE_ENV === 'development') {
@@ -175,12 +154,11 @@ const startServer = async () => {
         const pagesCount = await db.customPage.count()
 
         if (settingsCount === 0 || pagesCount === 0) {
-          console.log('🌱 Database appears empty, running seed...')
           const { execSync } = await import('child_process')
           execSync('npm run db:seed', { stdio: 'inherit' })
         }
       } catch (error) {
-        console.warn('⚠️  Seeding skipped:', error)
+        // Seeding skipped
       }
     }
 
@@ -188,25 +166,19 @@ const startServer = async () => {
     const httpServer = http.createServer(app)
     const { initTicketSocket } = await import('./src/socket/ticket.socket')
     initTicketSocket(httpServer)
-    console.log('🔌 Ticket socket (typing + new reply) enabled at /api/v1/socket.io')
 
     httpServer.listen(PORT, () => {
-      console.log(`🚀 Flexora Backend API is running on port ${PORT}`)
-      console.log(`📖 Health check: http://localhost:${PORT}/health`)
-      console.log(`🌍 Environment: ${process.env.NODE_ENV || 'development'}`)
+      // Server ready
     })
 
     // Start background cron jobs (non-blocking)
     try {
       const { startCronJobs } = await import('./src/utils/cron-jobs')
       startCronJobs()
-      console.log('⏰ Background cron jobs started')
     } catch (error) {
-      console.error('⚠️  Failed to start cron jobs:', error)
-      console.log('🔄 Server continues without cron jobs')
+      // Cron jobs unavailable
     }
   } catch (error) {
-    console.error('❌ Database connection failed:', error)
     process.exit(1)
   }
 }

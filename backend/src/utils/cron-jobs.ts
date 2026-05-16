@@ -9,8 +9,6 @@ import { subscriptionService } from '../services/subscription.service'
  * Start all cron jobs
  */
 export function startCronJobs() {
-  console.log('[CronJobs] Starting background cron jobs...')
-
   // Run subscription expiration check daily at midnight
   startSubscriptionExpirationJob()
 
@@ -19,18 +17,14 @@ export function startCronJobs() {
 
   // Run scheduled feedback publisher every 5 minutes
   startScheduledFeedbackJob()
-
-  console.log('[CronJobs] All cron jobs started')
 }
 
 /**
  * Stop all cron jobs (for graceful shutdown)
  */
 export function stopCronJobs() {
-  console.log('[CronJobs] Stopping all cron jobs...')
   // Note: setInterval doesn't return a reference we can easily clear in this pattern
   // For production, consider using node-cron or similar library
-  console.log('[CronJobs] All cron jobs stopped')
 }
 
 /**
@@ -57,8 +51,6 @@ function startSubscriptionExpirationJob() {
       24 * 60 * 60 * 1000
     )
   }, msUntilMidnight)
-
-  console.log('[CronJobs] Subscription expiration job scheduled (daily at midnight)')
 }
 
 /**
@@ -66,11 +58,9 @@ function startSubscriptionExpirationJob() {
  */
 async function runSubscriptionExpirationJob() {
   try {
-    console.log('[CronJobs] Running subscription expiration job...')
-    const result = await subscriptionService.expireSubscriptions()
-    console.log('[CronJobs] Subscription expiration job completed:', result)
+    await subscriptionService.expireSubscriptions()
   } catch (error) {
-    console.error('[CronJobs] Subscription expiration job failed:', error)
+    // Subscription expiration job failed
   }
 }
 
@@ -104,7 +94,6 @@ function startSubscriptionNotificationJob() {
     )
   }, msUntil10AM)
 
-  console.log('[CronJobs] Subscription notification job scheduled (daily at 10 AM)')
 }
 
 /**
@@ -112,11 +101,9 @@ function startSubscriptionNotificationJob() {
  */
 async function runSubscriptionNotificationJob() {
   try {
-    console.log('[CronJobs] Running subscription notification job...')
-    const result = await subscriptionService.sendExpirationNotifications()
-    console.log('[CronJobs] Subscription notification job completed:', result)
+    await subscriptionService.sendExpirationNotifications()
   } catch (error) {
-    console.error('[CronJobs] Subscription notification job failed:', error)
+    // Subscription notification job failed
   }
 }
 
@@ -134,8 +121,6 @@ function startScheduledFeedbackJob() {
   setInterval(() => {
     runScheduledFeedbackJob()
   }, INTERVAL_MS)
-
-  console.log('[CronJobs] Scheduled feedback job scheduled (every 1 minutes)')
 }
 
 /**
@@ -143,8 +128,6 @@ function startScheduledFeedbackJob() {
  */
 async function runScheduledFeedbackJob() {
   try {
-    console.log('[CronJobs] Running scheduled feedback job...')
-
     const db = (await import('../configs/db')).default
 
     const now = new Date()
@@ -161,7 +144,6 @@ async function runScheduledFeedbackJob() {
     })
 
     if (scheduledFeedbacks.length === 0) {
-      console.log('[CronJobs] No scheduled feedbacks to publish')
       return { published: 0 }
     }
 
@@ -193,12 +175,8 @@ async function runScheduledFeedbackJob() {
       }
     })
 
-    console.log(
-      `[CronJobs] Scheduled feedback job completed: published ${result.count} feedback(s), marked ${namesUpdated.count} name(s) as USED`
-    )
     return { published: result.count, namesMarked: namesUpdated.count }
   } catch (error) {
-    console.error('[CronJobs] Scheduled feedback job failed:', error)
     return { published: 0, error: String(error) }
   }
 }
