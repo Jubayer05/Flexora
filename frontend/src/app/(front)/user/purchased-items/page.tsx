@@ -1,16 +1,11 @@
 'use client'
 
-import { TransferStatusBadge } from '@/components/badge/TransferStatusBadge'
-import { VerifyMembershipButton } from '@/components/button/VerifyMembershipButton'
 import MotionLoader from '@/components/common/MotionLoader'
 import { TransferDetailModal } from '@/components/modals/TransferDetailModal'
 import { Button } from '@/components/ui/button'
 import { CustomSelect } from '@/components/common/CustomSelect'
 import OrderDeliveryDialog from '@/components/order/OrderDeliveryDialog'
-import { OrderPhoneCell } from '@/components/order/OrderPhoneCell'
-import TelegramOrderDetailsCard from '@/components/telegram/TelegramOrderDetailsCard'
-import TelegramCodeDialog from '@/components/telegram/TelegramCodeDialog'
-import TelegramManagementOrderCard from '@/components/telegram/TelegramManagementOrderCard'
+import { PurchasedOrderMobileCard } from '@/components/order/PurchasedOrderMobileCard'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { getDeliveryStatusColor, getStatusColor } from '@/components/ui/custom-badge'
 import {
@@ -38,21 +33,17 @@ import {
 } from '@/components/ui/table'
 import useAsync from '@/hooks/useAsync'
 import { useMounted } from '@/hooks/useMounted'
-import { isTelegramTransferProduct } from '@/lib/productTypeUtils'
 import { cn } from '@/lib/utils'
 import requests from '@/services/network/http'
 import Cookies from 'js-cookie'
 import { format } from 'date-fns'
 import {
-  ArrowRightLeft,
   AlertTriangle,
   CheckCircle2,
   ChevronLeft,
   ChevronRight,
   Download,
   Eye,
-  KeyRound,
-  LogOut,
   MoreVertical,
   RefreshCw,
   X
@@ -73,7 +64,6 @@ export default function PurchasedItems() {
   const [productTypeFilter, setProductTypeFilter] = useState<string>('ALL')
   const [statusFilter, setStatusFilter] = useState<string>('ALL')
   const [dateFilter, setDateFilter] = useState<string>('ALL')
-  const [requestingOtp, setRequestingOtp] = useState<number | null>(null)
   const [selectedTransfer, setSelectedTransfer] = useState<{
     transfer: any
     productName: string
@@ -83,13 +73,6 @@ export default function PurchasedItems() {
     orderId: number
     orderNumber: string
   } | null>(null)
-  const [selectedCodeOrder, setSelectedCodeOrder] = useState<{
-    orderId: number
-    orderNumber: string
-  } | null>(null)
-  const [kickDialogOpen, setKickDialogOpen] = useState<number | null>(null)
-  const [kickingSession, setKickingSession] = useState<number | null>(null)
-
   // Check for transfer success on mount
   useEffect(() => {
     if (searchParams.get('transferSuccess') === 'true') {
@@ -133,9 +116,7 @@ export default function PurchasedItems() {
 
       const baseQuery =
         `/customer/orders?page=${page}&limit=${limit}` +
-        (productTypeFilter !== 'ALL'
-          ? `&productType=${productTypeFilter === 'TELEGRAM_ACCOUNTS' ? 'TELEGRAM_ACCOUNTS' : productTypeFilter}`
-          : '')
+        (productTypeFilter !== 'ALL' ? `&productType=${productTypeFilter}` : '')
 
       if (token) {
         return baseQuery
@@ -161,15 +142,9 @@ export default function PurchasedItems() {
     void mutate()
   }, [mounted, token, guestEmail, guestAccessToken, mutate])
 
-  // Filter orders client-side (supports both ACCOUNT and TELEGRAM_ACCOUNTS for Telegram)
   const filteredOrders = (data?.orders || []).filter((order) => {
     const matchesProductType =
-      productTypeFilter === 'ALL'
-        ? true
-        : productTypeFilter === 'TELEGRAM_ACCOUNTS'
-          ? order.product?.type === 'TELEGRAM_ACCOUNTS' ||
-            (order.product?.platform === 'TELEGRAM' && order.product?.type === 'ACCOUNT')
-          : order.product?.type === productTypeFilter
+      productTypeFilter === 'ALL' ? true : order.product?.type === productTypeFilter
 
     const matchesStatus =
       statusFilter === 'ALL'
@@ -244,28 +219,6 @@ export default function PurchasedItems() {
     }
   }
 
-  const handleRequestOtp = async (orderId: number) => {
-    setRequestingOtp(orderId)
-    try {
-      const response = await requests.post<{ success: boolean; message: string }>(
-        '/customer/telegram-accounts/request-otp',
-        { orderId }
-      )
-
-      if (response.success) {
-        toast.success(response.message || 'OTP sent successfully to your email')
-      } else {
-        toast.error(response.message || 'Failed to send OTP')
-      }
-    } catch (error: any) {
-      const message =
-        error?.response?.data?.message || error?.message || 'Failed to send OTP. Please try again.'
-      toast.error(message)
-    } finally {
-      setRequestingOtp(null)
-    }
-  }
-
   const handleDownloadInvoice = async (orderId: number, orderNumber: string) => {
     try {
       const authToken = document.cookie
@@ -306,35 +259,6 @@ export default function PurchasedItems() {
       toast.success('Invoice downloaded successfully')
     } catch (error: any) {
       toast.error(error?.message || 'Failed to download invoice')
-    }
-  }
-
-  const canRequestOrderOtp = (order: Order) => {
-    return !isGuestSession && (order as any).canRequestOtp === true
-  }
-
-  const handleKickAdminSession = async (orderId: number) => {
-    setKickingSession(orderId)
-    try {
-      const response = await requests.post<{ success: boolean; message: string }>(
-        '/customer/telegram-accounts/kick-admin-session',
-        { orderId }
-      )
-
-      if (response.success) {
-        toast.success(response.message || 'Admin session kicked successfully')
-        setKickDialogOpen(null)
-      } else {
-        toast.error(response.message || 'Failed to kick admin session')
-      }
-    } catch (error: any) {
-      toast.error(
-        error?.response?.data?.message ||
-          error?.message ||
-          'Failed to kick admin session. Please try again.'
-      )
-    } finally {
-      setKickingSession(null)
     }
   }
 
@@ -591,7 +515,6 @@ export default function PurchasedItems() {
             showSearch={false}
             staticOptions={[
               { label: 'All Types', value: 'ALL' },
-              { label: 'Telegram Accounts', value: 'TELEGRAM_ACCOUNTS' },
               { label: 'Account', value: 'ACCOUNT' },
               { label: 'Service', value: 'SERVICE' },
               { label: 'Premium', value: 'PREMIUM' }
@@ -677,34 +600,18 @@ export default function PurchasedItems() {
       {/* Mobile Cards */}
       <div className='space-y-3 md:hidden'>
         {orders.map((order) => (
-          <TelegramManagementOrderCard
+          <PurchasedOrderMobileCard
             key={order.id}
             order={order}
-            requestingOtp={requestingOtp === order.id}
-            kickingSession={kickingSession === order.id}
             onViewDetails={(orderId) =>
               isGuestSession
                 ? push(`/guest/orders/${orderId}?email=${encodeURIComponent(guestEmail)}`)
                 : push(`/user/purchased-items/${orderId}`)
             }
-            onOpenTransfer={(selectedOrder) =>
-              setSelectedTransfer({
-                transfer: selectedOrder.telegramTransfer,
-                productName: selectedOrder.product?.name || 'Transfer Product'
-              })
-            }
             onOpenDelivery={(orderId, orderNumber) =>
               setSelectedOrderForDownload({ orderId, orderNumber })
             }
             onDownloadInvoice={handleDownloadInvoice}
-            onGetCode={(selectedOrder) =>
-              setSelectedCodeOrder({
-                orderId: selectedOrder.id,
-                orderNumber: selectedOrder.orderNumber
-              })
-            }
-            onRequestOtp={handleRequestOtp}
-            onKickSession={(orderId) => setKickDialogOpen(orderId)}
           />
         ))}
       </div>
@@ -743,16 +650,8 @@ export default function PurchasedItems() {
                   <span className='text-card-foreground font-medium'>{order.product?.name || 'N/A'}</span>
                 </TableCell>
 
-                {/* Phone Number - for Telegram account orders */}
                 <TableCell>
-                  <OrderPhoneCell
-                    orderId={order.id}
-                    isTelegramAccount={
-                      order.product?.platform === 'TELEGRAM' &&
-                      (order.product?.type === 'ACCOUNT' || order.product?.type === 'TELEGRAM_ACCOUNTS')
-                    }
-                    isDelivered={order.deliveryStatus === 'DELIVERED'}
-                  />
+                  <span className='text-card-foreground/60 text-sm'>—</span>
                 </TableCell>
 
                 {/* Quantity */}
@@ -791,22 +690,8 @@ export default function PurchasedItems() {
                   </span>
                 </TableCell>
 
-                {/* Transfer Status - Only show for SERVICE type products */}
                 <TableCell>
-                  {isTelegramTransferProduct(order.product) && order.telegramTransfer ? (
-                    <div className='flex flex-col gap-2'>
-                      <TransferStatusBadge status={order.telegramTransfer.status} />
-                      {order.telegramTransfer.status === 'VERIFICATION_REQUIRED' && (
-                        <VerifyMembershipButton
-                          transferId={order.telegramTransfer.id}
-                          currentStatus={order.telegramTransfer.status}
-                          onVerified={() => window.location.reload()}
-                        />
-                      )}
-                    </div>
-                  ) : (
-                    <span className='text-card-foreground/60 text-sm'>N/A</span>
-                  )}
+                  <span className='text-card-foreground/60 text-sm'>N/A</span>
                 </TableCell>
 
                 {/* Date */}
@@ -842,30 +727,6 @@ export default function PurchasedItems() {
                         <Eye className='mr-2 h-4 w-4' />
                         View Details
                       </DropdownMenuItem>
-                      {isTelegramTransferProduct(order.product) && order.telegramTransfer && (
-                        <DropdownMenuItem
-                          onClick={() =>
-                            setSelectedTransfer({
-                              transfer: order.telegramTransfer,
-                              productName: order.product?.name || 'Transfer Product'
-                            })
-                          }
-                          className='cursor-pointer text-card-foreground hover:bg-muted'
-                        >
-                          <ArrowRightLeft className='mr-2 h-4 w-4' />
-                          View Transfer
-                        </DropdownMenuItem>
-                      )}
-                      {canRequestOrderOtp(order) && (
-                        <DropdownMenuItem
-                          onClick={() => handleRequestOtp(order.id)}
-                          disabled={requestingOtp === order.id}
-                          className='cursor-pointer text-card-foreground hover:bg-muted'
-                        >
-                          <KeyRound className='mr-2 h-4 w-4' />
-                          {requestingOtp === order.id ? 'Sending...' : 'Request OTP'}
-                        </DropdownMenuItem>
-                      )}
                       {(order.deliveryStatus === 'DELIVERED' ||
                         (order.deliveryStatus === 'PARTIAL' &&
                           Number((order as any).quantityDelivered || 0) > 0)) && (
@@ -899,25 +760,6 @@ export default function PurchasedItems() {
                   </DropdownMenu>
                 </TableCell>
               </TableRow>
-
-              {(order.product?.platform === 'TELEGRAM' &&
-                (order.product?.type === 'ACCOUNT' || order.product?.type === 'TELEGRAM_ACCOUNTS') &&
-                (order.deliveryStatus === 'DELIVERED' ||
-                  (order.deliveryStatus === 'PARTIAL' &&
-                    Number((order as any).quantityDelivered || 0) > 0))) && (
-                <TableRow className='bg-muted/20 dark:bg-muted/10 border-border hover:bg-muted/30 dark:hover:bg-muted/20'>
-                  <TableCell colSpan={11} className='p-0 text-card-foreground'>
-                    <div className='p-4'>
-                      <TelegramOrderDetailsCard
-                        order={order}
-                        onDownloadClick={(orderId, orderNumber) =>
-                          setSelectedOrderForDownload({ orderId, orderNumber })
-                        }
-                      />
-                    </div>
-                  </TableCell>
-                </TableRow>
-              )}
               </Fragment>
             ))}
           </TableBody>
@@ -961,76 +803,6 @@ export default function PurchasedItems() {
           </div>
         </div>
       )}
-
-      {selectedCodeOrder && (
-        <TelegramCodeDialog
-          open={!!selectedCodeOrder}
-          onOpenChange={(open) => !open && setSelectedCodeOrder(null)}
-          orderId={selectedCodeOrder.orderId}
-          orderNumber={selectedCodeOrder.orderNumber}
-        />
-      )}
-
-      <Dialog open={kickDialogOpen !== null} onOpenChange={(open) => !open && setKickDialogOpen(null)}>
-        <DialogContent className='border-border bg-card text-card-foreground sm:max-w-md'>
-          <DialogHeader>
-            <DialogTitle className='flex items-center gap-2 text-red-600 dark:text-red-400'>
-              <AlertTriangle className='h-5 w-5' />
-              Logout Admin Session?
-            </DialogTitle>
-            <DialogDescription className='text-muted-foreground'>
-              This removes our active Telegram session from your account.
-            </DialogDescription>
-          </DialogHeader>
-
-          <div className='space-y-4 py-2'>
-            <Alert className='border-red-500/20 bg-red-500/10'>
-              <AlertTriangle className='h-4 w-4 text-red-500' />
-              <AlertTitle className='text-red-600 dark:text-red-400'>Important</AlertTitle>
-              <AlertDescription className='mt-2 text-red-700 dark:text-red-300/90'>
-                After logout, you may no longer be able to get codes from us for this account.
-              </AlertDescription>
-            </Alert>
-
-            <Alert className='border-amber-500/20 bg-amber-500/10'>
-              <AlertTriangle className='h-4 w-4 text-amber-500' />
-              <AlertTitle className='text-amber-600 dark:text-amber-400'>Session Note</AlertTitle>
-              <AlertDescription className='mt-2 text-amber-700 dark:text-amber-300/90'>
-                Make sure you already have full access before continuing.
-              </AlertDescription>
-            </Alert>
-          </div>
-
-          <DialogFooter>
-            <Button
-              type='button'
-              variant='outline'
-              onClick={() => setKickDialogOpen(null)}
-              className='border-border bg-background text-card-foreground hover:bg-muted'
-            >
-              Cancel
-            </Button>
-            <Button
-              type='button'
-              variant='destructive'
-              onClick={() => kickDialogOpen && handleKickAdminSession(kickDialogOpen)}
-              disabled={kickingSession === kickDialogOpen}
-            >
-              {kickingSession === kickDialogOpen ? (
-                <>
-                  <RefreshCw className='mr-2 h-4 w-4 animate-spin' />
-                  Logging out...
-                </>
-              ) : (
-                <>
-                  <LogOut className='mr-2 h-4 w-4' />
-                  Logout Session
-                </>
-              )}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
 
       {/* Transfer Detail Modal */}
       {selectedTransfer && (

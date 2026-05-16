@@ -7,18 +7,7 @@ interface TransferStatusDisplayProps {
   transfer: {
     id: number
     status: string
-    targetUrl?: string
-    customerTelegram?: string
-    joinVerified?: boolean
-    joinVerifiedAt?: Date | string | null
-    transferStartedAt?: Date | string | null
-    transferCompletedAt?: Date | string | null
-    screenshotUrl?: string | null
     failureReason?: string | null
-    retryCount?: number
-    createdAt?: Date | string | null
-    updatedAt?: Date | string | null
-    meta?: Record<string, unknown> | null
   }
   productName?: string
 }

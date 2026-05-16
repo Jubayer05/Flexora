@@ -19,7 +19,7 @@ import {
   TrendingUp,
   XCircle,
 } from 'lucide-react';
-import TransferStatusDisplay from '@/components/telegram/TransferStatusDisplay';
+import TransferStatusDisplay from '@/components/order/TransferStatusDisplay';
 
 interface TransferDetailModalProps {
   open: boolean;

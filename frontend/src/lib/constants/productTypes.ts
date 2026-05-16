@@ -1,55 +1,69 @@
 /**
  * Product Type Constants and Options
- *
- * Simplified for real physical products
  */
 
-// Product Type Values - empty for now, can be customized for real products
-export const PRODUCT_TYPE_VALUES = {} as const
+export const PRODUCT_TYPE_VALUES = {
+  FILE: 'FILE',
+  SERIAL: 'SERIAL',
+  ACCOUNT: 'ACCOUNT',
+  SERVICE: 'SERVICE',
+  TELEGRAM_ACCOUNTS: 'TELEGRAM_ACCOUNTS',
+  TELEGRAM_CHANNEL_GROUPS: 'TELEGRAM_CHANNEL_GROUPS',
+  PREMIUM_1M: 'PREMIUM_1M',
+  PREMIUM_3M: 'PREMIUM_3M',
+  PREMIUM_6M: 'PREMIUM_6M',
+  PREMIUM_12M: 'PREMIUM_12M'
+} as const
 
 export const PRODUCT_PLATFORM_VALUES = {
-  OTHER: 'OTHER'
+  OTHER: 'OTHER',
+  TELEGRAM: 'TELEGRAM'
 } as const
 
-// Product Platform Labels for UI display
 export const PRODUCT_PLATFORM_LABELS = {
-  [PRODUCT_PLATFORM_VALUES.OTHER]: 'Other Platform'
+  [PRODUCT_PLATFORM_VALUES.OTHER]: 'Other Platform',
+  [PRODUCT_PLATFORM_VALUES.TELEGRAM]: 'Telegram'
 } as const
 
-// Product Type Labels for UI display - empty for real products
-export const PRODUCT_TYPE_LABELS = {} as const
+export const PRODUCT_TYPE_LABELS: Record<string, string> = {
+  [PRODUCT_TYPE_VALUES.FILE]: 'File',
+  [PRODUCT_TYPE_VALUES.SERIAL]: 'Serial',
+  [PRODUCT_TYPE_VALUES.ACCOUNT]: 'Account',
+  [PRODUCT_TYPE_VALUES.SERVICE]: 'Service',
+  [PRODUCT_TYPE_VALUES.TELEGRAM_ACCOUNTS]: 'Accounts',
+  [PRODUCT_TYPE_VALUES.TELEGRAM_CHANNEL_GROUPS]: 'Channel / Group',
+  [PRODUCT_TYPE_VALUES.PREMIUM_1M]: 'Premium 1 Month',
+  [PRODUCT_TYPE_VALUES.PREMIUM_3M]: 'Premium 3 Months',
+  [PRODUCT_TYPE_VALUES.PREMIUM_6M]: 'Premium 6 Months',
+  [PRODUCT_TYPE_VALUES.PREMIUM_12M]: 'Premium 12 Months'
+}
 
-// Platform Type Options for Select components
 export const PRODUCT_PLATFORM_OPTIONS = [
   {
     value: PRODUCT_PLATFORM_VALUES.OTHER,
     label: PRODUCT_PLATFORM_LABELS[PRODUCT_PLATFORM_VALUES.OTHER]
+  },
+  {
+    value: PRODUCT_PLATFORM_VALUES.TELEGRAM,
+    label: PRODUCT_PLATFORM_LABELS[PRODUCT_PLATFORM_VALUES.TELEGRAM]
   }
 ]
 
-// Product Type Options for Select components - empty for real products
-export const PRODUCT_TYPE_OPTIONS = []
+export const PRODUCT_TYPE_OPTIONS = Object.entries(PRODUCT_TYPE_LABELS).map(([value, label]) => ({
+  value,
+  label
+}))
 
-// Product Type Options for editing - empty for real products
-export const PRODUCT_TYPE_OPTIONS_EDIT = []
+export const PRODUCT_TYPE_OPTIONS_EDIT = PRODUCT_TYPE_OPTIONS
 
-// Type for product type values
-export type ProductTypeValue = never
+export type ProductTypeValue = (typeof PRODUCT_TYPE_VALUES)[keyof typeof PRODUCT_TYPE_VALUES]
 
-// Helper function to get product type label
-export const getProductTypeLabel = (_type: ProductTypeValue): string => {
-  return ''
-}
+export const getProductTypeLabel = (type: ProductTypeValue | string): string =>
+  PRODUCT_TYPE_LABELS[String(type)] || String(type)
 
-// Helper function to get product type options based on context
-export const getProductTypeOptions = (_isEditing?: boolean) => {
-  return PRODUCT_TYPE_OPTIONS
-}
+export const getProductTypeOptions = (isEditing?: boolean) =>
+  isEditing ? PRODUCT_TYPE_OPTIONS_EDIT : PRODUCT_TYPE_OPTIONS
 
-// Helper function to get product type filter options (for frontend filtering)
-export const getProductTypeFilterOptions = () => {
-  return PRODUCT_TYPE_OPTIONS
-}
+export const getProductTypeFilterOptions = () => PRODUCT_TYPE_OPTIONS
 
-// Legacy product types array - empty for real products
-export const productTypes = []
+export const productTypes = PRODUCT_TYPE_OPTIONS

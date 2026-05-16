@@ -1,27 +1,16 @@
 export const PREMIUM_PRODUCT_TYPES = new Set(['PREMIUM_1M', 'PREMIUM_3M', 'PREMIUM_6M', 'PREMIUM_12M'])
 
-export const TELEGRAM_TRANSFER_PRODUCT_TYPES = new Set([
-  'TELEGRAM_CHANNEL_GROUPS',
-  'TELEGRAM_TRANSFER',
-  'TELEGRAM_GROUP',
-  'TELEGRAM_CHANNEL'
-])
-
 export const isPremiumProductType = (type?: string | null) => PREMIUM_PRODUCT_TYPES.has(String(type || ''))
 
 export const isFileProductType = (type?: string | null) => String(type || '') === 'FILE'
 
-export const isTelegramAccountDelivery = (platform?: string | null, type?: string | null) =>
-  platform === 'TELEGRAM' && (type === 'ACCOUNT' || type === 'TELEGRAM_ACCOUNTS')
+export const isTelegramAccountDelivery = (_platform?: string | null, _type?: string | null) => false
 
-export const isTelegramTransferDelivery = (product?: {
+export const isTelegramTransferDelivery = (_product?: {
   type?: string | null
   telegramUrl?: string | null
   platform?: string | null
-} | null) => {
-  const type = String(product?.type || '')
-  return TELEGRAM_TRANSFER_PRODUCT_TYPES.has(type) || type.includes('CHANNEL') || type.includes('GROUP')
-}
+} | null) => false
 
 export const getDeliveryKind = (product?: {
   type?: string | null

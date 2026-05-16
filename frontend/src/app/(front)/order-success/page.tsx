@@ -22,7 +22,6 @@ import {
 } from 'lucide-react'
 import Cookies from 'js-cookie'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import TelegramCredentialsDisplay from '@/components/telegram/TelegramCredentialsDisplay'
 
 interface OrderDetails {
   id: number
@@ -57,16 +56,8 @@ export default function OrderSuccessPage() {
   const [showCode, setShowCode] = useState(false)
   const [codeCopied, setCodeCopied] = useState(false)
   const [isAuthenticated, setIsAuthenticated] = useState(false)
-  const [telegramAccounts, setTelegramAccounts] = useState<any[]>([])
-  const [loadingTelegramAccounts, setLoadingTelegramAccounts] = useState(false)
-
   const orderId = searchParams.get('order_id') || searchParams.get('orderId')
   const isGuest = searchParams.get('guest') === 'true'
-  
-  // Check if this is a Telegram account order
-  // Note: Order response doesn't include product.type, so we check platform only
-  // Product type 'TELEGRAM_ACCOUNTS' is confirmed from product list
-  const isTelegramOrder = orderDetails?.product?.platform === 'TELEGRAM'
 
   useEffect(() => {
     setIsAuthenticated(!!Cookies.get('token'))
@@ -101,15 +92,6 @@ export default function OrderSuccessPage() {
 
         if (response) {
           setOrderDetails(response)
-          
-          // If Telegram order and delivered, fetch account details immediately
-          // Note: Order response doesn't include product.type, so we check platform only
-          if (
-            response.product?.platform === 'TELEGRAM' &&
-            response.deliveryStatus === 'DELIVERED'
-          ) {
-            fetchTelegramAccounts(response.id, isGuest, storedEmail ?? undefined)
-          }
         }
       } catch (error: any) {
         console.error('Error fetching order:', error)
@@ -121,27 +103,6 @@ export default function OrderSuccessPage() {
 
     fetchOrderDetails()
   }, [orderId, isGuest])
-
-  // Fetch Telegram account details
-  const fetchTelegramAccounts = async (orderId: number, isGuest: boolean, email?: string) => {
-    try {
-      setLoadingTelegramAccounts(true)
-      const queryParams = isGuest && email ? `?guestEmail=${encodeURIComponent(email)}` : ''
-      const response = await requests.get<{
-        success: boolean
-        accounts: any[]
-      }>(`/customer/orders/${orderId}/telegram-accounts${queryParams}`)
-      
-      if (response.success && response.accounts) {
-        setTelegramAccounts(response.accounts)
-      }
-    } catch (error: any) {
-      console.error('Failed to fetch Telegram accounts:', error)
-      // Don't show error to user, just log it
-    } finally {
-      setLoadingTelegramAccounts(false)
-    }
-  }
 
   const downloadOrder = async (format: 'txt' | 'excel' | 'json') => {
     if (!orderDetails) return
@@ -258,29 +219,6 @@ export default function OrderSuccessPage() {
           </Typography>
         </div>
 
-        {/* Immediate Telegram Credentials Display - Only for delivered Telegram orders */}
-        {isTelegramOrder && orderDetails.deliveryStatus === 'DELIVERED' && (
-          <div className='bg-gradient-to-r from-green-500/10 to-blue-500/10 border border-green-500/20 rounded-lg p-6 mb-6'>
-            {loadingTelegramAccounts ? (
-              <div className='text-center py-8'>
-                <Loader2 className='w-6 h-6 animate-spin text-green-400 mx-auto mb-2' />
-                <p className='text-white/60 text-sm'>Loading your Telegram credentials...</p>
-              </div>
-            ) : telegramAccounts.length > 0 ? (
-              <TelegramCredentialsDisplay
-                accounts={telegramAccounts}
-                productName={orderDetails.product.name}
-                orderId={orderDetails.id}
-              />
-            ) : (
-              <div className='text-center py-4'>
-                <p className='text-white/60 text-sm'>
-                  Account details are being prepared. Please check back in a few moments.
-                </p>
-              </div>
-            )}
-          </div>
-        )}
 
         {/* Order Summary Card */}
         <div className='bg-slate-900 rounded-lg border border-white/20 p-8 mb-6'>

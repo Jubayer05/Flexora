@@ -45,12 +45,6 @@ const menuItems: MenuItem[] = [
     description: 'View your purchase history'
   },
   {
-    label: 'Telegram Accounts',
-    href: '/user/telegram-accounts',
-    icon: MessageSquare,
-    description: 'Manage your Telegram accounts'
-  },
-  {
     label: 'Subscription',
     href: '/user/subscription',
     icon: Crown,

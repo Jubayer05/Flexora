@@ -4,7 +4,6 @@ import MotionLoader from '@/components/common/MotionLoader'
 import { Typography } from '@/components/common/typography'
 import MultiFormatDownload from '@/components/order/MultiFormatDownload'
 import OrderDeliveryDialog from '@/components/order/OrderDeliveryDialog'
-import TelegramCredentialsDisplay from '@/components/telegram/TelegramCredentialsDisplay'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
@@ -36,14 +35,6 @@ type PaymentDetails = {
   productPlatform?: string
 }
 
-type TelegramAccount = {
-  id: number
-  phone: string
-  password?: string
-  hasPremium?: boolean
-  meta?: Record<string, any>
-}
-
 type GroupedOrder = {
   id: number
   orderNumber: string
@@ -72,7 +63,6 @@ export default function PaymentSuccessPage() {
   const [guestEmail, setGuestEmail] = useState<string | null>(null)
   const [isAuthenticated, setIsAuthenticated] = useState(false)
   const [isInitialized, setIsInitialized] = useState(false)
-  const [telegramAccounts, setTelegramAccounts] = useState<TelegramAccount[]>([])
   const [groupedOrders, setGroupedOrders] = useState<GroupedOrder[]>([])
   const [isDownloadDialogOpen, setIsDownloadDialogOpen] = useState(false)
   const hasAutoOpenedDelivery = useRef(false)
@@ -222,26 +212,6 @@ export default function PaymentSuccessPage() {
           productPlatform: response.data.product?.platform
         })
         setGroupedOrders(response.data.groupedOrders || [])
-
-        // Fetch Telegram accounts if this is a Telegram account delivery
-        if (
-          response.data.product?.platform === 'TELEGRAM' &&
-          response.data.product?.type === 'ACCOUNT' &&
-          hasDelivery
-        ) {
-          try {
-            const telegramResponse = await requests.get<{
-              success: boolean
-              accounts: TelegramAccount[]
-            }>(`/customer/orders/${id}/telegram-accounts${queryString ? `?${queryString}` : ''}`)
-
-            if (telegramResponse.success && telegramResponse.accounts) {
-              setTelegramAccounts(telegramResponse.accounts)
-            }
-          } catch (error) {
-            console.error('Failed to fetch Telegram accounts:', error)
-          }
-        }
 
         if (response.data.payment?.status === 'COMPLETED') {
           setStatus('success')
@@ -570,18 +540,6 @@ export default function PaymentSuccessPage() {
               </div>
             </div>
           )}
-
-          {/* Telegram Credentials Display */}
-          {status === 'success' &&
-            paymentDetails?.productPlatform === 'TELEGRAM' &&
-            paymentDetails?.productType === 'ACCOUNT' &&
-            telegramAccounts.length > 0 && (
-              <TelegramCredentialsDisplay
-                accounts={telegramAccounts}
-                productName={paymentDetails.productName || 'Telegram Account'}
-                orderId={paymentDetails.orderId}
-              />
-            )}
 
           {/* Guest Order Access Info */}
           {status === 'success' && !isAuthenticated && guestEmail && (

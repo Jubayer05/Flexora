@@ -29,7 +29,7 @@ type ProductAccountRow = {
   meta?: Record<string, any>
 }
 
-type TelegramCredentialsResponse = {
+type AccountCredentialsResponse = {
   phone?: string
   email?: string
   username?: string
@@ -78,7 +78,7 @@ const normalizeStockField = (value: string): StockField | null => {
   }
 }
 
-const stringifyTelegramCredentials = (credentials: TelegramCredentialsResponse) => {
+const stringifyAccountCredentials = (credentials: AccountCredentialsResponse) => {
   return [credentials.phone, credentials.email, credentials.username, credentials.password]
     .map((value) => (typeof value === 'string' ? value.trim() : ''))
     .filter(Boolean)
@@ -86,7 +86,7 @@ const stringifyTelegramCredentials = (credentials: TelegramCredentialsResponse) 
 }
 
 export default function ProductStockManager({ product }: { product: Product }) {
-  const fetchUrl = `/admin/telegram-accounts/product/${product.id}?includeUsed=true&nonce=${Date.now()}`
+  const fetchUrl = `/admin/accounts/product/${product.id}?includeUsed=true&nonce=${Date.now()}`
   const { data: accountsResponse, loading, mutate } = useAsync<{ data: ProductAccountRow[] }>(
     fetchUrl
   )
@@ -237,7 +237,7 @@ export default function ProductStockManager({ product }: { product: Product }) {
 
     setIsDeletingId(account.id)
     try {
-      await requests.delete(`/admin/telegram-accounts/${account.id}`)
+      await requests.delete(`/admin/accounts/${account.id}`)
       setSelectedIds((prev) => prev.filter((id) => id !== account.id))
       toast.success('Stock deleted successfully')
       await refreshStock()
@@ -262,7 +262,7 @@ export default function ProductStockManager({ product }: { product: Product }) {
     setIsBulkDeleting(true)
     try {
       await Promise.all(
-        deletableAccounts.map((account) => requests.delete(`/admin/telegram-accounts/${account.id}`))
+        deletableAccounts.map((account) => requests.delete(`/admin/accounts/${account.id}`))
       )
       setSelectedIds((prev) => prev.filter((id) => !deletableAccounts.some((account) => account.id === id)))
       toast.success(`Deleted ${deletableAccounts.length} stock item(s)`)
@@ -277,11 +277,11 @@ export default function ProductStockManager({ product }: { product: Product }) {
   const fetchSelectedCredentials = async (accountsToCopy: ProductAccountRow[]) => {
     const credentialsList = await Promise.all(
       accountsToCopy.map(async (account) => {
-        const response = await requests.get<{ data?: TelegramCredentialsResponse; phone?: string }>(
-          `/admin/telegram-accounts/${account.id}/credentials`
+        const response = await requests.get<{ data?: AccountCredentialsResponse; phone?: string }>(
+          `/admin/accounts/${account.id}/credentials`
         )
         const raw = (response as any)?.data ?? response
-        return stringifyTelegramCredentials(raw)
+        return stringifyAccountCredentials(raw)
       })
     )
 
@@ -334,7 +334,7 @@ export default function ProductStockManager({ product }: { product: Product }) {
   const handleNoteSave = async (accountId: number, note: string) => {
     setSavingNotes((prev) => ({ ...prev, [accountId]: true }))
     try {
-      await requests.put(`/admin/telegram-accounts/${accountId}`, {
+      await requests.put(`/admin/accounts/${accountId}`, {
         meta: {
           adminNote: note
         }

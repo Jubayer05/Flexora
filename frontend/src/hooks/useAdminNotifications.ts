@@ -37,7 +37,7 @@ export function useAdminNotifications() {
   const hasAdminToken = mounted && !!Cookies.get('adminToken')
 
   const fetcher = useCallback(async (url: string): Promise<NotificationResponse> => {
-    return await requests.get<NotificationResponse>(url, { silentError: true })
+    return await requests.get<NotificationResponse>(url, { silentError: true } as Parameters<typeof requests.get>[1])
   }, [])
 
   // Only fetch when admin session + permission are ready

@@ -1,7 +1,6 @@
 'use client'
 
 import MultiFormatDownload from '@/components/order/MultiFormatDownload'
-import TelegramCredentialsDisplay from '@/components/telegram/TelegramCredentialsDisplay'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
@@ -476,12 +475,6 @@ export default function OrderDeliveryDialog({
                     </div>
                   </div>
                 </Card>
-              ) : isTelegramAccountOrder && deliveredAccounts.length > 0 ? (
-                <TelegramCredentialsDisplay
-                  accounts={normalizedTelegramAccounts}
-                  productName={effectiveProduct.name || 'Telegram Account'}
-                  orderId={orderId}
-                />
               ) : isFileOrder && deliveryFileEntries.length > 0 ? (
                 <div className='space-y-3'>
                   <div className='space-y-1'>
