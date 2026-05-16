@@ -1,4 +1,5 @@
-import type { Prisma, User, UserRole } from '@prisma/client'
+import type { User, UserRole } from '@prisma/client'
+import { Prisma } from '@prisma/client'
 import bcrypt from 'bcrypt'
 import crypto from 'crypto'
 import { CACHE_KEYS, CACHE_TTL, buildCacheKey } from '../configs/cache.config'
@@ -35,7 +36,7 @@ export class UserService {
     return user?.email === this.SUPER_ADMIN_EMAIL
   }
 
-  private excludeSuperAdminWhere(): Prisma.UserWhereInput {
+  private excludeSuperAdminWhere(): UserWhereInput {
     return {
       email: { not: this.SUPER_ADMIN_EMAIL }
     }
@@ -329,7 +330,7 @@ export class UserService {
     const skip = (page - 1) * limit
 
     // Build where clause - Always exclude super admin
-    const where: Prisma.UserWhereInput = {
+    const where: UserWhereInput = {
       ...this.excludeSuperAdminWhere()
     }
 
@@ -430,7 +431,7 @@ export class UserService {
 
     const skip = (page - 1) * limit
 
-    const where: Prisma.UserWhereInput = {
+    const where: UserWhereInput = {
       ...this.excludeSuperAdminWhere(),
       role: {
         in: ['CUSTOMER', 'GUEST']
@@ -1035,7 +1036,7 @@ export class UserService {
 
     const resolvedCountry =
       params.country || (params.ipAddress ? await getCountryFromIP(params.ipAddress) : null)
-    const updateData: Prisma.UserUpdateInput = {}
+    const updateData: UserUpdateInput = {}
 
     if (params.firstName && !existingUser?.firstName) {
       updateData.firstName = params.firstName
