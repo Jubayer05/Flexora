@@ -44,7 +44,6 @@ model User {
   passwordHash           String?
   firstName              String?
   phone                  String?
-  telegramUsername       String?
   photoUrl               String?
   role                   UserRole                 @default(CUSTOMER)
   country                String?
@@ -187,7 +186,6 @@ model Product {
   description    String?
   type           String        @default("FILE")
   platform       PlatformType?
-  telegramUrl    String?
   tags           String[]      @default([])
   policy         String?
   sortOrder      Int           @default(0)
@@ -565,7 +563,6 @@ model Order {
   product           Product           @relation(fields: [productId], references: [id], onDelete: Cascade)
   user              User?             @relation(fields: [userId], references: [id])
   payment           Payment?
-  telegramTransfer  TelegramTransfer?
 
   @@index([orderNumber])
   @@index([userId])
@@ -670,42 +667,6 @@ model Delivery {
   @@index([status])
   @@index([createdAt])
   @@map("deliveries")
-}
-
-model TelegramTransfer {
-  id                  Int                    @id @default(autoincrement())
-  orderId             Int                    @unique
-  status              TelegramTransferStatus @default(PENDING)
-  targetUrl           String
-  transferType        String
-  customerTelegram    String
-  joinVerified        Boolean                @default(false)
-  joinVerifiedAt      DateTime?
-  transferStartedAt   DateTime?
-  transferCompletedAt DateTime?
-  lastRetryAt         DateTime?
-  completedAt         DateTime?
-  transferProofUrl    String?
-  proofData           String?
-  failureReason       String?
-  retryCount          Int                    @default(0)
-  maxRetries          Int                    @default(3)
-  adminNotes          String?
-  manualOverride      Boolean                @default(false)
-  verifiedBy          String?
-  createdAt           DateTime               @default(now())
-  updatedAt           DateTime               @updatedAt
-  meta                Json?
-  order               Order                  @relation(fields: [orderId], references: [id], onDelete: Cascade)
-
-  @@index([orderId])
-  @@index([status])
-  @@index([customerTelegram])
-  @@index([transferType])
-  @@index([targetUrl])
-  @@index([joinVerified])
-  @@index([createdAt])
-  @@map("telegram_transfers")
 }
 
 model Affiliate {
@@ -854,22 +815,6 @@ model AuthEmailTemplate {
   updatedAt             DateTime  @updatedAt
 
   @@map("auth_email_templates")
-}
-
-model CustomerTelegramData {
-  id          Int      @id @default(autoincrement())
-  userId      BigInt   @unique
-  chatId      BigInt
-  username    String?  @unique
-  phoneNumber String?  @unique
-  firstName   String?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
-  @@index([userId])
-  @@index([username])
-  @@index([phoneNumber])
-  @@map("customer_telegram_data")
 }
 
 model CustomPage {
@@ -1116,41 +1061,6 @@ model UrlClickTracking {
   @@map("url_click_trackings")
 }
 
-model TelegramSession {
-  id            Int      @id @default(autoincrement())
-  phoneNumber   String   @unique @map("phone_number")
-  sessionString String   @map("session_string")
-  isAuthorized  Boolean  @default(false) @map("is_authorized")
-  userId        BigInt?  @map("user_id")
-  username      String?
-  firstName     String?  @map("first_name")
-  lastName      String?  @map("last_name")
-  createdBy     Int?     @map("created_by")
-  createdAt     DateTime @default(now()) @map("created_at")
-  updatedAt     DateTime @updatedAt @map("updated_at")
-
-  @@index([phoneNumber])
-  @@index([isAuthorized])
-  @@index([createdBy])
-  @@map("telegram_sessions")
-}
-
-model TelegramOtpRequest {
-  id            Int      @id @default(autoincrement())
-  phoneNumber   String   @map("phone_number")
-  phoneCodeHash String?  @map("phone_code_hash")
-  status        String   @default("pending")
-  requires2FA   Boolean  @default(false) @map("requires_2fa")
-  customerId    Int?     @map("customer_id")
-  createdAt     DateTime @default(now()) @map("created_at")
-  expiresAt     DateTime @map("expires_at")
-
-  @@index([phoneNumber])
-  @@index([status])
-  @@index([expiresAt])
-  @@map("telegram_otp_requests")
-}
-
 model BinanceSession {
   id        Int      @id @default(autoincrement())
   sessionId String   @unique @default("default") @map("session_id")
@@ -1215,7 +1125,6 @@ enum PlatformType {
   INSTAGRAM
   FACEBOOK
   TWITTER
-  TELEGRAM
   TIKTOK
   YOUTUBE
   OTHER
@@ -1250,17 +1159,6 @@ enum DeliveryStatus {
   DELIVERED
   FAILED
   PARTIAL
-}
-
-enum TelegramTransferStatus {
-  PENDING
-  VERIFICATION_REQUIRED
-  CUSTOMER_JOINED
-  TRANSFER_IN_PROGRESS
-  WAITING_PERIOD
-  COMPLETING
-  COMPLETED
-  FAILED
 }
 
 enum TicketStatus {

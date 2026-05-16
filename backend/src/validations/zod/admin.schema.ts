@@ -44,16 +44,6 @@ export const CreateAdminSchema = z.object({
     .regex(/^\+?[1-9]\d{1,14}$/, 'Invalid phone number format')
     .or(z.literal(''))
     .optional(),
-  telegramUsername: z
-    .string()
-    .min(5, 'Telegram username must be at least 5 characters')
-    .max(32, 'Telegram username is too long')
-    .regex(
-      /^[a-zA-Z0-9_]+$/,
-      'Telegram username can only contain letters, numbers, and underscores'
-    )
-    .or(z.literal(''))
-    .optional(),
   role: z.enum(['ADMIN', 'MODERATOR']).optional(), // Allow specifying role
   roleId: z.number().int().positive('Role ID must be a positive integer').optional(), // Required when role is MODERATOR - links to custom Role
 });
@@ -104,16 +94,6 @@ export const UpdateAdminSchema = z.object({
   phone: z
     .string()
     .regex(/^\+?[1-9]\d{1,14}$/, 'Invalid phone number format')
-    .or(z.literal(''))
-    .optional(),
-  telegramUsername: z
-    .string()
-    .min(5, 'Telegram username must be at least 5 characters')
-    .max(32, 'Telegram username is too long')
-    .regex(
-      /^[a-zA-Z0-9_]+$/,
-      'Telegram username can only contain letters, numbers, and underscores'
-    )
     .or(z.literal(''))
     .optional(),
   isActive: z.boolean().optional(),

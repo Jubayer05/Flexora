@@ -191,7 +191,7 @@ export class AnalyticsService {
   private async getBaseData(timeframe: AnalyticsTimeframe) {
     const { start, end } = getTimeframeWindow(timeframe)
 
-    const [visitors, urlClicks, orders, subscriptions, telegramTransfers] = await Promise.all([
+    const [visitors, urlClicks, orders, subscriptions] = await Promise.all([
       db.visitor.findMany({
         where: { date: { gte: startOfDay(start), lte: end } },
         orderBy: { date: 'asc' },
@@ -243,16 +243,6 @@ export class AnalyticsService {
           amount: true,
           createdAt: true
         }
-      }),
-      db.telegramTransfer.findMany({
-        where: {
-          createdAt: { gte: start, lte: end }
-        },
-        select: {
-          status: true,
-          createdAt: true,
-          transferCompletedAt: true
-        }
       })
     ])
 
@@ -284,7 +274,6 @@ export class AnalyticsService {
         amount: Number(item.amount),
         createdAt: item.createdAt
       })),
-      telegramTransfers,
       guestCountryMap
     }
   }
@@ -418,7 +407,7 @@ export class AnalyticsService {
   }
 
   async getSalesAnalytics(timeframe: AnalyticsTimeframe) {
-    const { orders, subscriptions, telegramTransfers, guestCountryMap, urlClicks } =
+    const { orders, subscriptions, guestCountryMap, urlClicks } =
       await this.getBaseData(timeframe)
 
     const totalRevenue = orders.reduce((sum, order) => sum + order.total, 0)
@@ -534,14 +523,7 @@ export class AnalyticsService {
       }))
       .sort((a, b) => b.revenue - a.revenue)
 
-    const telegramRevenue = orders
-      .filter((order) => order.product.platform === 'TELEGRAM')
-      .reduce((sum, order) => sum + order.total, 0)
     const premiumRevenue = subscriptions.reduce((sum, item) => sum + item.amount, 0)
-    const completedTransfers = telegramTransfers.filter((item) => item.status === 'COMPLETED').length
-    const transferCompletionRate = telegramTransfers.length
-      ? formatNumber((completedTransfers / telegramTransfers.length) * 100)
-      : 0
 
     const fulfillmentHours = orders
       .map(parseFulfillmentHours)
@@ -567,9 +549,7 @@ export class AnalyticsService {
       products: products.slice(0, 20),
       categories,
       specials: {
-        telegramRevenue: formatNumber(telegramRevenue),
         premiumRevenue: formatNumber(premiumRevenue),
-        transferCompletionRate,
         averageFulfillmentTimeHours
       }
     }
@@ -583,7 +563,6 @@ export class AnalyticsService {
       summary: {
         bestSeller: sales.products[0] || null,
         totalTrackedProducts: sales.products.length,
-        telegramRevenue: sales.specials.telegramRevenue,
         premiumRevenue: sales.specials.premiumRevenue
       },
       products: sales.products,

@@ -169,9 +169,6 @@ export const updateProfile = async (
     if (validatedData.firstName !== undefined) updateData.firstName = validatedData.firstName
     if (validatedData.phone !== undefined)
       updateData.phone = validatedData.phone.trim() === '' ? null : validatedData.phone.trim()
-    if (validatedData.telegramUsername !== undefined)
-      updateData.telegramUsername =
-        validatedData.telegramUsername.trim() === '' ? null : validatedData.telegramUsername.trim()
     if (validatedData.photoUrl !== undefined)
       updateData.photoUrl = validatedData.photoUrl === '' ? null : validatedData.photoUrl
     if (validatedData.email !== undefined) updateData.email = validatedData.email

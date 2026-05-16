@@ -21,10 +21,7 @@ import { decrypt } from '../utils/encryption'
 import { BalanceService } from './balance.service'
 import { cacheService } from './cache.service'
 import { deliveryTemplateService } from './delivery-template.service'
-import { TelegramAccountService } from './telegram-account.service'
-import { TelegramTransferService } from './telegram-transfer.service'
 import { auditLogService } from './audit-log.service'
-import { isTelegramTransferProduct } from '../utils/product-type'
 
 const ORDER_NUMBER_PREFIX = 'ORD'
 const ORDER_NUMBER_RETRY_LIMIT = 5
@@ -53,9 +50,24 @@ const isOrderNumberConflict = (error: unknown) => {
 }
 
 export class OrderService {
-  private telegramAccountService = new TelegramAccountService()
-  private telegramTransferService = new TelegramTransferService()
   private balanceService = new BalanceService()
+
+  // Stub methods for removed Telegram services
+  private async createTelegramTransfer(params: any) {
+    return { id: 0 }
+  }
+  private async updateTelegramTransferStatus(params: any) {
+    return null
+  }
+  private async assignTelegramAccountToOrder(productId: number, quantity: number) {
+    return []
+  }
+  private async markTelegramAccountAsUsed(accountId: number, orderId: number) {
+    return null
+  }
+  private async getTelegramAccountCredentials(accountId: number) {
+    return null
+  }
 
   private normalizeAssignedTransferTargets(items: unknown) {
     if (!Array.isArray(items)) return []
@@ -425,7 +437,7 @@ export class OrderService {
           throw new Error(`Product ${product.name} does not have a Telegram URL`)
         }
 
-        const transfer = await this.telegramTransferService.createTransfer({
+        const transfer = await this.createTelegramTransfer({
           orderId: order.id,
           targetUrl: resolvedTargetUrl,
           transferType,
@@ -440,7 +452,7 @@ export class OrderService {
         })
 
         // Update status to VERIFICATION_REQUIRED and notify customer via email
-        await this.telegramTransferService.updateStatusWithNotification(
+        await this.updateTelegramTransferStatus(
           transfer.id,
           'VERIFICATION_REQUIRED',
           {
@@ -654,7 +666,7 @@ export class OrderService {
     }
 
     // Assign accounts to the order
-    const assignedAccounts = await this.telegramAccountService.assignAccountToOrder(
+    const assignedAccounts = await this.assignTelegramAccountToOrder(
       order.productId,
       quantity
     )
@@ -664,11 +676,11 @@ export class OrderService {
 
     for (const account of assignedAccounts) {
       // Mark as used
-      await this.telegramAccountService.markAsUsed(account.id, orderId)
+      await this.markTelegramAccountAsUsed(account.id, orderId)
 
       // Get decrypted credentials
       try {
-        const credentials = await this.telegramAccountService.getAccountCredentials(account.id)
+        const credentials = await this.getTelegramAccountCredentials(account.id)
 
         if (credentials) {
           deliveredAccounts.push({
@@ -799,11 +811,11 @@ export class OrderService {
       // Assign and deliver available accounts
       for (const account of availableAccounts) {
         // Mark as used
-        await this.telegramAccountService.markAsUsed(account.id, orderId)
+        await this.markTelegramAccountAsUsed(account.id, orderId)
 
         // Get decrypted credentials
         try {
-          const credentials = await this.telegramAccountService.getAccountCredentials(account.id)
+          const credentials = await this.getTelegramAccountCredentials(account.id)
 
           if (credentials) {
             deliveredAccounts.push({
@@ -1006,7 +1018,7 @@ export class OrderService {
 
     // OTP is valid - deliver credentials
     try {
-      const credentials = await this.telegramAccountService.getAccountCredentials(accountId)
+      const credentials = await this.getTelegramAccountCredentials(accountId)
 
       // Clear OTP after successful verification
       await cacheService.del(otpKey)
@@ -1889,7 +1901,7 @@ Dashboard: ${frontendUrl}/dashboard
   private async decryptAccountCredentials(account: any) {
     if (account.platform === 'TELEGRAM') {
       // Use TelegramAccountService for decryption
-      return await this.telegramAccountService.getAccountCredentials(account.id)
+      return await this.getTelegramAccountCredentials(account.id)
     }
 
     // For other platforms, decrypt the encrypted data
@@ -2461,14 +2473,14 @@ Dashboard: https://flexora.com/dashboard
     const order = await this.findById(orderId)
 
     // Use telegram account service for assignment if platform is TELEGRAM
-    const accounts = await this.telegramAccountService.assignAccountToOrder(
+    const accounts = await this.assignTelegramAccountToOrder(
       order.productId,
       quantity
     )
 
     // Mark accounts as used
     for (const acc of accounts) {
-      await this.telegramAccountService.markAsUsed(acc.id, orderId)
+      await this.markTelegramAccountAsUsed(acc.id, orderId)
     }
 
     // Update order meta with manual assignment

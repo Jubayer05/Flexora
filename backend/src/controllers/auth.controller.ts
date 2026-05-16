@@ -210,38 +210,14 @@ export const verifyToken = async (
   }
 }
 
-function verifyTelegramWidgetHash(
-  payload: Record<string, string | number>,
-  botToken: string
-): boolean {
-  const crypto = require('crypto')
-  const hash = payload.hash as string
-  if (!hash) return false
-  const checkPayload = { ...payload }
-  delete checkPayload.hash
-  const dataCheckString = Object.keys(checkPayload)
-    .sort()
-    .map((k) => `${k}=${checkPayload[k]}`)
-    .join('\n')
-  const secretKey = crypto.createHash('sha256').update(botToken).digest()
-  const computedHash = crypto.createHmac('sha256', secretKey).update(dataCheckString).digest('hex')
-  return computedHash === hash
-}
+// Telegram login removed
 
 export async function verifyOauthToken(req: Request, res: Response) {
   const body = req.body as {
     token?: string
-    provider?: 'google' | 'facebook' | 'twitter' | 'telegram'
+    provider?: 'google' | 'facebook' | 'twitter'
     email?: string
     name?: string
-    // Telegram widget payload
-    id?: number
-    first_name?: string
-    last_name?: string
-    username?: string
-    photo_url?: string
-    auth_date?: number
-    hash?: string
   }
 
   const userAgent = req.get('User-Agent')
@@ -250,61 +226,6 @@ export async function verifyOauthToken(req: Request, res: Response) {
   try {
     const selectedProvider = body.provider || 'google'
 
-    // Telegram: verify widget payload (no token)
-    if (selectedProvider === 'telegram') {
-      const { id, first_name, last_name, username, auth_date, hash } = body
-      if (!id || !hash || !auth_date) {
-        throw new AppError('Telegram widget data is incomplete (id, auth_date, hash required)', 400)
-      }
-
-      const storeConfig = (await db.settings.findUnique({
-        where: { key: 'system_telegram_login' }
-      })) as any | null
-      const fromDb = storeConfig?.value?.isActive && storeConfig?.value?.appSecret
-      const botToken = fromDb ? storeConfig.value.appSecret : process.env.TELEGRAM_BOT_TOKEN
-      if (!botToken) {
-        throw new AppError(
-          'Telegram login is not configured. Enable it in Admin → Settings → Social Login Management.',
-          400
-        )
-      }
-
-      // Build payload with only fields present (Telegram omits empty values from data-check-string)
-      const payload: Record<string, string | number> = { id, auth_date }
-      if (first_name != null && first_name !== '') payload.first_name = first_name
-      if (last_name != null && last_name !== '') payload.last_name = last_name
-      if (username != null && username !== '') payload.username = username
-      if (body.photo_url) payload.photo_url = body.photo_url
-      payload.hash = hash
-
-      if (!verifyTelegramWidgetHash(payload, botToken)) {
-        throw new AppError('Invalid Telegram login data', 400)
-      }
-
-      // Auth date should be within 24h
-      const authDateSec = Number(auth_date)
-      if (Date.now() / 1000 - authDateSec > 86400) {
-        throw new AppError('Telegram login data expired', 400)
-      }
-
-      const name = [first_name, last_name].filter(Boolean).join(' ') || username || `User ${id}`
-      const email = `telegram_${id}@telegram.user`
-
-      const accessData = await authService.socialLogin({
-        provider: 'telegram',
-        providerUserId: String(id),
-        email,
-        emailVerified: true,
-        name,
-        providerUsername: username,
-        userAgent,
-        ipAddress
-      })
-
-      return sendSuccessResponse(res, accessData, 'Login successful')
-    }
-
-    // Google, Facebook, Twitter require token
     const token = body.token
     if (!token || typeof token !== 'string') {
       throw new AppError('Token is required', 400)

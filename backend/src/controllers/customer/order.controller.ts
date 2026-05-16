@@ -345,7 +345,6 @@ const getAdminPurchasedItemDetail = async (order: any, item?: any) => {
     },
     deliveries,
     deliveryAccounts,
-    telegramTransfer: order.telegramTransfer || null,
     premiumSubscription: meta.premiumSubscription || meta.premium || null,
     clientInput: meta.clientInput || null,
     serviceNotes: meta.serviceFulfillment?.fulfillmentNotes || meta.notes || null,
@@ -1530,23 +1529,6 @@ export const getOrders = async (req: AuthRequest, res: Response) => {
             type: true,
             thumbnail: true
           }
-        },
-        telegramTransfer: {
-          select: {
-            id: true,
-            status: true,
-            targetUrl: true,
-            customerTelegram: true,
-            joinVerified: true,
-            transferCompletedAt: true,
-            transferStartedAt: true,
-            joinVerifiedAt: true,
-            failureReason: true,
-            transferProofUrl: true,
-            createdAt: true,
-            updatedAt: true,
-            meta: true
-          }
         }
       },
       orderBy: {
@@ -1693,20 +1675,6 @@ export const getOrderByIdAdmin = async (req: AuthRequest, res: Response) => {
             meta: true
           }
         },
-        telegramTransfer: {
-          select: {
-            id: true,
-            status: true,
-            targetUrl: true,
-            customerTelegram: true,
-            joinVerified: true,
-            transferCompletedAt: true,
-            transferProofUrl: true,
-            failureReason: true,
-            createdAt: true,
-            updatedAt: true
-          }
-        },
         meta: true
       }
     })
@@ -1805,20 +1773,6 @@ export const getOrderByIdAdmin = async (req: AuthRequest, res: Response) => {
                 format: true,
                 fileUrl: true,
                 meta: true
-              }
-            },
-            telegramTransfer: {
-              select: {
-                id: true,
-                status: true,
-                targetUrl: true,
-                customerTelegram: true,
-                joinVerified: true,
-                transferCompletedAt: true,
-                transferProofUrl: true,
-                failureReason: true,
-                createdAt: true,
-                updatedAt: true
               }
             }
           }
@@ -1979,21 +1933,6 @@ export const getOrderById = async (req: AuthRequest, res: Response) => {
             downloadCount: true,
             format: true,
             fileUrl: true,
-            meta: true
-          }
-        },
-        telegramTransfer: {
-          select: {
-            id: true,
-            status: true,
-            targetUrl: true,
-            customerTelegram: true,
-            joinVerified: true,
-            transferCompletedAt: true,
-            failureReason: true,
-            transferProofUrl: true,
-            createdAt: true,
-            updatedAt: true,
             meta: true
           }
         },

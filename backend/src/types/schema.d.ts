@@ -27,7 +27,6 @@ export enum PlatformType {
   INSTAGRAM = 'INSTAGRAM',
   FACEBOOK = 'FACEBOOK',
   TWITTER = 'TWITTER',
-  TELEGRAM = 'TELEGRAM',
   TIKTOK = 'TIKTOK',
   YOUTUBE = 'YOUTUBE',
   OTHER = 'OTHER',
@@ -66,15 +65,6 @@ export enum PaymentMethod {
   CHANGENOW = 'CHANGENOW',
   CRYPTOMUS = 'CRYPTOMUS',
   OTHER = 'OTHER',
-}
-
-export enum TelegramTransferStatus {
-  PENDING = 'PENDING',
-  VERIFICATION_REQUIRED = 'VERIFICATION_REQUIRED',
-  CUSTOMER_JOINED = 'CUSTOMER_JOINED',
-  TRANSFER_IN_PROGRESS = 'TRANSFER_IN_PROGRESS',
-  COMPLETED = 'COMPLETED',
-  FAILED = 'FAILED',
 }
 
 export enum TicketStatus {
@@ -131,7 +121,6 @@ export interface User {
   passwordHash?: string | null;
   firstName?: string | null;
   phone?: string | null;
-  telegramUsername?: string | null;
   role: UserRole;
   rank: UserRank;
   totalSpent: number;
@@ -204,7 +193,6 @@ export interface Product {
   description?: string | null;
   type: ProductType;
   platform?: PlatformType | null;
-  telegramUrl?: string | null;
   price: number;
   originalPrice?: number | null;
   costPrice?: number | null;
@@ -357,7 +345,6 @@ export interface OrderItem {
   // Relations
   order?: Order;
   product?: Product;
-  telegramTransfer?: TelegramTransfer | null;
 }
 
 export interface Payment {
@@ -398,27 +385,6 @@ export interface Delivery {
   downloadCount: number;
   // Relations
   order?: Order;
-}
-
-export interface TelegramTransfer {
-  id: number;
-  createdAt: Date;
-  updatedAt: Date;
-  meta?: Record<string, any> | null;
-  orderItemId: number;
-  status: TelegramTransferStatus;
-  targetUrl: string;
-  customerTelegram: string;
-  joinVerified: boolean;
-  joinVerifiedAt?: Date | null;
-  transferStartedAt?: Date | null;
-  transferCompletedAt?: Date | null;
-  screenshotUrl?: string | null;
-  proofData?: Record<string, any> | null;
-  failureReason?: string | null;
-  retryCount: number;
-  // Relations
-  orderItem?: OrderItem;
 }
 
 // ================================
@@ -609,7 +575,6 @@ export interface CheckoutData {
   customerInfo?: {
     name?: string;
     phone?: string;
-    telegramUsername?: string;
   };
 }
 
@@ -623,13 +588,6 @@ export interface DeliveryData {
     additionalData?: Record<string, any>;
   }>;
   format: 'txt' | 'xlsx' | 'json';
-}
-
-export interface TelegramTransferData {
-  customerTelegram: string;
-  targetUrl: string;
-  transferType: 'ownership' | 'admin' | 'member';
-  verificationRequired: boolean;
 }
 
 // ================================

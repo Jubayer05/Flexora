@@ -40,7 +40,6 @@ export const ProductBaseSchema = z.object({
   description: z.string().max(2000, 'Description must be less than 2000 characters').optional(),
   type: z.string(),
   tags: z.string().optional(),
-  telegramUrl: z.string().optional(),
   btnText: z.string().optional(),
   platform: PlatformType.optional(),
   price: z.number().min(0, 'Price cannot be negative').max(999999.99, 'Price is too high'),
@@ -325,18 +324,3 @@ export const ProductReorderSchema = z.object({
 })
 
 export type ProductReorder = z.infer<typeof ProductReorderSchema>
-
-export const TelegramProductSchema = ProductBaseSchema.extend({
-  platform: z.literal('TELEGRAM'),
-  type: z.string().min(1, 'Product type is required'),
-  telegramUrl: z.string().optional(), // Required for transfers, optional for accounts
-  meta: z
-    .object({
-      // For account products (type: FILE)
-      description: z.string().optional()
-      // For transfer products (type: SERVICE) - validated separately via TelegramOwnershipTransferProductMetaSchema
-    })
-    .optional()
-})
-
-export type TelegramProduct = z.infer<typeof TelegramProductSchema>

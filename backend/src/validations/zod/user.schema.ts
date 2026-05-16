@@ -9,14 +9,6 @@ const optionalPhoneSchema = z
   })
   .optional()
 
-const optionalTelegramUsernameSchema = z
-  .string()
-  .trim()
-  .refine((value) => value === '' || (value.length >= 5 && value.length <= 32), {
-    message: 'Telegram username must be 5 to 32 characters long'
-  })
-  .optional()
-
 // ================================
 // BASE SCHEMAS
 // ================================
@@ -56,8 +48,7 @@ export const RegisterSchema = z.object({
     .string()
     // .regex(/^\+?[1-9]\d{1,14}$/, 'Invalid phone number format')
     .optional(),
-  telegramUsername: z.string().optional(),
-  country: z.string().optional(),
+    country: z.string().optional(),
   ref: z.string().max(100, 'Referral code is too long').optional()
 })
 
@@ -137,8 +128,7 @@ export const CreateUserSchema = z.object({
     .max(50, 'First name is too long')
     .optional(),
   phone: z.string().optional(),
-  telegramUsername: z.string().optional(),
-  country: z.string().optional(),
+    country: z.string().optional(),
   role: z.enum(['CUSTOMER', 'GUEST'] as const).optional(),
   isGuest: z.boolean().optional(),
   referredById: z.number().int().positive().optional(),
@@ -158,8 +148,7 @@ export const UpdateUserSchema = z.object({
     .max(50, 'First name is too long')
     .optional(),
   phone: z.string().optional(),
-  telegramUsername: z.string().optional(),
-  role: z.enum(['ADMIN', 'CUSTOMER', 'GUEST'] as const).optional(),
+    role: z.enum(['ADMIN', 'CUSTOMER', 'GUEST'] as const).optional(),
   isActive: z.boolean().optional(),
   isVerified: z.boolean().optional(),
   isBanned: z.boolean().optional(),
@@ -177,7 +166,6 @@ export const UpdateProfileSchema = z.object({
     .max(50, 'First name is too long')
     .optional(),
   phone: optionalPhoneSchema,
-  telegramUsername: optionalTelegramUsernameSchema,
   photoUrl: z.string().url('Invalid image URL').optional().or(z.literal('')),
   email: z.email('Invalid email format').max(255, 'Email is too long').optional()
 })
