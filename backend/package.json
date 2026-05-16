@@ -1,18 +1,13 @@
 {
   "name": "uhq-backend",
-  "main": "dist/index.js",
-  "module": "dist/index.js",
+  "main": "dist/index.cjs",
   "type": "module",
   "private": true,
-  "imports": {
-    "@prisma/client": "./generated/prisma/index.js",
-    "@prisma/client/*": "./generated/prisma/*"
-  },
   "scripts": {
     "postinstall": "prisma generate",
     "build": "prisma generate && node esbuild.config.mjs",
     "dev": "bun --watch main.ts",
-    "start": "node dist/index.js",
+    "start": "node dist/index.cjs",
     "db:generate": "prisma generate",
     "db:push": "prisma db push",
     "db:sync": "prisma db push",
