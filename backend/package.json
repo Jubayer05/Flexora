@@ -5,7 +5,8 @@
   "private": true,
   "scripts": {
     "postinstall": "prisma generate",
-    "build": "prisma generate",
+    "build": "rm -rf dist && prisma generate",
+    "vercel-build": "rm -rf dist && prisma generate",
     "build:bundle": "prisma generate && node esbuild.config.mjs",
     "dev": "bun --watch main.ts",
     "start": "node --import tsx main.ts",
