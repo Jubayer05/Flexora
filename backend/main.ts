@@ -198,4 +198,15 @@ if (!process.env.VERCEL) {
   startServer()
 }
 
-export default app
+// On Vercel Services, requests arrive as /_/backend/health (routePrefix + route).
+// Mount the app so internal paths stay /health, /api/v1, etc.
+const vercelMountPath =
+  process.env.BACKEND_ROUTE_PREFIX?.replace(/\/$/, '') ||
+  (process.env.VERCEL ? '/_/backend' : '')
+
+const server = express()
+if (vercelMountPath) {
+  server.use(vercelMountPath, app)
+}
+
+export default vercelMountPath ? server : app
