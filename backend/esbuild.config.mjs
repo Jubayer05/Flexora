@@ -19,3 +19,13 @@ await esbuild.build({
   ],
   logLevel: 'info'
 })
+
+// Remove stale ESM bundle — Vercel must not pick up dist/index.js
+import fs from 'node:fs'
+for (const file of ['dist/index.js', 'dist/index.js.map']) {
+  try {
+    fs.unlinkSync(file)
+  } catch {
+    // ignore
+  }
+}
