@@ -1,15 +1,25 @@
 import * as esbuild from 'esbuild'
+import fs from 'node:fs'
+
+// Remove any stale bundles (old dist/index.js caused Prisma ESM errors on Vercel)
+for (const file of ['dist', 'server.cjs', 'server.cjs.map']) {
+  try {
+    const stat = fs.statSync(file)
+    if (stat.isDirectory()) fs.rmSync(file, { recursive: true, force: true })
+    else fs.unlinkSync(file)
+  } catch {
+    // ignore
+  }
+}
 
 await esbuild.build({
   entryPoints: ['main.ts'],
-  outfile: 'dist/index.cjs',
+  outfile: 'server.cjs',
   bundle: true,
   platform: 'node',
   target: 'node20',
   format: 'cjs',
   packages: 'external',
-  // Do NOT bundle Prisma — generated client uses dynamic require() for
-  // @prisma/client-runtime-utils, which breaks inside an ESM bundle.
   external: [
     '@prisma/client',
     '@prisma/client-runtime-utils',
@@ -19,13 +29,3 @@ await esbuild.build({
   ],
   logLevel: 'info'
 })
-
-// Remove stale ESM bundle — Vercel must not pick up dist/index.js
-import fs from 'node:fs'
-for (const file of ['dist/index.js', 'dist/index.js.map']) {
-  try {
-    fs.unlinkSync(file)
-  } catch {
-    // ignore
-  }
-}

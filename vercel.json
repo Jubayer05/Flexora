@@ -6,9 +6,8 @@
       "framework": "nextjs"
     },
     "backend": {
-      "entrypoint": "backend/main.ts",
+      "entrypoint": "backend/server.cjs",
       "routePrefix": "/_/backend",
-      "framework": "express",
       "includeFiles": [
         "backend/node_modules/.prisma/**",
         "backend/node_modules/@prisma/**"
