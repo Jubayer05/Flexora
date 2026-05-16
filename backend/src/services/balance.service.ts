@@ -1886,7 +1886,7 @@ Note: This topup was processed automatically via Stripe payment gateway. The bal
       throw new Error('Stripe is not configured')
     }
 
-    const stripe = new Stripe(stripeKey, { apiVersion: '2025-09-30.clover' })
+    const stripe = new Stripe(stripeKey)
     const fee = params.amount * 0.02
     const totalAmount = params.amount + fee
 
@@ -1931,7 +1931,7 @@ Note: This topup was processed automatically via Stripe payment gateway. The bal
       return false
     }
 
-    const stripe = new Stripe(stripeKey, { apiVersion: '2025-09-30.clover' })
+    const stripe = new Stripe(stripeKey)
     try {
       stripe.webhooks.constructEvent(
         typeof req.body === 'string' ? req.body : req.body,
