@@ -35,7 +35,13 @@ const allowedOriginsFromEnv = (process.env.FRONTEND_URL || '')
 // Allow your production frontends even if env is misconfigured.
 // Allow your production frontends even if env is misconfigured.
 // You can still override/extend via FRONTEND_URL="https://www.flexora.com,https://flexora.com"
-const defaultAllowedOrigins = ['https://www.flexora.com', 'https://flexora.com','https://flexora-frontend.vercel.app','http://109.199.119']
+const defaultAllowedOrigins = [
+  'https://www.flexora.com',
+  'https://flexora.com',
+  'https://flexora-ten.vercel.app',
+  'https://flexora-frontend.vercel.app',
+  'http://109.199.119'
+]
 const allowedOrigins = [...new Set([...allowedOriginsFromEnv, ...defaultAllowedOrigins])]
 
 // Check if we're in development mode (allow IP addresses for local/VPS testing)
@@ -51,6 +57,11 @@ const corsOptions: cors.CorsOptions = {
 
     // Allow any subdomain of flexora.com (e.g. https://admin.flexora.com)
     if (/^https:\/\/([a-z0-9-]+\.)*flexora\.com$/i.test(origin)) {
+      return callback(null, true)
+    }
+
+    // Vercel preview and production (*.vercel.app)
+    if (/^https:\/\/[a-z0-9-]+\.vercel\.app$/i.test(origin)) {
       return callback(null, true)
     }
 

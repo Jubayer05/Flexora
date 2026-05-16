@@ -1,9 +1,10 @@
 import axios from 'axios'
 import Cookies from 'js-cookie'
+import { getApiBaseUrl } from '@/lib/api-base-url'
 import { handleApiError } from './errorHandler'
 
 // Ensure base URL ends with / so paths like "admin/blogs/upload-image" resolve to .../api/v1/admin/... not .../api/v1admin/...
-const rawBaseURL = (process.env.NEXT_PUBLIC_APP_ROOT_API || '').trim()
+const rawBaseURL = getApiBaseUrl()
 const baseURL = rawBaseURL ? (rawBaseURL.endsWith('/') ? rawBaseURL : `${rawBaseURL}/`) : ''
 
 const axiosInstance = axios.create({
