@@ -1,11 +1,9 @@
 'use server'
 
+import { getApiBaseUrl } from '@/lib/api-base-url'
 import { getPostLoginRedirectPath } from '@/lib/authRedirect'
 import { cookies } from 'next/headers'
 import { redirect } from 'next/navigation'
-
-// Use the public API URL for both server and client
-const baseURL = process.env.NEXT_PUBLIC_APP_ROOT_API || 'http://localhost:5015/api/v1'
 
 // Decide if cookies should be marked secure based on the public app URL.
 // On HTTPS domains (e.g. Vercel / production), cookies are secure.
@@ -94,11 +92,8 @@ const clearAdminSessionCookies = async () => {
 // *** Admin Authentications ***
 // =============================
 export const authenticateAdmin = async (email: string, password: string, userAgent?: string) => {
-  console.log('authenticateAdmin called with baseURL:', baseURL)
-
   try {
-    console.log('Making request to:', baseURL + '/admin/auth/login')
-    const response = await fetch(baseURL + '/admin/auth/login', {
+    const response = await fetch(getApiBaseUrl() + '/admin/auth/login', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -189,7 +184,7 @@ export const adminLogout = async () => {
       const timeout = setTimeout(() => controller.abort(), 800)
 
       try {
-        await fetch(baseURL + '/admin/auth/logout', {
+        await fetch(getApiBaseUrl() + '/admin/auth/logout', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -217,7 +212,7 @@ export const registerUser = async (
   userAgent?: string
 ): Promise<{ data: any | null; errors: any }> => {
   try {
-    const res = await fetch(baseURL + '/auth/register', {
+    const res = await fetch(getApiBaseUrl() + '/auth/register', {
       method: 'POST',
       body: JSON.stringify(data),
       headers: {
@@ -240,7 +235,7 @@ export const registerUser = async (
     const registrationData = userData?.data
 
     if (res.ok && registrationData && !registrationData.requiresVerification) {
-      const loginRes = await fetch(baseURL + '/auth/login', {
+      const loginRes = await fetch(getApiBaseUrl() + '/auth/login', {
         method: 'POST',
         body: JSON.stringify({
           email: data.email,
@@ -281,7 +276,7 @@ export const verifyEmailCodeAndLogin = async (
   userAgent?: string
 ): Promise<{ data: any | null; errors?: any; message?: string }> => {
   try {
-    const res = await fetch(baseURL + '/auth/verify-email/code', {
+    const res = await fetch(getApiBaseUrl() + '/auth/verify-email/code', {
       method: 'POST',
       body: JSON.stringify(data),
       headers: {
@@ -328,7 +323,7 @@ export const authenticate = async (
   message?: string
 }> => {
   try {
-    const res = await fetch(baseURL + '/auth/login', {
+    const res = await fetch(getApiBaseUrl() + '/auth/login', {
       method: 'POST',
       body: JSON.stringify(data),
       headers: {
@@ -393,7 +388,7 @@ export const resendVerificationEmail = async (
   email: string
 ): Promise<{ success: boolean; message?: string }> => {
   try {
-    const res = await fetch(baseURL + '/auth/resend-verification', {
+    const res = await fetch(getApiBaseUrl() + '/auth/resend-verification', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email })
@@ -434,7 +429,7 @@ export const socialAuthenticate = async (
       provider === 'telegram' && telegramPayload
         ? { provider: 'telegram', ...telegramPayload, ...options }
         : { provider, token, ...options }
-    const res = await fetch(baseURL + '/auth/verify-token/oauth', {
+    const res = await fetch(getApiBaseUrl() + '/auth/verify-token/oauth', {
       method: 'POST',
       body: JSON.stringify(body),
       headers: { 'Content-Type': 'application/json' }
@@ -463,7 +458,7 @@ export const userLogout = async () => {
   const token = cookieStore.get('token')?.value
 
   try {
-    await fetch(baseURL + '/customer/auth/logout', {
+    await fetch(getApiBaseUrl() + '/customer/auth/logout', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
