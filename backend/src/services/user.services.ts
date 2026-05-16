@@ -339,7 +339,6 @@ export class UserService {
         { username: { contains: search, mode: 'insensitive' } },
         { firstName: { contains: search, mode: 'insensitive' } },
         { phone: { contains: search, mode: 'insensitive' } },
-        { telegramUsername: { contains: search, mode: 'insensitive' } },
         { country: { contains: search, mode: 'insensitive' } }
       ]
     }
@@ -369,7 +368,6 @@ export class UserService {
           isActive: true,
           totalSpent: true,
           phone: true,
-          telegramUsername: true,
           isGuest: true,
           note: true,
           isBanned: true,
@@ -448,7 +446,6 @@ export class UserService {
         { username: { contains: search, mode: 'insensitive' } },
         { firstName: { contains: search, mode: 'insensitive' } },
         { phone: { contains: search, mode: 'insensitive' } },
-        { telegramUsername: { contains: search, mode: 'insensitive' } },
         { country: { contains: search, mode: 'insensitive' } }
       ]
     }
@@ -474,7 +471,6 @@ export class UserService {
             totalSpent: true,
             totalOrders: true,
             phone: true,
-            telegramUsername: true,
             isGuest: true,
             note: true,
             isBanned: true,

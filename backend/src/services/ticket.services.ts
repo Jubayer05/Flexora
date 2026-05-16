@@ -209,8 +209,7 @@ export class TicketService {
               email: true,
               firstName: true,
               username: true,
-              phone: true,
-              telegramUsername: true
+              phone: true
             }
           },
           replies: {
@@ -665,7 +664,6 @@ export class TicketService {
             email: true,
             firstName: true,
             phone: true,
-            telegramUsername: true,
             photoUrl: true,
             isBanned: true,
             isVerified: true,
@@ -723,17 +721,6 @@ export class TicketService {
             type: true,
             thumbnail: true
           }
-        },
-        telegramTransfer: {
-          select: {
-            id: true,
-            status: true,
-            customerTelegram: true,
-            targetUrl: true,
-            joinVerified: true,
-            transferCompletedAt: true,
-            createdAt: true
-          }
         }
       },
       orderBy: {
@@ -769,11 +756,6 @@ export class TicketService {
         displayName,
         email,
         phone: profileUser?.phone || ticket.user?.phone || orders[0]?.customerPhone || null,
-        telegramUsername:
-          profileUser?.telegramUsername ||
-          orders.find((order) => order.telegramTransfer?.customerTelegram)?.telegramTransfer
-            ?.customerTelegram ||
-          null,
         photoUrl: profileUser?.photoUrl || ticket.user?.photoUrl || null,
         isBanned: Boolean(profileUser?.isBanned || ticket.user?.isBanned),
         isVerified: Boolean(profileUser?.isVerified || ticket.user?.isVerified),
@@ -799,13 +781,7 @@ export class TicketService {
         discount: Number(order.discount?.toString() || 0),
         quantity: order.quantity,
         createdAt: order.createdAt,
-        product: order.product,
-        telegramTransfer: order.telegramTransfer
-          ? {
-              ...order.telegramTransfer,
-              isTelegramProduct: true
-            }
-          : null
+        product: order.product
       }))
     }
   }

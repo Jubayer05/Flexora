@@ -9,12 +9,11 @@ import type {
   CreateProduct,
   ProductImport,
   ProductQuery,
-  TelegramProduct,
   UpdateProduct
 } from '../validations/zod/product.schema'
 import { CacheInvalidationService } from './cache-invalidation.service'
 import { cacheService } from './cache.service'
-import { isTelegramTransferProduct, TELEGRAM_ACCOUNT_PRODUCT_TYPES, TELEGRAM_TRANSFER_PRODUCT_TYPES } from '../utils/product-type'
+import { isTelegramTransferProduct } from '../utils/product-type'
 
 const CATALOG_DELETED_SLUG_PREFIX = '__deleted__-'
 
@@ -28,19 +27,7 @@ export class ProductService {
     'PREMIUM_12M'
   ])
   private normalizeTelegramPlatform<T extends { type?: unknown; platform?: unknown }>(data: T): T {
-    const productType = String(data.type ?? '')
-
-    if (
-      (TELEGRAM_ACCOUNT_PRODUCT_TYPES.has(productType) ||
-        TELEGRAM_TRANSFER_PRODUCT_TYPES.has(productType)) &&
-      data.platform !== 'TELEGRAM'
-    ) {
-      return {
-        ...data,
-        platform: 'TELEGRAM'
-      }
-    }
-
+    // Telegram platform handling has been removed
     return data
   }
 
@@ -359,11 +346,6 @@ export class ProductService {
 
     if (!data.platform) throw new Error('Platform is required')
 
-    // Handle Telegram Transfer Products (use same SKU resolved above)
-    if (isTelegramTransferProduct(data)) {
-      return this.createTelegramTransferProduct({ ...data, slug })
-    }
-
     // Regular product creation
     const tags = data.tags ? data.tags.split(',').map((tag) => tag.trim().toLowerCase()) : []
     const { stocks, ...rest } = data
@@ -415,100 +397,10 @@ export class ProductService {
 
   /**
    * Create Telegram Transfer Product (Group/Channel Ownership)
-   * - Validates transfer meta schema
-   * - Checks for duplicate telegramUrl
-   * - Sets transfer-specific defaults
+   * @deprecated Telegram transfer products have been disabled
    */
-  private async createTelegramTransferProduct(data: CreateProduct & { sku?: string }) {
-    const rawMeta =
-      data.meta && typeof data.meta === 'object' && !Array.isArray(data.meta)
-        ? ({ ...(data.meta as Record<string, any>) } as Record<string, any>)
-        : {}
-
-    const isChannelsGroupsCatalogProduct = String(data.type) === 'TELEGRAM_CHANNEL_GROUPS'
-    const hasFullTransferSetup =
-      typeof data.telegramUrl === 'string' &&
-      data.telegramUrl.trim().length > 0 &&
-      typeof rawMeta.adminPhone === 'string' &&
-      rawMeta.adminPhone.trim().length > 0 &&
-      typeof rawMeta.originalOwner === 'string' &&
-      rawMeta.originalOwner.trim().length > 0
-
-    // Keep generic product-create flow lightweight for the new channels/groups type.
-    // Full transfer details can be completed later from Management Channels/groups via the "+" action.
-    let transferMeta: Record<string, any> = {
-      ...rawMeta,
-      transferType:
-        rawMeta.transferType === 'channel' || rawMeta.transferType === 'group'
-          ? rawMeta.transferType
-          : 'group',
-      botAdded: typeof rawMeta.botAdded === 'boolean' ? rawMeta.botAdded : false
-    }
-
-    if (!isChannelsGroupsCatalogProduct) {
-      if (!data.meta) {
-        throw new Error(
-          'Transfer products require meta data with transferType, botAdded, adminPhone, originalOwner, etc.'
-        )
-      }
-
-      transferMeta = TransferProductMetaSchema.parse(transferMeta)
-    } else if (hasFullTransferSetup) {
-      transferMeta = TransferProductMetaSchema.parse({
-        ...transferMeta,
-        adminPhone: String(rawMeta.adminPhone).trim(),
-        originalOwner: String(rawMeta.originalOwner).trim()
-      })
-    }
-
-    // Validate / de-duplicate telegram URL only when one is provided.
-    if (data.telegramUrl && data.telegramUrl.trim().length > 0) {
-      const existing = await db.product.findFirst({
-        where: {
-          platform: 'TELEGRAM',
-          type: { in: Array.from(TELEGRAM_TRANSFER_PRODUCT_TYPES) },
-          telegramUrl: data.telegramUrl,
-          isActive: true,
-          deletedAt: null
-        }
-      })
-
-      if (existing) {
-        throw new Error(
-          `A transfer product for ${data.telegramUrl} already exists (SKU: ${existing.sku})`
-        )
-      }
-    }
-
-    // 4. Set transfer-specific defaults
-    const tags = data.tags ? data.tags.split(',').map((tag) => tag.trim().toLowerCase()) : []
-    const { stocks, ...rest } = data
-
-    // Ensure unique slug
-    let slug = data.slug?.trim()
-    if (!slug) {
-      slug = this.generateSlug(data.name)
-    }
-    slug = await this.ensureUniqueSlug(slug)
-
-    const product = await this.createProductRecordWithUniqueSku({
-        ...rest,
-        slug,
-        tags,
-        type: String(data.type), // Preserve requested Telegram channels/groups type
-        platform: 'TELEGRAM',
-        telegramUrl: data.telegramUrl?.trim() || null,
-        stockCount: 1, // Only 1 transfer available per group/channel
-        minQuantity: 1,
-        maxQuantity: 1, // Customer can only buy 1 transfer
-        meta: transferMeta,
-        privateUrl: data.privateUrl ? data.privateUrl : undefined
-      })
-
-    // Invalidate related caches
-    await this.cacheInvalidationService.invalidateProduct(product.id)
-
-    return product
+  private async createTelegramTransferProduct(_data: CreateProduct & { sku?: string }) {
+    throw new Error('Telegram transfer products have been disabled')
   }
 
   async findById(id: number, includeAccounts = false) {
@@ -1485,150 +1377,28 @@ export class ProductService {
   }
 
   // ================================
-  // TELEGRAM-SPECIFIC METHODS
+  // TELEGRAM-SPECIFIC METHODS (Disabled)
   // ================================
 
-  async createTelegramProduct(data: TelegramProduct) {
-    // Check if SKU already exists
-    const existingSku = await db.product.findFirst({
-      where: { sku: data.sku, deletedAt: null },
-      select: { sku: true }
-    })
-
-    if (existingSku) {
-      throw new Error(`Product with SKU "${data.sku}" already exists`)
-    }
-
-    const tags = data.tags ? data.tags.split(',').map((tag) => tag.trim().toLowerCase()) : []
-
-    const product = await db.product.create({
-      data: {
-        ...data,
-        sku: data.sku.toUpperCase(), // Use provided SKU
-        tags,
-        platform: 'TELEGRAM',
-        stockCount: 0 // Will be calculated from accounts
-      }
-    })
-
-    // Invalidate related caches
-    await this.cacheInvalidationService.invalidateProduct(product.id)
-
-    return product
+  async createTelegramProduct(_data: any) {
+    throw new Error('Telegram products have been disabled')
   }
 
-  async getTelegramProducts(query?: Partial<ProductQuery>) {
-    const telegramQuery = {
-      page: 1,
-      limit: 20,
-      ...query,
-      platform: 'TELEGRAM' as const,
-      minPrice: query?.minPrice ?? undefined,
-      maxPrice: query?.maxPrice ?? undefined,
-      sortBy: query?.sortBy ?? undefined,
-      sortOrder: query?.sortOrder ?? undefined,
-      search: query?.search ?? undefined,
-      type: query?.type ?? undefined
-    }
-
-    const result = await this.findMany(telegramQuery as ProductQuery)
-
-    // Enhance products with Telegram-specific data
-    const enhancedProducts = result.products.map((product: any) => ({
-      ...product,
-      telegramMeta: product.meta as { description?: string } | null,
-      availableAccounts: product._count.accounts,
-      requiresOTP: true
-    }))
-
-    return {
-      products: enhancedProducts,
-      pagination: result.pagination
-    }
+  async getTelegramProducts(_query?: Partial<ProductQuery>) {
+    // Return empty results since Telegram is disabled
+    return { products: [], pagination: { page: 1, limit: 20, total: 0, totalPages: 0 } }
   }
 
   async getTelegramProductById(id: number) {
-    const product = await this.findById(id)
-
-    if (product.platform !== 'TELEGRAM') {
-      throw new Error('Product is not a Telegram product')
-    }
-
-    return {
-      ...product,
-      telegramMeta: product.meta as { description?: string } | null,
-      availableAccounts: product._count.accounts,
-      requiresOTP: true,
-      platform: 'TELEGRAM' as const
-    }
+    throw new Error(`Product ${id} is not a Telegram product (Telegram products have been disabled)`)
   }
 
-  async updateTelegramProduct(id: number, data: Partial<TelegramProduct>) {
-    const product = await this.findById(id)
-
-    if (product.platform !== 'TELEGRAM') {
-      throw new Error('Product is not a Telegram product')
-    }
-
-    return this.update(id, {
-      ...data,
-      platform: 'TELEGRAM'
-    })
+  async updateTelegramProduct(id: number, _data: any) {
+    throw new Error('Telegram products have been disabled')
   }
 
   async getTelegramProductStats(id: number) {
-    const product = await this.getTelegramProductById(id)
-
-    const [accountStats, orderStats] = await Promise.all([
-      db.account.groupBy({
-        by: ['isUsed', 'isValid', 'hasPremium'],
-        where: {
-          productId: id,
-          archived: false // Exclude archived accounts from stats
-        },
-        _count: true
-      }),
-      db.order.aggregate({
-        where: {
-          productId: id,
-          status: { in: ['COMPLETED', 'PARTIAL'] }
-        },
-        _sum: { quantity: true, total: true },
-        _count: true
-      })
-    ])
-
-    type AccountStat = { _count: number; isUsed: boolean; isValid: boolean; hasPremium: boolean }
-
-    const totalAccounts = accountStats.reduce(
-      (sum: number, stat: AccountStat) => sum + stat._count,
-      0
-    )
-    const availableAccounts = accountStats
-      .filter((stat: AccountStat) => !stat.isUsed && stat.isValid)
-      .reduce((sum: number, stat: AccountStat) => sum + stat._count, 0)
-    const premiumAccounts = accountStats
-      .filter((stat: AccountStat) => stat.hasPremium && !stat.isUsed && stat.isValid)
-      .reduce((sum: number, stat: AccountStat) => sum + stat._count, 0)
-
-    return {
-      product: {
-        id: product.id,
-        name: product.name,
-        sku: product.sku
-      },
-      accounts: {
-        total: totalAccounts,
-        available: availableAccounts,
-        premium: premiumAccounts,
-        used: totalAccounts - availableAccounts
-      },
-      sales: {
-        totalSold: orderStats._sum.quantity || 0,
-        totalOrders: orderStats._count || 0,
-        totalRevenue: Number(orderStats._sum.total || 0)
-      }
-    }
+    throw new Error(`Telegram product stats not available for product ${id}`)
   }
 
   /**
@@ -1648,7 +1418,6 @@ export class ProductService {
         description: true,
         type: true,
         platform: true,
-        telegramUrl: true,
         tags: true,
         policy: true,
         sortOrder: true,
@@ -1691,7 +1460,6 @@ export class ProductService {
         description: originalProduct.description,
         type: originalProduct.type,
         platform: originalProduct.platform,
-        telegramUrl: originalProduct.telegramUrl,
         tags: originalProduct.tags,
         policy: originalProduct.policy,
         sortOrder: originalProduct.sortOrder,

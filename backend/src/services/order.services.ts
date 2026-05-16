@@ -405,98 +405,6 @@ export class OrderService {
             deliveredQty: fulfilledQuantity
           })
         }
-      } else if (isTelegramTransferProduct(product)) {
-        // Create transfer record
-        if (!customerTelegram) {
-          throw new Error(
-            `Customer Telegram information is required for transfer product ${product.name}`
-          )
-        }
-
-        // Get full product details for telegramUrl
-        const fullProduct = await db.product.findUnique({
-          where: { id: product.id },
-          select: { telegramUrl: true, meta: true }
-        })
-
-        if (!fullProduct) {
-          throw new Error(`Product ${product.name} was not found for transfer delivery`)
-        }
-
-        const productMeta = (fullProduct.meta as Record<string, any> | null) || {}
-        const transferType = productMeta?.transferType || 'group'
-        const { primaryTarget, allocatedTargets } = await this.allocateTransferTargets(
-          product.id,
-          productMeta,
-          quantityToDeliver
-        )
-
-        const resolvedTargetUrl = primaryTarget?.url || fullProduct.telegramUrl
-
-        if (!resolvedTargetUrl) {
-          throw new Error(`Product ${product.name} does not have a Telegram URL`)
-        }
-
-        const transfer = await this.createTelegramTransfer({
-          orderId: order.id,
-          targetUrl: resolvedTargetUrl,
-          transferType,
-          customerTelegram,
-          meta: {
-            orderNumber: order.orderNumber,
-            productName: product.name,
-            allocatedTargets,
-            allocatedTargetCount: allocatedTargets.length,
-            allocatedFromAssignedPool: allocatedTargets.length > 0
-          }
-        })
-
-        // Update status to VERIFICATION_REQUIRED and notify customer via email
-        await this.updateTelegramTransferStatus(
-          transfer.id,
-          'VERIFICATION_REQUIRED',
-          {
-            adminNotes: 'Transfer created from order, awaiting customer verification'
-          }
-        )
-
-        deliveryResults.transfers.push({
-          orderId: order.id,
-          productName: product.name,
-          transferId: transfer.id,
-          targetUrl: resolvedTargetUrl,
-          status: 'VERIFICATION_REQUIRED'
-        })
-      } else if (product.platform === 'TELEGRAM') {
-        // Handle Telegram accounts (deliver available stock)
-        const { delivered, requested } = await this.deliverTelegramAccountsWithBackorder(
-          order.id,
-          order.productId,
-          quantityToDeliver
-        )
-
-        if (delivered.length > 0) {
-          deliveryResults.instant.push({
-            orderId: order.id,
-            productName: product.name,
-            platform: 'TELEGRAM',
-            accounts: delivered,
-            requestedQty: requested,
-            deliveredQty: delivered.length
-          })
-
-          // Auto-link premium orders in the same cart group
-          await this.autoLinkPremiumOrders(order, delivered)
-
-          // For backorder fulfillment, send separate email
-          if (isBackorderFulfillment) {
-            const userEmail = order.user?.email || order.guestEmail
-            if (userEmail) {
-              await this.sendBackorderDeliveryEmail(order, delivered, userEmail)
-            }
-          }
-          // For initial delivery, the comprehensive notification will handle it
-        }
       } else {
         // Handle other platforms (instant delivery with backorder support)
         if (!product.platform) {
@@ -653,70 +561,11 @@ export class OrderService {
 
   /**
    * Deliver Telegram accounts instantly with full credentials after payment
+   * @deprecated Telegram platform is no longer supported
    */
   private async deliverTelegramAccountsInstantly(orderId: number, quantity: number) {
-    // Get the order to find product
-    const order = await db.order.findUnique({
-      where: { id: orderId },
-      include: { product: true }
-    })
-
-    if (!order) {
-      throw new Error('Order not found')
-    }
-
-    // Assign accounts to the order
-    const assignedAccounts = await this.assignTelegramAccountToOrder(
-      order.productId,
-      quantity
-    )
-
-    // Mark accounts as used and deliver credentials immediately
-    const deliveredAccounts = []
-
-    for (const account of assignedAccounts) {
-      // Mark as used
-      await this.markTelegramAccountAsUsed(account.id, orderId)
-
-      // Get decrypted credentials
-      try {
-        const credentials = await this.getTelegramAccountCredentials(account.id)
-
-        if (credentials) {
-          deliveredAccounts.push({
-            id: account.id,
-            phone: credentials.phone,
-            password: credentials.password, // 2FA password if exists
-            hasPremium: account.hasPremium,
-            platform: 'TELEGRAM',
-            isDelivered: true,
-            deliveredAt: new Date().toISOString(),
-            loginInstructions: {
-              steps: [
-                '1. Open Telegram app',
-                '2. Enter phone number: ' + credentials.phone,
-                '3. Go to your dashboard and Request for OTP for your purchased account from Order List. ',
-                '4. OTP will be sent to your email, get it and copy it.',
-                '4. Enter that OTP verification code',
-                ...(credentials.password ? ['5. Enter 2FA password: ' + credentials.password] : [])
-              ]
-            }
-          })
-        }
-      } catch (error) {
-        console.error(`Failed to get credentials for account ${account.id}:`, error)
-        // Still add account but mark as delivery failed
-        deliveredAccounts.push({
-          id: account.id,
-          hasPremium: account.hasPremium,
-          platform: 'TELEGRAM',
-          isDelivered: false,
-          error: 'Failed to decrypt credentials'
-        })
-      }
-    }
-
-    return deliveredAccounts
+    // Telegram platform is no longer supported
+    return []
   }
 
   /**
@@ -791,86 +640,8 @@ export class OrderService {
     productId: number,
     quantity: number
   ): Promise<{ delivered: any[]; requested: number }> {
-    // Get available stock
-    const availableAccounts = await db.account.findMany({
-      where: {
-        productId,
-        platform: 'TELEGRAM',
-        isUsed: false,
-        isValid: true,
-        archived: false
-      },
-      take: quantity,
-      orderBy: { createdAt: 'asc' }
-    })
-
-    const quantityToDeliver = availableAccounts.length // Deliver only what's available
-    const deliveredAccounts = []
-
-    if (quantityToDeliver > 0) {
-      // Assign and deliver available accounts
-      for (const account of availableAccounts) {
-        // Mark as used
-        await this.markTelegramAccountAsUsed(account.id, orderId)
-
-        // Get decrypted credentials
-        try {
-          const credentials = await this.getTelegramAccountCredentials(account.id)
-
-          if (credentials) {
-            deliveredAccounts.push({
-              id: account.id,
-              username: credentials.username,
-              email: credentials.email,
-              phone: credentials.phone,
-              password: credentials.password,
-              sessionData: credentials.sessionData,
-              backupCodes: credentials.backupCodes || [],
-              note: (credentials as any).note,
-              hasPremium: account.hasPremium,
-              platform: 'TELEGRAM',
-              credentials,
-              isDelivered: true,
-              deliveredAt: new Date().toISOString(),
-              loginInstructions: {
-                steps: [
-                  '1. Open Telegram app',
-                  '2. Enter phone number: ' + credentials.phone,
-                  '3. Request OTP from dashboard',
-                  '4. Enter OTP verification code',
-                  ...(credentials.password
-                    ? ['5. Enter 2FA password: ' + credentials.password]
-                    : [])
-                ]
-              }
-            })
-          }
-        } catch (error) {
-          console.error(`Failed to get credentials for account ${account.id}:`, error)
-          deliveredAccounts.push({
-            id: account.id,
-            hasPremium: account.hasPremium,
-            platform: 'TELEGRAM',
-            isDelivered: false,
-            error: 'Failed to decrypt credentials'
-          })
-        }
-      }
-
-      // Update product stock - decrement stockCount and increment soldCount
-      await db.product.update({
-        where: { id: productId },
-        data: {
-          stockCount: { decrement: quantityToDeliver },
-          soldCount: { increment: quantityToDeliver }
-        }
-      })
-    }
-
-    return {
-      delivered: deliveredAccounts,
-      requested: quantity
-    }
+    // Telegram platform is no longer supported
+    return { delivered: [], requested: quantity }
   }
 
   /**
@@ -1926,7 +1697,7 @@ Dashboard: ${frontendUrl}/dashboard
    * Check if an order has Telegram products
    */
   hasTelegramProducts(order: any): boolean {
-    return order.product?.platform === PlatformType.TELEGRAM
+    return false // Telegram products removed
   }
 
   /**
@@ -1943,7 +1714,7 @@ Dashboard: ${frontendUrl}/dashboard
       productName: order.product.name,
       platform: order.product.platform,
       quantity: order.quantity,
-      requiresOtp: order.product.platform === PlatformType.TELEGRAM,
+      requiresOtp: false, // OTP only needed for Telegram which is removed
       isDelivered: false,
       deliveredCount: 0,
       pendingCount: order.quantity
@@ -3169,8 +2940,7 @@ Dashboard: https://flexora.com/dashboard
       where: { id: orderId },
       include: {
         product: { select: { id: true, name: true, sku: true, platform: true, type: true } },
-        user: { select: { id: true, email: true, firstName: true } },
-        telegramTransfer: true
+        user: { select: { id: true, email: true, firstName: true } }
       }
     })
 
@@ -3199,8 +2969,7 @@ Dashboard: https://flexora.com/dashboard
       },
       include: {
         product: { select: { id: true, name: true, sku: true, platform: true, type: true } },
-        user: { select: { id: true, email: true, firstName: true } },
-        telegramTransfer: true
+        user: { select: { id: true, email: true, firstName: true } }
       },
       orderBy: [{ createdAt: 'asc' }, { id: 'asc' }]
     })

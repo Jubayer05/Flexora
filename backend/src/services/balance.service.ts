@@ -833,12 +833,8 @@ Please review this request on the admin panel: ${manageLink}
       },
     });
 
-
-    // Send email to admin
-    this.notifyAdminsOfStripeTopup(userId, user, topupAmount, paymentIntent.id)
-      .catch((err: any) => console.error('Failed to send admin notification:', err));
-
-    console.log(`[Stripe Topup] Successfully processed $${topupAmount} for user ${userId}`);
+    // Note: notifyAdminsOfStripeTopup removed here as it referenced undefined variables
+    console.log(`[Stripe Topup] Rejected topup request ${requestId}`);
   }
 
   /**

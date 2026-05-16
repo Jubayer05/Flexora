@@ -1030,7 +1030,7 @@ export class AuthService {
   // ================================
 
   async socialLogin(params: {
-    provider: 'google' | 'facebook' | 'twitter' | 'telegram'
+    provider: 'google' | 'facebook' | 'twitter'
     providerUserId: string
     email: string
     emailVerified: boolean
@@ -1043,11 +1043,10 @@ export class AuthService {
     const normalizedEmail = email.trim().toLowerCase()
     const normalizedProviderUsername = providerUsername?.trim().replace(/^@/, '')
     const isSyntheticSocialEmail =
-      (provider === 'twitter' && normalizedEmail.endsWith('@twitter.user')) ||
-      (provider === 'telegram' && normalizedEmail.endsWith('@telegram.user'))
+      (provider === 'twitter' && normalizedEmail.endsWith('@twitter.user'))
 
-    // Telegram and Twitter may use placeholder email when provider does not supply one
-    if (!normalizedEmail && provider !== 'telegram' && provider !== 'twitter') {
+    // Twitter may use placeholder email when provider does not supply one
+    if (!normalizedEmail && provider !== 'twitter') {
       throw new AppError('Email is required for social login', 400)
     }
 
@@ -1069,19 +1068,6 @@ export class AuthService {
       user = await this.userService.findByEmail(normalizedEmail)
     }
 
-    if (!user && provider === 'telegram' && normalizedProviderUsername) {
-      user = await db.user.findFirst({
-        where: {
-          role: 'CUSTOMER',
-          isGuest: false,
-          telegramUsername: {
-            equals: normalizedProviderUsername,
-            mode: 'insensitive'
-          }
-        }
-      })
-    }
-
     if (!user) {
       // Check if a guest User row exists for this email — upgrade instead of duplicating
       const existingGuest = normalizedEmail && !isSyntheticSocialEmail
@@ -1096,10 +1082,7 @@ export class AuthService {
             isGuest: false,
             guestToken: null,
             role: 'CUSTOMER',
-            isVerified: emailVerified,
-            ...(provider === 'telegram' && normalizedProviderUsername
-              ? { telegramUsername: normalizedProviderUsername }
-              : {})
+            isVerified: emailVerified
           }
         })
       } else {
@@ -1107,10 +1090,7 @@ export class AuthService {
           email: normalizedEmail,
           firstName: name,
           isGuest: false,
-          isVerified: emailVerified,
-          ...(provider === 'telegram' && normalizedProviderUsername
-            ? { telegramUsername: normalizedProviderUsername }
-            : {})
+          isVerified: emailVerified
         } as any)) as unknown as User
       }
 
@@ -1140,18 +1120,6 @@ export class AuthService {
       // If provider says email is verified and our user is not, mark verified
       if (emailVerified && !user.isVerified) {
         await this.userService.verifyEmail(user.id)
-        user = (await this.userService.findByIdWithSensitiveData(user.id))!
-      }
-
-      if (
-        provider === 'telegram' &&
-        normalizedProviderUsername &&
-        user.telegramUsername?.replace(/^@/, '') !== normalizedProviderUsername
-      ) {
-        await db.user.update({
-          where: { id: user.id },
-          data: { telegramUsername: normalizedProviderUsername }
-        })
         user = (await this.userService.findByIdWithSensitiveData(user.id))!
       }
     }

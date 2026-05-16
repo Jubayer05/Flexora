@@ -822,7 +822,6 @@ const CartCheckoutSchema = z.object({
         quantity: z.number().int().min(1).max(10000),
         customerTelegram: z.string().optional(),
         clientInput: z.string().optional(),
-        telegramUsername: z.string().optional(), // For premium orders
         premiumTargets: z.array(z.string().min(1)).optional()
       })
     )
@@ -1072,10 +1071,6 @@ export const createCartOrders = async (req: AuthRequest, res: Response) => {
           : {}),
         ...(product.type === 'SERVICE' && product.platform !== 'TELEGRAM' && item.clientInput
           ? { clientInput: item.clientInput }
-          : {}),
-        // Add Telegram username for premium orders
-        ...(item.telegramUsername
-          ? { telegramUsername: item.telegramUsername }
           : {}),
         ...(item.premiumTargets?.length
           ? {
@@ -1382,7 +1377,6 @@ export const getOrdersAdmin = async (req: AuthRequest, res: Response) => {
               email: true,
               firstName: true,
               username: true,
-              telegramUsername: true,
               isBanned: true,
               banReason: true
             }
@@ -1628,8 +1622,7 @@ export const getOrderByIdAdmin = async (req: AuthRequest, res: Response) => {
             username: true,
             phone: true,
             country: true,
-            isGuest: true,
-            telegramUsername: true
+            isGuest: true
           }
         },
         product: {

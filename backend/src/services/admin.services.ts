@@ -152,7 +152,6 @@ export class AdminService {
             username: true,
             firstName: true,
             phone: true,
-            telegramUsername: true,
             role: true,
             passwordHash: true,
             isActive: true,
@@ -587,7 +586,6 @@ export class AdminService {
     updateData: {
       firstName?: string;
       phone?: string;
-      telegramUsername?: string;
       isActive?: boolean;
       isVerified?: boolean;
       role?: 'ADMIN' | 'MODERATOR';
@@ -618,7 +616,6 @@ export class AdminService {
     const data: Record<string, unknown> = {
       firstName: updateData.firstName,
       phone: updateData.phone,
-      telegramUsername: updateData.telegramUsername,
       updatedAt: new Date(),
     };
 

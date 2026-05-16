@@ -45,8 +45,7 @@ export const createTicket = async (req: AuthRequest, res: Response) => {
           id: true,
           email: true,
           firstName: true,
-          phone: true,
-          telegramUsername: true
+          phone: true
         }
       }),
       db.order.findFirst({
@@ -71,15 +70,6 @@ export const createTicket = async (req: AuthRequest, res: Response) => {
               sku: true,
               type: true,
               platform: true
-            }
-          },
-          telegramTransfer: {
-            select: {
-              id: true,
-              status: true,
-              customerTelegram: true,
-              targetUrl: true,
-              joinVerified: true
             }
           }
         }
@@ -109,12 +99,10 @@ export const createTicket = async (req: AuthRequest, res: Response) => {
           total: Number(order.total.toString()),
           createdAt: order.createdAt.toISOString(),
           product: order.product,
-          telegramTransfer: order.telegramTransfer,
           client: {
             email: user?.email || req.user!.email,
             name: user?.firstName || order.customerName || req.user!.email,
-            phone: user?.phone || order.customerPhone || null,
-            telegramUsername: user?.telegramUsername || null
+            phone: user?.phone || order.customerPhone || null
           }
         }
       }

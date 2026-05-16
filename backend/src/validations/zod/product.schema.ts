@@ -8,7 +8,6 @@ export const PlatformType = z.enum([
   'INSTAGRAM',
   'FACEBOOK',
   'TWITTER',
-  'TELEGRAM',
   'TIKTOK',
   'YOUTUBE',
   'OTHER'
