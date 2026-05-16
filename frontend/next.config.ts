@@ -2,8 +2,7 @@ import path from "path";
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  output: "standalone",
-  // Use frontend as trace root so Next doesn't use monorepo root (avoids multiple lockfile warning)
+  // standalone breaks Vercel experimentalServices routing for the frontend at /
   outputFileTracingRoot: path.join(process.cwd()),
 // typescript: {
 //     ignoreBuildErrors: true,

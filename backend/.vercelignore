@@ -1,3 +1,5 @@
 dist
 generated
 *.map
+main.js
+index.js

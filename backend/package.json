@@ -5,8 +5,8 @@
   "private": true,
   "scripts": {
     "postinstall": "prisma generate",
-    "build": "prisma generate && node esbuild.config.mjs",
-    "vercel-build": "prisma generate && node esbuild.config.mjs",
+    "build": "prisma generate && node esbuild.config.mjs && rm -f main.js index.js",
+    "vercel-build": "prisma generate && node esbuild.config.mjs && rm -f main.js index.js",
     "dev": "bun --watch main.ts",
     "start": "node server.cjs",
     "db:generate": "prisma generate",
