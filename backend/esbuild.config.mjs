@@ -2,7 +2,7 @@ import * as esbuild from 'esbuild'
 
 await esbuild.build({
   entryPoints: ['main.ts'],
-  outfile: 'index.js',
+  outfile: 'dist/index.js',
   bundle: true,
   platform: 'node',
   target: 'node20',

@@ -4,8 +4,6 @@ node_modules
 # output
 out
 dist
-index.js
-index.js.map
 *.tgz
 # Python cache files
 python-services/__pycache__/
