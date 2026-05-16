@@ -1,4 +1,4 @@
-import { PlatformType } from '@prisma/client'
+import { PlatformType, Prisma } from '@prisma/client'
 import db from '../configs/db'
 import { sendEmail } from '../libs/email'
 import {
@@ -41,8 +41,7 @@ const getNextOrderSequence = async (year: number) => {
 }
 
 const isOrderNumberConflict = (error: unknown) => {
-  const { PrismaClientKnownRequestError } = require('@prisma/client/runtime/library')
-  if (!(error instanceof PrismaClientKnownRequestError) || (error as any).code !== 'P2002') return false
+  if (!(error instanceof Prisma.PrismaClientKnownRequestError) || (error as any).code !== 'P2002') return false
   const targets = Array.isArray((error as any).meta?.target)
     ? (error as any).meta.target.map((t: unknown) => String(t))
     : [String((error as any).meta?.target || '')]
