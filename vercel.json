@@ -11,7 +11,11 @@
       "framework": "express",
       "includeFiles": [
         "backend/node_modules/.prisma/**",
-        "backend/node_modules/@prisma/**"
+        "backend/node_modules/@prisma/**",
+        "backend/node_modules/axios/**",
+        "backend/node_modules/follow-redirects/**",
+        "backend/node_modules/proxy-from-env/**",
+        "backend/node_modules/form-data/**"
       ]
     }
   }

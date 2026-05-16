@@ -1,8 +1,6 @@
 'use server'
+import { getApiBaseUrl } from '@/lib/api-base-url'
 import { HomepageSettings } from '@/lib/validations/schemas/homepageSettings'
-
-// Use the public API URL for server-side calls
-const serverBaseURL = process.env.NEXT_PUBLIC_APP_ROOT_API || 'http://localhost:5015/api/v1'
 
 // Add build-time detection
 const isBuildTime = () => {
@@ -47,8 +45,7 @@ export const fetchOnServer = async <T = any>(
   token?: 'token' | 'adminToken',
   cacheOption?: RequestInit['cache']
 ): Promise<{ data: T | null; error: string | null }> => {
-  // Use serverBaseURL for server-side calls
-  const apiURL = serverBaseURL
+  const apiURL = getApiBaseUrl()
 
   if (!apiURL) {
     console.error('API URL is not configured')

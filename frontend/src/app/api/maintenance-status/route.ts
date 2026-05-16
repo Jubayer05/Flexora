@@ -1,3 +1,4 @@
+import { getApiBaseUrl } from '@/lib/api-base-url'
 import { NextResponse } from 'next/server'
 
 const noCache = {
@@ -11,7 +12,7 @@ const DEFAULT_MESSAGE =
 
 export async function GET() {
   try {
-    const baseURL = (process.env.NEXT_PUBLIC_APP_ROOT_API || '').trim()
+    const baseURL = getApiBaseUrl()
     const apiUrl = baseURL.endsWith('/') ? baseURL : `${baseURL}/`
     const url = `${apiUrl}settings/key/maintenance_mode`
 
