@@ -2,15 +2,15 @@ import { cn } from '@/lib/utils'
 
 export default function VisualCategoryGrid() {
   return (
-    <section className="py-20 max-w-[1440px] mx-auto px-20">
+    <section className="py-6 md:py-8 lg:py-12 max-w-[1440px] mx-auto px-4 sm:px-6 md:px-8 lg:px-12">
       <h2
         className={cn(
-          'font-[Bebas_Neue] text-[48px] leading-[48px] tracking-[0.02em] font-bold mb-12 text-[var(--foreground)]'
+          'font-[Bebas_Nue] text-xl sm:text-2xl md:text-3xl leading-tight sm:leading-[28px] md:leading-[36px] tracking-[0.02em] font-bold mb-4 md:mb-8 text-[var(--foreground)]'
         )}
       >
         CHOOSE YOUR DISCIPLINE
       </h2>
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
         {[
           {
             name: 'STRENGTH',
@@ -26,12 +26,17 @@ export default function VisualCategoryGrid() {
             name: 'RECOVERY',
             image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuC7aQaFbqS6byC4JJ1Zm1FtmfFUvhVoPbHLFj9ryxl_4NBbm2vbAlWPrxPZh0_E5kBYTnyzP1ldBFrd35fXvSe51SoErtwIA8CBsupC8-nObxbXz0wLWudRUjhtyw_A8zhkMq49MUxBr_lZuwv0mlCdnWAXtLYb2T-UbpxgLKj7iSKzIlyTO-5pePtWA-u-GWTHSDvP5gHULJ1nQQk1LPGEqj-_QvA-6YxUmHZFKPvVMtNmAvyKRgrTzjhzVjDBJyd2UbULTdqDZ2JG',
             alt: 'A focused athlete performing static stretching in a yoga studio'
+          },
+          {
+            name: 'PERFORMANCE',
+            image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuBOXLz8kVRFdm9k7i1pO3y9hQJKfJ3x8mVcL5tGn2sP4rY5wA7uX9qK2lM1jH3fD8eC7bA6vN5uM4lK3jH2gF1eD0cB9aZ8xY7wV6uT5sR4qP3oN2mM1lK0jI9hG8fD7eC6bA5vN4uM3lK2jH1gF0eD9cB8aZ7xY6wV5uT4sR3qP2oN1mM0lK',
+            alt: 'Athlete performing explosive power clean in gym'
           }
         ].map((category, index) => (
           <div
             key={index}
             className={cn(
-              'relative h-[450px] rounded-xl overflow-hidden',
+              'relative h-[180px] sm:h-[200px] md:h-[240px] lg:h-[280px] rounded-lg overflow-hidden',
               'glass-card group cursor-pointer'
             )}
           >
@@ -49,17 +54,17 @@ export default function VisualCategoryGrid() {
                 'opacity-0 group-hover:opacity-100 transition-opacity'
               )}
             />
-            <div className="absolute bottom-6 left-6">
+            <div className="absolute bottom-3 left-4">
               <h3
                 className={cn(
-                  'font-[Bebas_Neue] text-[48px] leading-[48px] tracking-[0.02em] font-bold text-white'
+                  'font-[Bebas_Neue] text-lg sm:text-xl md:text-2xl leading-tight sm:leading-[24px] md:leading-[32px] tracking-[0.02em] font-bold text-white'
                 )}
               >
                 {category.name}
               </h3>
               <div
                 className={cn(
-                  'h-1 w-0 bg-white transition-all duration-300 group-hover:w-full'
+                  'h-0.5 w-0 bg-white transition-all duration-300 group-hover:w-full'
                 )}
               />
             </div>

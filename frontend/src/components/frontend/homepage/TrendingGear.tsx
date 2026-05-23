@@ -2,15 +2,15 @@ import { cn } from '@/lib/utils'
 
 export default function TrendingGear() {
   return (
-    <section className="py-20 max-w-[1440px] mx-auto px-20">
+    <section className="py-8 sm:py-10 lg:py-12 max-w-[1440px] mx-auto px-4 sm:px-6 md:px-8 lg:px-12 xl:px-20">
       <h2
         className={cn(
-          'font-[Bebas_Neue] text-[48px] leading-[48px] tracking-[0.02em] font-bold mb-12 text-[var(--foreground)]'
+          'font-[Bebas_Neue] text-2xl sm:text-3xl md:text-4xl lg:text-[36px] leading-tight sm:leading-tight md:leading-[1.1] lg:leading-[36px] tracking-[0.02em] font-bold mb-6 sm:mb-8 text-[var(--foreground)]'
         )}
       >
         TRENDING GEAR
       </h2>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 sm:gap-3 lg:gap-4">
         {[
           {
             category: 'Supplements',
@@ -43,13 +43,13 @@ export default function TrendingGear() {
           <div
             key={index}
             className={cn(
-              'glass-card p-3 rounded-xl relative group',
+              'glass-card p-2 rounded-lg relative group',
               product.isActive && 'border-[var(--primary-fixed-dim)]/40 ring-1 ring-[var(--primary-fixed-dim)]/20'
             )}
           >
             <div
               className={cn(
-                'aspect-square rounded-lg bg-[var(--surface-container-high)] overflow-hidden mb-3 relative'
+                'aspect-square rounded-md bg-[var(--surface-container-high)] overflow-hidden mb-2 relative'
               )}
             >
               <img
@@ -59,7 +59,7 @@ export default function TrendingGear() {
               />
               <button
                 className={cn(
-                  'absolute top-3 right-3 w-10 h-10 rounded-full',
+                  'absolute top-1.5 right-1.5 sm:top-2 sm:right-2 w-7 h-7 sm:w-8 sm:h-8 rounded-full',
                   'flex items-center justify-center transition-colors',
                   product.isActive
                     ? 'fire-gradient text-white'
@@ -67,7 +67,7 @@ export default function TrendingGear() {
                 )}
               >
                 <span
-                  className="material-symbols-outlined"
+                  className="material-symbols-outlined text-sm"
                   data-icon="favorite"
                   style={product.isActive ? { fontVariationSettings: "'FILL' 1" } : undefined}
                 >
@@ -75,25 +75,25 @@ export default function TrendingGear() {
                 </span>
               </button>
             </div>
-            <div className="px-1">
+            <div className="px-0.5">
               <p
                 className={cn(
-                  'font-[JetBrains_Mono] text-[14px] leading-[18px] tracking-[-0.01em] font-medium uppercase mb-1 tracking-tight text-[var(--primary)]'
+                  'font-[JetBrains_Mono] text-[11px] leading-[14px] tracking-[-0.01em] font-medium uppercase mb-0.5 text-[var(--primary)]'
                 )}
               >
                 {product.category}
               </p>
               <h5
                 className={cn(
-                  'font-[Outfit] text-[18px] leading-[28px] font-bold mb-1 truncate text-[var(--foreground)]'
+                  'font-[Outfit] text-[14px] leading-[18px] font-bold mb-0.5 truncate text-[var(--foreground)]'
                 )}
               >
                 {product.name}
               </h5>
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-2">
                 <span
                   className={cn(
-                    'font-[JetBrains_Mono] text-[20px] leading-[24px] tracking-[-0.02em] font-semibold text-[var(--primary)]'
+                    'font-[JetBrains_Mono] text-[14px] leading-[18px] tracking-[-0.02em] font-semibold text-[var(--primary)]'
                   )}
                 >
                   {product.price}
@@ -101,7 +101,7 @@ export default function TrendingGear() {
                 {product.oldPrice && (
                   <span
                     className={cn(
-                      'font-[JetBrains_Mono] text-[14px] leading-[18px] tracking-[-0.01em] font-medium text-[var(--on-surface-variant)] line-through'
+                      'font-[JetBrains_Mono] text-[11px] leading-[14px] tracking-[-0.01em] font-medium text-[var(--on-surface-variant)] line-through'
                     )}
                   >
                     {product.oldPrice}

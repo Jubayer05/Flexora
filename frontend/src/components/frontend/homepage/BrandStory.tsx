@@ -2,26 +2,26 @@ import { cn } from '@/lib/utils'
 
 export default function BrandStory() {
   return (
-    <section className="py-20 bg-[var(--surface-container-low)]">
+    <section className="py-8 md:py-12 bg-[var(--surface-container-low)]">
       <div
         className={cn(
-          'max-w-[1440px] mx-auto px-20',
-          'grid grid-cols-1 md:grid-cols-2 gap-20 items-center'
+          'max-w-[1440px] mx-auto px-4 sm:px-6 md:px-10 lg:px-20',
+          'grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8 items-center'
         )}
       >
         <div className="order-2 md:order-1">
           <h2
             className={cn(
-              'font-[Bebas_Neue] text-[48px] leading-[48px] tracking-[0.02em] font-bold mb-6 text-[var(--foreground)]'
+              'font-[Bebas_Neue] text-[24px] sm:text-[32px] md:text-[40px] leading-[1.1] tracking-[0.02em] font-bold mb-3 sm:mb-4 text-[var(--foreground)]'
             )}
           >
             THE SCIENCE OF
-            <br />
+            <br className="hidden sm:block" />
             <span className="text-[var(--primary)]">UNSTOPPABLE.</span>
           </h2>
           <p
             className={cn(
-              'font-[Outfit] text-[18px] leading-[28px] mb-6 leading-relaxed text-[var(--on-surface-variant)]'
+              'font-[Outfit] text-[14px] sm:text-[16px] leading-relaxed mb-4 text-[var(--on-surface-variant)]'
             )}
           >
             At Flexora, we don't just sell equipment; we engineer progress.
@@ -30,7 +30,7 @@ export default function BrandStory() {
             professional-grade performance shouldn't be a privilege of the elite
             few, but a standard for everyone who dares to push their limits.
           </p>
-          <div className="grid grid-cols-3 gap-6">
+          <div className="grid grid-cols-3 gap-4 sm:gap-6">
             {[
               { value: '150K+', label: 'Athletes' },
               { value: '12', label: 'Pro Awards' },
@@ -39,14 +39,14 @@ export default function BrandStory() {
               <div key={index}>
                 <p
                   className={cn(
-                    'font-[Bebas_Neue] text-[32px] leading-[32px] tracking-[0.02em] font-bold text-[var(--primary)]'
+                    'font-[Bebas_Neue] text-[20px] sm:text-[24px] leading-[1.1] tracking-[0.02em] font-bold text-[var(--primary)]'
                   )}
                 >
                   {stat.value}
                 </p>
                 <p
                   className={cn(
-                    'font-[Outfit] text-[14px] leading-[20px] uppercase text-[var(--on-surface-variant)]'
+                    'font-[Outfit] text-[10px] sm:text-[12px] leading-[1.4] uppercase text-[var(--on-surface-variant)]'
                   )}
                 >
                   {stat.label}
@@ -55,7 +55,7 @@ export default function BrandStory() {
             ))}
           </div>
         </div>
-        <div className="order-1 md:order-2 rounded-xl overflow-hidden glass-card h-[500px]">
+        <div className="order-1 md:order-2 rounded-xl overflow-hidden glass-card h-[240px] sm:h-[280px] md:h-[320px]">
           <img
             alt="Brand Story"
             className="w-full h-full object-cover"
